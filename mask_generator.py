@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import final
+
 import cv2 as cv
 import numpy as np
 import random
@@ -10,17 +12,20 @@ class MaskGenerator:
     Generator that yields random masks by drawing lines, circles and ellipses.
     The white part represents the area of interest.
     """
+    DEFAULT_MAX_OBJECTS: final = 15
+    DEFAULT_DRAW_SCALE: final = 0.025
 
-    def __init__(self, mask_size: tuple[int, int], count: int = 0, draw_scale: float = 0.025, max_objects: int = 20, seed: int = None) -> None:
+    def __init__(self, mask_size: tuple[int, int], count: int = 0, draw_scale: float = DEFAULT_DRAW_SCALE, max_objects: int = DEFAULT_MAX_OBJECTS,
+                 seed: int = None) -> None:
         """
         Initializes the generator.
 
         Args:
-            mask_size (tuple[int, int]): Mask dimensions.
-            count (int, optional): Numbers of masks to generate. Defaults to 0.
-            draw_scale (float, optional): Drawing objects scaling factor. Defaults to 0.025.
-            max_objects (int, optional): Upper limit of every type of drawing. Defaults to 20.
-            seed (int, optional): Seed for deterministic output. Defaults to 42.
+            mask_size (tuple[int, int]): Mask dimensions
+            count (int, optional): Numbers of masks to generate. Defaults to 0
+            draw_scale (float, optional): Drawing objects scaling factor. Defaults to DEFAULT_DRAW_SCALE
+            max_objects (int, optional): Upper limit of every type of drawing. Defaults to DEFAULT_MAX_OBJECTS
+            seed (int, optional): Seed for deterministic output. Defaults to 42
         """
         self.width, self.height = mask_size
         self.count = count
@@ -191,6 +196,30 @@ class MaskGenerator:
             raise ValueError("Current value must be positive")
         self.__current = value
 
+    @classmethod
+    def __generate_mask_helper(cls, height: int, width: int, draw_scale: float, max_objects: int) -> np.ndarray:
+        """
+        Helper method for the mask generation that can be called from the
+        generator or from the class itself.
+
+        Args:
+            height (int): Mask height
+            width (int): Mask width
+            draw_scale (float): Drawing objects scaling factor
+            max_objects (int): Upper limit of every type of drawing
+
+        Returns:
+            np.ndarray: Mask
+        """
+        mask = np.zeros((height, width), dtype=np.uint8)
+        size = int((width + height) * draw_scale)
+
+        cls.__draw_lines(mask, size, height, width, max_objects)
+        cls.__draw_circles(mask, size, height, width, max_objects)
+        cls.__draw_ellipses(mask, size, height, width, max_objects)
+
+        return mask
+
     def __generate_mask(self) -> np.ndarray:
         """
         Generates a random mask.
@@ -198,61 +227,82 @@ class MaskGenerator:
         Returns:
             np.ndarray: Mask
         """
-        mask = np.zeros((self.height, self.width), dtype=np.uint8)
-        size = int((self.width + self.height) * self.draw_scale)
+        return self.__generate_mask_helper(self.height, self.width, self.draw_scale, self.max_objects)
 
-        self.__draw_lines(mask, size)
-        self.__draw_circles(mask, size)
-        self.__draw_ellipses(mask, size)
-
-        return mask
-
-    def __draw_lines(self, mask: np.ndarray, size: int) -> None:
+    @classmethod
+    def __draw_lines(cls, mask: np.ndarray, size: int, height: int, width: int, max_objects: int) -> None:
         """
         Draws random lines on the mask.
 
         Args:
             mask (np.ndarray): Mask
             size (int): Line size
+            height (int): Mask height
+            width (int): Mask width
+            max_objects (int): Upper limit of every type of drawing
         """
-        for _ in range(random.randint(1, self.max_objects)):
-            start_x, stop_x = np.random.randint(0, self.width, 2, dtype=np.uint16)
-            start_y, stop_y = np.random.randint(0, self.height, 2, dtype=np.uint16)
+        for _ in range(random.randint(1, max_objects)):
+            start_x, stop_x = np.random.randint(0, width, 2, dtype=np.uint16)
+            start_y, stop_y = np.random.randint(0, height, 2, dtype=np.uint16)
             thickness = random.randint(1, size)
             cv.line(mask, (start_x, start_y), (stop_x, stop_y), 255, thickness)
 
-    def __draw_circles(self, mask: np.ndarray, size: int) -> None:
+    @classmethod
+    def __draw_circles(cls, mask: np.ndarray, size: int, height: int, width: int, max_objects: int) -> None:
         """
         Draws random circles on the mask.
 
         Args:
             mask (np.ndarray): Mask
             size (int): Circle size
+            height (int): Mask height
+            width (int): Mask width
+            max_objects (int): Upper limit of every type of drawing
         """
-        for _ in range(random.randint(1, self.max_objects)):
-            center_x = random.randint(0, self.width)
-            center_y = random.randint(0, self.height)
+        for _ in range(random.randint(1, max_objects)):
+            center_x = random.randint(0, width)
+            center_y = random.randint(0, height)
             radius = random.randint(1, size)
             cv.circle(mask, (center_x, center_y), radius, 255, -1)
 
-    def __draw_ellipses(self, mask: np.ndarray, size: int) -> None:
+    @classmethod
+    def __draw_ellipses(cls, mask: np.ndarray, size: int, height: int, width: int, max_objects: int) -> None:
         """
         Draws random ellipses on the mask.
 
         Args:
             mask (np.ndarray): Mask
             size (int): Ellipse size
+            height (int): Mask height
+            width (int): Mask width
+            max_objects (int): Upper limit of every type of drawing
         """
-        for _ in range(random.randint(1, self.max_objects)):
-            center_x = random.randint(0, self.width)
-            center_y = random.randint(0, self.height)
+        for _ in range(random.randint(1, max_objects)):
+            center_x = random.randint(0, width)
+            center_y = random.randint(0, height)
             axis1 = random.randint(1, size)
             axis2 = random.randint(1, size)
             rotation_angle = random.randint(0, 360)
             start_arc_angle = random.randint(0, 180)
             stop_arc_angle = random.randint(0, 180)
             thickness = random.randint(1, size)
-            cv.ellipse(mask, (center_x, center_y), (axis1, axis2), rotation_angle, start_arc_angle, stop_arc_angle, 255, thickness)
+            cv.ellipse(mask, (center_x, center_y), (axis1, axis2), rotation_angle,
+                       start_arc_angle, stop_arc_angle, 255, thickness)
+
+    @classmethod
+    def generate_mask(cls, mask_size: tuple[int, int], draw_scale: float = DEFAULT_DRAW_SCALE, max_objects: int = DEFAULT_MAX_OBJECTS) -> np.ndarray:
+        """
+        Generates a single random mask.
+
+        Args:
+            mask_size (tuple[int, int]): Mask dimensions.
+            draw_scale (float, optional): Drawing objects scaling factor. Defaults to DEFAULT_DRAW_SCALE
+            max_objects (int, optional): Upper limit of every type of drawing. Defaults to DEFAULT_MAX_OBJECTS
+
+        Returns:
+            np.ndarray: Mask
+        """
+        return cls.__generate_mask_helper(mask_size[0], mask_size[1], draw_scale, max_objects)
 
     def __iter__(self) -> MaskGenerator:
         """
