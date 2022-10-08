@@ -13,10 +13,12 @@ class MaskGenerator:
     The white part represents the area of interest.
     """
     DEFAULT_MAX_OBJECTS: final = 15
-    DEFAULT_DRAW_SCALE: final = 0.025
+    DEFAULT_DRAW_SCALE: final = 0.015
 
-    def __init__(self, mask_size: tuple[int, int], count: int = 0, draw_scale: float = DEFAULT_DRAW_SCALE, max_objects: int = DEFAULT_MAX_OBJECTS,
-                 seed: int = None) -> None:
+    MAX_MASK_VALUE: final = 255
+
+    def __init__(self, mask_size: tuple[int, int], count: int = 0, draw_scale: float = DEFAULT_DRAW_SCALE,
+                 max_objects: int = DEFAULT_MAX_OBJECTS) -> None:
         """
         Initializes the generator.
 
@@ -25,17 +27,12 @@ class MaskGenerator:
             count (int, optional): Numbers of masks to generate. Defaults to 0
             draw_scale (float, optional): Drawing objects scaling factor. Defaults to DEFAULT_DRAW_SCALE
             max_objects (int, optional): Upper limit of every type of drawing. Defaults to DEFAULT_MAX_OBJECTS
-            seed (int, optional): Seed for deterministic output. Defaults to 42
         """
         self.width, self.height = mask_size
         self.count = count
         self.draw_scale = draw_scale
         self.max_objects = max_objects
         self.current = 0
-
-        if seed is not None:
-            np.random.seed(seed)
-            random.seed(seed)
 
     @property
     def width(self) -> int:
