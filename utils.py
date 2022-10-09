@@ -2,6 +2,7 @@ import tensorflow as tf
 from enum import Enum, unique
 
 import numpy as np
+import cv2 as cv
 import random
 
 from mask_generator import MaskGenerator
@@ -50,3 +51,33 @@ def apply_mask(image: np.ndarray, color: MaskColor = True) -> tuple[np.ndarray, 
         masked[mask == MaskGenerator.MAX_MASK_VALUE] = MaskColor.BLACK.value
 
     return masked, mask
+
+
+def inpaint_navier_stokes(image: np.ndarray, mask: np.ndarray, radius: float = 3.0) -> np.ndarray:
+    """
+    Inpaint an image using the Navier-Stokes algorithm.
+
+    Args:
+        image (np.ndarray): The image to inpaint
+        mask (np.ndarray): The mask to use
+        radius (float, optional): The inpaint radius to use. Defaults to 3.0.
+
+    Returns:
+        np.ndarray: The inpainted image
+    """
+    return cv.inpaint(image, mask, radius, cv.INPAINT_NS)
+
+
+def inpaint_telea(image: np.ndarray, mask: np.ndarray, radius: float = 3.0) -> np.ndarray:
+    """
+    Inpaint an image using the Telea algorithm.
+
+    Args:
+        image (np.ndarray): The image to inpaint
+        mask (np.ndarray): The mask to use
+        radius (float, optional): The inpaint radius to use. Defaults to 3.0.
+
+    Returns:
+        np.ndarray: The inpainted image
+    """
+    return cv.inpaint(image, mask, radius, cv.INPAINT_TELEA)
