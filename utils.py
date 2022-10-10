@@ -29,7 +29,7 @@ class MaskColor(Enum):
     BLACK = 0
 
 
-def apply_mask(image: np.ndarray, color: MaskColor = True) -> tuple[np.ndarray, np.ndarray]:
+def apply_mask(image: np.ndarray, color: MaskColor = MaskColor.WHITE) -> tuple[np.ndarray, np.ndarray]:
     """
     Apply a mask to an image.
 
