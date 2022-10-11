@@ -1,11 +1,10 @@
 import tensorflow as tf
-from enum import Enum, unique
 
 import numpy as np
 import cv2 as cv
 import random
 
-from mask_generator import MaskGenerator
+from mask_generator import MaskGenerator, MaskColor
 
 
 def set_global_seed(seed: int) -> None:
@@ -20,35 +19,27 @@ def set_global_seed(seed: int) -> None:
     random.seed(seed)
 
 
-@unique
-class MaskColor(Enum):
-    """
-    The color of the mask.
-    """
-    WHITE = 255
-    BLACK = 0
-
-
-def apply_mask(image: np.ndarray, color: MaskColor = MaskColor.WHITE) -> tuple[np.ndarray, np.ndarray]:
+def apply_mask(image: np.ndarray, ratio: tuple[float, float] = MaskGenerator.DEFAULT_MASK_RATIO, color: MaskColor = MaskColor.WHITE) -> tuple[np.ndarray, np.ndarray]:
     """
     Apply a mask to an image.
 
     Args:
         image (np.ndarray): The image to apply the mask to
+        ratio (tuple[float, float]): Percentage interval of the image that is covered by the mask. Defaults to DEFAULT_MASK_RATIO
         color (MaskColor): The color of the mask
 
     Returns:
         tuple[np.ndarray, np.ndarray]: The masked image and the mask
     """
     height, width, _ = image.shape
-    mask = MaskGenerator.generate_mask((height, width))
+    mask = MaskGenerator.generate_mask(mask_size=(height, width), ratio=ratio)
 
     masked = image.copy()
 
     if color == MaskColor.WHITE:
-        masked[mask == MaskGenerator.MAX_MASK_VALUE] = MaskColor.WHITE.value
+        masked[mask == MaskGenerator.MASK_VALUE] = MaskColor.WHITE.value
     elif color == MaskColor.BLACK:
-        masked[mask == MaskGenerator.MAX_MASK_VALUE] = MaskColor.BLACK.value
+        masked[mask == MaskGenerator.MASK_VALUE] = MaskColor.BLACK.value
 
     return masked, mask
 

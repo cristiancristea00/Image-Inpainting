@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from enum import Enum, unique
 from typing import final
 
 import cv2 as cv
@@ -7,31 +7,40 @@ import numpy as np
 import random
 
 
+@unique
+class MaskColor(Enum):
+    """
+    The color of the mask.
+    """
+    WHITE = 255
+    BLACK = 0
+
+
 class MaskGenerator:
     """
     Generator that yields random masks by drawing lines, circles and ellipses.
     The white part represents the area of interest.
     """
-    DEFAULT_MAX_OBJECTS: final = 15
+    MASK_VALUE: final = MaskColor.WHITE.value
+
     DEFAULT_DRAW_SCALE: final = 0.015
+    DEFAULT_MASK_RATIO: final = (10, 15)
 
-    MAX_MASK_VALUE: final = 255
-
-    def __init__(self, mask_size: tuple[int, int], count: int = 0, draw_scale: float = DEFAULT_DRAW_SCALE,
-                 max_objects: int = DEFAULT_MAX_OBJECTS) -> None:
+    def __init__(self, mask_size: tuple[int, int], count: int = 0, ratio: tuple[float, float] = DEFAULT_MASK_RATIO,
+                 draw_scale: float = DEFAULT_DRAW_SCALE) -> None:
         """
         Initializes the generator.
 
         Args:
             mask_size (tuple[int, int]): Mask dimensions
             count (int, optional): Numbers of masks to generate. Defaults to 0
+            ratio (tuple[float, float]): Percentage interval of the image that is covered by the mask. Defaults to DEFAULT_MASK_RATIO
             draw_scale (float, optional): Drawing objects scaling factor. Defaults to DEFAULT_DRAW_SCALE
-            max_objects (int, optional): Upper limit of every type of drawing. Defaults to DEFAULT_MAX_OBJECTS
         """
         self.width, self.height = mask_size
+        self.ratio_min, self.ratio_max = ratio
         self.count = count
         self.draw_scale = draw_scale
-        self.max_objects = max_objects
         self.current = 0
 
     @property
@@ -55,6 +64,26 @@ class MaskGenerator:
         return self.__height
 
     @property
+    def ratio_min(self) -> float:
+        """
+        Read only property for the minimum of the ratio.
+
+        Returns:
+            float: Minimum ratio
+        """
+        return self.__ratio_min
+
+    @property
+    def ratio_max(self) -> float:
+        """
+        Read only property for the maximum of the ratio.
+
+        Returns:
+            float: Maximum ratio
+        """
+        return self.__ratio_max
+
+    @property
     def count(self) -> int:
         """
         Read only property for the number of masks to generate.
@@ -73,16 +102,6 @@ class MaskGenerator:
             float: Drawing objects scaling factor
         """
         return self.__draw_scale
-
-    @property
-    def max_objects(self) -> int:
-        """
-        Read only property for the upper limit of every type of drawing.
-
-        Returns:
-            int: Upper limit of every type of drawing
-        """
-        return self.__max_objects
 
     @property
     def current(self) -> int:
@@ -130,6 +149,39 @@ class MaskGenerator:
             raise ValueError("Height value must be greater than 28")
         self.__height = value
 
+    @ratio_min.setter
+    def ratio_min(self, value: float) -> None:
+        """
+        Setter for the minimum of the ratio.
+
+        Args:
+            value (float): Minimum ratio
+
+        Raises:
+            ValueError: If the value is negative
+        """
+        if value < 0:
+            raise ValueError("Minimum ratio value must be positive")
+        self.__ratio_min = value
+
+    @ratio_max.setter
+    def ratio_max(self, value: float) -> None:
+        """
+        Setter for the maximum of the ratio.
+
+        Args:
+            value (float): Maximum ratio
+
+        Raises:
+            ValueError: If the value is negative
+            ValueError: If the value is higher than 100
+        """
+        if value < 0:
+            raise ValueError("Maximum ratio value must be positive")
+        if value > 100:
+            raise ValueError("Maximum ratio value must be lower than 100")
+        self.__ratio_max = value
+
     @count.setter
     def count(self, value: int) -> None:
         """
@@ -160,24 +212,6 @@ class MaskGenerator:
             raise ValueError("Draw value scale must be positive")
         self.__draw_scale = value
 
-    @max_objects.setter
-    def max_objects(self, value: int) -> None:
-        """
-        Setter for the upper limit of every type of drawing.
-
-        Args:
-            value (int): Upper limit of every type of drawing
-
-        Raises:
-            ValueError: If the value is negative
-            ValueError: If the value is higher than 20
-        """
-        if value <= 0:
-            raise ValueError("Max value objects must be positive")
-        elif value > 20:
-            raise ValueError("Max value objects must be less than 20")
-        self.__max_objects = value
-
     @current.setter
     def current(self, value: int) -> None:
         """
@@ -194,7 +228,20 @@ class MaskGenerator:
         self.__current = value
 
     @classmethod
-    def __generate_mask_helper(cls, height: int, width: int, draw_scale: float, max_objects: int) -> np.ndarray:
+    def __compute_mask_ratio(cls, mask: np.ndarray) -> float:
+        """
+        Compute the hole-to-image ratio of the mask.
+
+        Args:
+            mask (np.ndarray): Mask to compute the ratio
+
+        Returns:
+            float: Ratio of the mask
+        """
+        return 100 * np.count_nonzero(mask) / mask.size
+
+    @classmethod
+    def __generate_mask_helper(cls, height: int, width: int, ratio_min: float, ratio_max: float, draw_scale: float) -> np.ndarray:
         """
         Helper method for the mask generation that can be called from the
         generator or from the class itself.
@@ -211,9 +258,27 @@ class MaskGenerator:
         mask = np.zeros((height, width), dtype=np.uint8)
         size = int((width + height) * draw_scale)
 
-        cls.__draw_lines(mask, size, height, width, max_objects)
-        cls.__draw_circles(mask, size, height, width, max_objects)
-        cls.__draw_ellipses(mask, size, height, width, max_objects)
+        while True:
+            if cls.__compute_mask_ratio(mask) > ratio_min:
+                break
+            cls.__draw_line(mask, size, height, width, MaskColor.WHITE)
+            if cls.__compute_mask_ratio(mask) > ratio_min:
+                break
+            cls.__draw_circle(mask, size, height, width, MaskColor.WHITE)
+            if cls.__compute_mask_ratio(mask) > ratio_min:
+                break
+            cls.__draw_ellipse(mask, size, height, width, MaskColor.WHITE)
+
+        while True:
+            if cls.__compute_mask_ratio(mask) < ratio_max:
+                break
+            cls.__draw_line(mask, size, height, width, MaskColor.BLACK)
+            if cls.__compute_mask_ratio(mask) < ratio_max:
+                break
+            cls.__draw_circle(mask, size, height, width, MaskColor.BLACK)
+            if cls.__compute_mask_ratio(mask) < ratio_max:
+                break
+            cls.__draw_ellipse(mask, size, height, width, MaskColor.BLACK)
 
         return mask
 
@@ -224,10 +289,10 @@ class MaskGenerator:
         Returns:
             np.ndarray: Mask
         """
-        return self.__generate_mask_helper(self.height, self.width, self.draw_scale, self.max_objects)
+        return self.__generate_mask_helper(self.height, self.width, self.ratio_min, self.ratio_max, self.draw_scale)
 
     @classmethod
-    def __draw_lines(cls, mask: np.ndarray, size: int, height: int, width: int, max_objects: int) -> None:
+    def __draw_line(cls, mask: np.ndarray, size: int, height: int, width: int, color: MaskColor = MaskColor.WHITE) -> None:
         """
         Draws random lines on the mask.
 
@@ -236,16 +301,15 @@ class MaskGenerator:
             size (int): Line size
             height (int): Mask height
             width (int): Mask width
-            max_objects (int): Upper limit of every type of drawing
         """
-        for _ in range(random.randint(1, max_objects)):
+        if random.uniform(0, 1) > 0.5:
             start_x, stop_x = np.random.randint(0, width, 2, dtype=np.uint16)
             start_y, stop_y = np.random.randint(0, height, 2, dtype=np.uint16)
             thickness = random.randint(1, size)
-            cv.line(mask, (start_x, start_y), (stop_x, stop_y), 255, thickness)
+            cv.line(mask, (start_x, start_y), (stop_x, stop_y), color.value, thickness)
 
     @classmethod
-    def __draw_circles(cls, mask: np.ndarray, size: int, height: int, width: int, max_objects: int) -> None:
+    def __draw_circle(cls, mask: np.ndarray, size: int, height: int, width: int, color: MaskColor = MaskColor.WHITE) -> None:
         """
         Draws random circles on the mask.
 
@@ -254,16 +318,15 @@ class MaskGenerator:
             size (int): Circle size
             height (int): Mask height
             width (int): Mask width
-            max_objects (int): Upper limit of every type of drawing
         """
-        for _ in range(random.randint(1, max_objects)):
+        if random.uniform(0, 1) > 0.5:
             center_x = random.randint(0, width)
             center_y = random.randint(0, height)
             radius = random.randint(1, size)
-            cv.circle(mask, (center_x, center_y), radius, 255, -1)
+            cv.circle(mask, (center_x, center_y), radius, color.value, -1)
 
     @classmethod
-    def __draw_ellipses(cls, mask: np.ndarray, size: int, height: int, width: int, max_objects: int) -> None:
+    def __draw_ellipse(cls, mask: np.ndarray, size: int, height: int, width: int, color: MaskColor = MaskColor.WHITE) -> None:
         """
         Draws random ellipses on the mask.
 
@@ -272,9 +335,8 @@ class MaskGenerator:
             size (int): Ellipse size
             height (int): Mask height
             width (int): Mask width
-            max_objects (int): Upper limit of every type of drawing
         """
-        for _ in range(random.randint(1, max_objects)):
+        if random.uniform(0, 1) > 0.5:
             center_x = random.randint(0, width)
             center_y = random.randint(0, height)
             axis1 = random.randint(1, size)
@@ -283,23 +345,23 @@ class MaskGenerator:
             start_arc_angle = random.randint(0, 180)
             stop_arc_angle = random.randint(0, 180)
             thickness = random.randint(1, size)
-            cv.ellipse(mask, (center_x, center_y), (axis1, axis2), rotation_angle,
-                       start_arc_angle, stop_arc_angle, 255, thickness)
+            cv.ellipse(mask, (center_x, center_y), (axis1, axis2), rotation_angle, start_arc_angle, stop_arc_angle, color.value, thickness)
 
     @classmethod
-    def generate_mask(cls, mask_size: tuple[int, int], draw_scale: float = DEFAULT_DRAW_SCALE, max_objects: int = DEFAULT_MAX_OBJECTS) -> np.ndarray:
+    def generate_mask(cls, mask_size: tuple[int, int], ratio: tuple[float, float] = DEFAULT_MASK_RATIO,
+                      draw_scale: float = DEFAULT_DRAW_SCALE) -> np.ndarray:
         """
         Generates a single random mask.
 
         Args:
-            mask_size (tuple[int, int]): Mask dimensions.
+            mask_size (tuple[int, int]): Mask dimensions
+            ratio (tuple[float, float]): Percentage interval of the image that is covered by the mask. Defaults to (15, 20).
             draw_scale (float, optional): Drawing objects scaling factor. Defaults to DEFAULT_DRAW_SCALE
-            max_objects (int, optional): Upper limit of every type of drawing. Defaults to DEFAULT_MAX_OBJECTS
 
         Returns:
             np.ndarray: Mask
         """
-        return cls.__generate_mask_helper(mask_size[0], mask_size[1], draw_scale, max_objects)
+        return cls.__generate_mask_helper(mask_size[0], mask_size[1], ratio[0], ratio[1], draw_scale)
 
     def __iter__(self) -> MaskGenerator:
         """
