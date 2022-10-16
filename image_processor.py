@@ -1,9 +1,13 @@
-from mask_generator import MaskGenerator, MaskColor
+from mask_generator import MaskGenerator
+from utils import MaskColor
 import numpy as np
 import cv2 as cv
 
 
 class ImageProcessor:
+    """
+    Class for processing images.
+    """
 
     @staticmethod
     def apply_mask(image: np.ndarray, ratio: tuple[float, float] = MaskGenerator.DEFAULT_MASK_RATIO, color: MaskColor = MaskColor.WHITE) -> tuple[

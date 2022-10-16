@@ -22,3 +22,12 @@ class InpaintMethod(Enum):
     PATCH_MATCH: str = 'patch_match'
     NAVIER_STOKES: str = 'navier_stokes'
     TELEA: str = 'telea'
+
+
+@unique
+class MaskColor(Enum):
+    """
+    The color of the mask.
+    """
+    WHITE: int = 255
+    BLACK: int = 0

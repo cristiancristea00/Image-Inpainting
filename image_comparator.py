@@ -2,6 +2,9 @@ import numpy as np
 
 
 class ImageComparator:
+    """
+    Class for comparing images.
+    """
 
     @classmethod
     def __compute_mse(cls, first_image: np.ndarray, second_image: np.ndarray) -> float:

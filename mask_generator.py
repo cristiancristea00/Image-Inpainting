@@ -1,19 +1,10 @@
 from __future__ import annotations
-from enum import Enum, unique
-from typing import final
+from typing import Final
+from utils import MaskColor
 
 import cv2 as cv
 import numpy as np
 import random
-
-
-@unique
-class MaskColor(Enum):
-    """
-    The color of the mask.
-    """
-    WHITE = 255
-    BLACK = 0
 
 
 class MaskGenerator:
@@ -21,10 +12,10 @@ class MaskGenerator:
     Generator that yields random masks by drawing lines, circles and ellipses.
     The white part represents the area of interest.
     """
-    MASK_VALUE: final = MaskColor.WHITE.value
+    MASK_VALUE: Final = MaskColor.WHITE.value
 
-    DEFAULT_DRAW_SCALE: final = 0.015
-    DEFAULT_MASK_RATIO: final = (10, 15)
+    DEFAULT_DRAW_SCALE: Final = 0.015
+    DEFAULT_MASK_RATIO: Final = (10, 15)
 
     def __init__(self, mask_size: tuple[int, int], count: int = 0, ratio: tuple[float, float] = DEFAULT_MASK_RATIO,
                  draw_scale: float = DEFAULT_DRAW_SCALE) -> None:
