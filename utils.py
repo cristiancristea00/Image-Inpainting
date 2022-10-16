@@ -1,6 +1,9 @@
+from enum import Enum, unique
+
 import tensorflow as tf
 import numpy as np
 import random
+
 
 def set_global_seed(seed: int) -> None:
     """
@@ -12,3 +15,10 @@ def set_global_seed(seed: int) -> None:
     tf.random.set_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
+
+
+@unique
+class InpaintMethod(Enum):
+    PATCH_MATCH: str = 'patch_match'
+    NAVIER_STOKES: str = 'navier_stokes'
+    TELEA: str = 'telea'
