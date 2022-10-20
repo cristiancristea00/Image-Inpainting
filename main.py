@@ -32,6 +32,10 @@ def main():
     average_navier_stokes = sum([pair[1] for pair in navier_stokes]) / len(navier_stokes)
     average_telea = sum([pair[1] for pair in telea]) / len(telea)
 
+    std_patch_match = (sum((pair[1] - average_patch_match) ** 2 for pair in patch_match) / len(patch_match)) ** 0.5
+    std_navier_stokes = (sum((pair[1] - average_navier_stokes) ** 2 for pair in navier_stokes) / len(navier_stokes)) ** 0.5
+    std_telea = (sum((pair[1] - average_telea) ** 2 for pair in telea) / len(telea)) ** 0.5
+
     images = [pair[0][:-4] for pair in patch_match]
     patch_match = [F'{pair[1]:.2f}' for pair in patch_match]
     navier_stokes = [F'{pair[1]:.2f}' for pair in navier_stokes]
@@ -43,7 +47,8 @@ def main():
     table.add_column('PatchMatch', patch_match)
     table.add_column('Navier-Stokes', navier_stokes)
     table.add_column('Telea', telea)
-    table.add_row(['Average', F'{average_patch_match:.2f}', F'{average_navier_stokes:.2f}', F'{average_telea:.2f}'])
+    table.add_row(['Average:', F'{average_patch_match:.2f}', F'{average_navier_stokes:.2f}', F'{average_telea:.2f}'])
+    table.add_row(['Standard deviation:', F'{std_patch_match:.2f}', F'{std_navier_stokes:.2f}', F'{std_telea:.2f}'])
 
     results_path = Path('results/RESULTS.md')
 
