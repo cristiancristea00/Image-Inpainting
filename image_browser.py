@@ -95,7 +95,7 @@ class ImageBrowser:
         yield from cls.__generate_inpainted(InpaintMethod.TELEA)
 
     @classmethod
-    def generate_all(cls, inpaint_method: InpaintMethod) -> Iterator[tuple[np.ndarray, np.ndarray, np.ndarray, str]]:
+    def generate_all(cls, inpaint_method: InpaintMethod = InpaintMethod.PATCH_MATCH) -> Iterator[tuple[np.ndarray, np.ndarray, np.ndarray, str]]:
         """
         Browses the original, masked and inpainted images and yields them.
 
