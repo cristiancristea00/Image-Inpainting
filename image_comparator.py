@@ -5,6 +5,7 @@ import cv2 as cv
 
 from image_browser import ImageBrowser
 from utils import InpaintMethod
+from lpips import LPIPS, im2tensor
 
 
 class ImageComparator:
@@ -58,7 +59,27 @@ class ImageComparator:
         return cv.quality.QualitySSIM_compute(original_image, inpainted_image)[0][0]
 
     @classmethod
-    def compute_results(cls, inpaint_method: InpaintMethod) -> list[tuple[str, str, str, str]]:
+    def compute_lpips(cls, original_image: np.ndarray, inpainted_image: np.ndarray) -> float:
+        """
+        Compute the LPIPS of an inpainted image and the original image.
+
+        Args:
+            original_image (np.ndarray): The original image
+            inpainted_image (np.ndarray): The inpainted image
+
+        Returns:
+            float: The LPIPS
+        """
+
+        perceptual_loss = LPIPS(net='vgg')
+
+        original = im2tensor(original_image)
+        inpainted = im2tensor(inpainted_image)
+
+        return perceptual_loss(original, inpainted).item()
+
+    @classmethod
+    def compute_results(cls, inpaint_method: InpaintMethod) -> list[tuple[str, str, str, str, str]]:
         """
         Compute the MSE, PSNR and SSIM of all images for a given inpaint method.
 
@@ -103,25 +124,27 @@ class ImageComparator:
             mse = cls.compute_mse(original, inpainted)
             psnr = cls.compute_psnr(original, inpainted)
             ssim = cls.compute_ssim(original, inpainted)
-            results.append((name, mse, psnr, ssim))
+            lpips = cls.compute_lpips(original, inpainted)
+            results.append((name, mse, psnr, ssim, lpips))
 
         results.sort(key=lambda pair: int(pair[0][:-4]))
 
         average_mse = compute_average((result[1] for result in results))
         average_psnr = compute_average((result[2] for result in results))
         average_ssim = compute_average((result[3] for result in results))
+        average_lpips = compute_average((result[4] for result in results))
 
         std_mse = compute_std((result[1] for result in results), average_mse)
         std_psnr = compute_std((result[2] for result in results), average_psnr)
         std_ssim = compute_std((result[3] for result in results), average_ssim)
+        std_lpips = compute_std((result[4] for result in results), average_lpips)
 
-        results = [(F'{values[0][:-4]}', F'{values[1]:.3f}', F'{values[2]:.3f}', F'{values[3]:.3f}')
-                   for values in results]
+        results = [(F'{values[0][:-4]}', F'{values[1]:.3f}', F'{values[2]:.3f}', F'{values[3]:.3f}', F'{values[4]:.3f}') for values in results]
 
-        averages = ('AVG', F'{average_mse:.3f}', F'{average_psnr:.3f}', F'{average_ssim:.3f}')
+        averages = ('AVG', F'{average_mse:.3f}', F'{average_psnr:.3f}', F'{average_ssim:.3f}', F'{average_lpips:.3f}')
         results.append(averages)
 
-        stds = ('STD', F'{std_mse:.3f}', F'{std_psnr:.3f}', F'{std_ssim:.3f}')
+        stds = ('STD', F'{std_mse:.3f}', F'{std_psnr:.3f}', F'{std_ssim:.3f}', F'{std_lpips:.3f}')
         results.append(stds)
 
         return results
