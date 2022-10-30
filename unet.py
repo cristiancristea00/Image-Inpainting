@@ -79,13 +79,13 @@ class UNetDownLayer(tf.keras.layers.Layer):
 
             if downsample_mode is DownsampleMode.MAX_POOL:
 
-                self.downsample = tf.keras.layers.MaxPool2D(pool_size=2, strides=stride)
+                self.downsample = tf.keras.layers.MaxPool2D(pool_size=stride, strides=1)
 
             elif downsample_mode is DownsampleMode.AVERAGE_POOL:
 
-                self.downsample = tf.keras.layers.AveragePooling2D(pool_size=2, strides=stride)
+                self.downsample = tf.keras.layers.AveragePooling2D(pool_size=stride, strides=1)
 
-        self.convolve = tf.keras.layers.Conv2D(filters=filters, kernel_size=kernel_size, strides=stride, padding='same', use_bias=use_bias)
+        self.convolve = tf.keras.layers.Conv2D(filters=filters, kernel_size=kernel_size, strides=1, padding='same', use_bias=use_bias)
         self.batch_norm = tf.keras.layers.BatchNormalization()
         self.activation = tf.keras.layers.LeakyReLU(alpha=LEAKY_RELU_ALPHA)
         self.unet_conv_block = UNet2DConvolutionBlock(filters=filters, kernel_size=kernel_size, stride=stride, use_bias=use_bias, pad_mode=pad_mode)
@@ -141,7 +141,7 @@ class UNet(tf.keras.Model):
 
         for i, (filter_num, kernel) in enumerate(zip(filters, kernels)):
             self.down_layers.append(
-                UNetDownLayer(filters=filter_num, kernel_size=kernel, downsample_mode=downsample_mode, pad_mode=pad_mode, name=f'down_{i}'))
+                UNetDownLayer(filters=filter_num, kernel_size=kernel, stride=2, downsample_mode=downsample_mode, pad_mode=pad_mode, name=f'down_{i}'))
 
         self.up_layers: list[tf.keras.layers.Layer] = []
 
