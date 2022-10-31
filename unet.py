@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Final
+from typing import Final, TypeAlias
 
 import tensorflow as tf
 from enum import Enum
@@ -23,6 +23,9 @@ class PadMode(Enum):
     CONSTANT = 'CONSTANT'
     REFLECT = 'REFLECT'
     SYMMETRIC = 'SYMMETRIC'
+
+
+UNetConfig: TypeAlias = list[int, int, int, int, int, int]
 
 
 class Padding2D(tf.keras.layers.Layer):
@@ -131,8 +134,10 @@ class UNetUpLayer(tf.keras.layers.Layer):
 
 class UNet(tf.keras.Model):
 
-    def __init__(self, filters: list[int], kernels: list[int], output_channels: int = 3, upsample_mode: UpsampleMode = UpsampleMode.DECONVOLUTION,
-                 downsample_mode: DownsampleMode = DownsampleMode.MAX_POOL, pad_mode: PadMode = PadMode.CONSTANT, *args, **kwargs) -> None:
+    def __init__(self, filters: UNetConfig, kernels: UNetConfig, skip_filters: UNetConfig, skip_kernels: UNetConfig, output_channels: int = 3,
+                 downsample_mode: DownsampleMode = DownsampleMode.MAX_POOL, pad_mode: PadMode = PadMode.CONSTANT,
+                 upsample_mode: UpsampleMode = UpsampleMode.DECONVOLUTION, *args, **kwargs) -> None:
+
         super().__init__(*args, **kwargs)
 
         self.filters = filters
@@ -141,27 +146,49 @@ class UNet(tf.keras.Model):
 
         for i, (filter_num, kernel) in enumerate(zip(filters, kernels)):
             self.down_layers.append(
-                UNetDownLayer(filters=filter_num, kernel_size=kernel, stride=2, downsample_mode=downsample_mode, pad_mode=pad_mode, name=f'down_{i}'))
+                UNetDownLayer(filters=filter_num, kernel_size=kernel, stride=2, downsample_mode=downsample_mode, pad_mode=pad_mode,
+                              name=f'unet_down_{i}'))
 
         self.up_layers: list[tf.keras.layers.Layer] = []
 
-        for i, (filter_num, kernel) in enumerate(zip(filters[::-1], kernels[::-1])):
+        for i, (filter_num, kernel) in enumerate(zip(filters, kernels)):
             self.up_layers.append(
-                UNetUpLayer(filters=filter_num, kernel_size=kernel, upsample_mode=upsample_mode, pad_mode=pad_mode, name=f'up_{i}'))
+                UNetUpLayer(filters=filter_num, kernel_size=kernel, upsample_mode=upsample_mode, pad_mode=pad_mode, name=f'unet_up_{i}'))
+
+        self.skip_layers: list[tf.keras.layers.Layer] = []
+
+        for i, (filter_num, kernel) in enumerate(zip(skip_filters, skip_kernels)):
+            self.skip_layers.append(
+                UNet2DConvolutionBlock(filters=filter_num, kernel_size=kernel, pad_mode=pad_mode, name=f'unet_skip_{i}'))
 
         self.convolve = tf.keras.layers.Conv2D(filters=output_channels, kernel_size=1, strides=1, padding='same', use_bias=True)
 
     def call(self, inputs: tf.Tensor, *args, **kwargs) -> tf.Tensor:
 
-        for down_layer in self.down_layers:
-            inputs = down_layer(inputs)
+        down_computed_0 = self.down_layers[0](inputs)
+        down_computed_1 = self.down_layers[1](down_computed_0)
+        down_computed_2 = self.down_layers[2](down_computed_1)
+        down_computed_3 = self.down_layers[3](down_computed_2)
+        down_computed_4 = self.down_layers[4](down_computed_3)
+        down_computed_5 = self.down_layers[5](down_computed_4)
 
-        for up_layer in self.up_layers:
-            inputs = up_layer(inputs)
+        skip_computed_0 = self.skip_layers[0](down_computed_0)
+        skip_computed_1 = self.skip_layers[1](down_computed_1)
+        skip_computed_2 = self.skip_layers[2](down_computed_2)
+        skip_computed_3 = self.skip_layers[3](down_computed_3)
+        skip_computed_4 = self.skip_layers[4](down_computed_4)
+        skip_computed_5 = self.skip_layers[5](down_computed_5)
 
-        return self.convolve(inputs)
+        up_computed_5 = tf.keras.layers.Concatenate()([self.up_layers[5](skip_computed_5), skip_computed_4])
+        up_computed_4 = tf.keras.layers.Concatenate()([self.up_layers[4](up_computed_5), skip_computed_3])
+        up_computed_3 = tf.keras.layers.Concatenate()([self.up_layers[3](up_computed_4), skip_computed_2])
+        up_computed_2 = tf.keras.layers.Concatenate()([self.up_layers[2](up_computed_3), skip_computed_1])
+        up_computed_1 = tf.keras.layers.Concatenate()([self.up_layers[1](up_computed_2), skip_computed_0])
+        up_computed_0 = self.up_layers[0](up_computed_1)
 
-    def summary(self, *args, **kwargs) -> None:
-        inputs = tf.keras.layers.Input(shape=(512, 512, 3))
-        model = tf.keras.Model(inputs=inputs, outputs=self.call(inputs))
-        return model.summary()
+        return self.convolve(up_computed_0)
+
+    def build_model(self, input_shape: tuple[int, int, int]) -> tf.keras.Model:
+
+        inputs = tf.keras.Input(shape=input_shape)
+        return tf.keras.Model(inputs=inputs, outputs=self.call(inputs))
