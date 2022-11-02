@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Final
 from utils import MaskColor
+import tensorflow as tf
 
 import cv2 as cv
 import numpy as np
@@ -271,7 +272,7 @@ class MaskGenerator:
                 break
             cls.__draw_ellipse(mask, size, height, width, MaskColor.BLACK)
 
-        return mask
+        return mask.astype(np.uint8)
 
     def __generate_mask(self) -> np.ndarray:
         """
@@ -339,6 +340,7 @@ class MaskGenerator:
             cv.ellipse(mask, (center_x, center_y), (axis1, axis2), rotation_angle, start_arc_angle, stop_arc_angle, color.value, thickness)
 
     @classmethod
+    @tf.autograph.experimental.do_not_convert
     def generate_mask(cls, mask_size: tuple[int, int], ratio: tuple[float, float] = DEFAULT_MASK_RATIO,
                       draw_scale: float = DEFAULT_DRAW_SCALE) -> np.ndarray:
         """

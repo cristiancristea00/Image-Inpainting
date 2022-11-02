@@ -4,7 +4,7 @@ from typing import Final, TypeAlias
 import tensorflow as tf
 from enum import Enum
 
-LEAKY_RELU_ALPHA: Final[float] = 0.01
+LEAKY_RELU_ALPHA: Final[float] = 0.2
 
 
 class UpsampleMode(Enum):
