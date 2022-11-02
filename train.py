@@ -51,8 +51,8 @@ def run() -> None:
 
     tf.config.run_functions_eagerly(True)
     tf.data.experimental.enable_debug_mode()
-    train_images = tf.keras.utils.image_dataset_from_directory('../CIFAR10-64/train', labels=None, batch_size=64, image_size=(64, 64), shuffle=True)
-    test_images = tf.keras.utils.image_dataset_from_directory('../CIFAR10-64/test', labels=None, batch_size=64, image_size=(64, 64), shuffle=True)
+    train_images = tf.keras.utils.image_dataset_from_directory('images/CIFAR10-64/train', labels=None, batch_size=64, image_size=(64, 64), shuffle=True)
+    test_images = tf.keras.utils.image_dataset_from_directory('images/CIFAR10-64/test', labels=None, batch_size=64, image_size=(64, 64), shuffle=True)
 
     train_images = train_images.map(get_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE).cache().prefetch(tf.data.AUTOTUNE)
     test_images = test_images.map(get_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE).cache().prefetch(tf.data.AUTOTUNE)
