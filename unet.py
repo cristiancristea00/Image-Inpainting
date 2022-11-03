@@ -188,7 +188,10 @@ class UNet(tf.keras.Model):
 
         return self.convolve(up_computed_0)
 
+    def name(self):
+        return 'UNet'
+
     def build_model(self, input_shape: tuple[int, int, int]) -> tf.keras.Model:
 
         inputs = tf.keras.Input(shape=input_shape)
-        return tf.keras.Model(inputs=inputs, outputs=self.call(inputs))
+        return tf.keras.Model(inputs=inputs, outputs=self.call(inputs), name=self.name())

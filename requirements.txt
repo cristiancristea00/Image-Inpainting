@@ -1,5 +1,8 @@
 opencv-contrib-python>=4.6.0.66
-prettytable>=3.4.1
+prettytable>=3.5.0
 tensorflow>=2.10.0
 numpy>=1.21.6
 lpips>=0.1.4
+matplotlib>=3.6.2
+pandas>=1.5.1
+colorama>=0.4.6

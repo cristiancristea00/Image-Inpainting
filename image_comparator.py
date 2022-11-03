@@ -1,11 +1,14 @@
+from __future__ import annotations
+
 from collections.abc import Iterator
 
-import numpy as np
 import cv2 as cv
+from lpips import LPIPS, im2tensor
+import numpy as np
+import tensorflow as tf
 
 from image_browser import ImageBrowser
 from utils import InpaintMethod
-from lpips import LPIPS, im2tensor
 
 
 class ImageComparator:
@@ -14,49 +17,70 @@ class ImageComparator:
     """
 
     @classmethod
-    def compute_mse(cls, original_image: np.ndarray, inpainted_image: np.ndarray) -> float:
+    def compute_mse(cls, original_image: np.ndarray | tf.Tensor, inpainted_image: np.ndarray | tf.Tensor) -> tf.Tensor | float:
         """
         Compute the MSE of an inpainted image and the original image.
 
         Args:
-            original_image (np.ndarray): The original image
-            inpainted_image (np.ndarray): The inpainted image
+            original_image (np.ndarray | tf.Tensor): The original image.
+            inpainted_image (np.ndarray | tf.Tensor): The inpainted image.
 
         Returns:
             float: The MSE
         """
 
-        return cv.quality.QualityMSE_compute(original_image, inpainted_image)[0][0]
+        if isinstance(original_image, tf.Tensor) or isinstance(inpainted_image, tf.Tensor):
+
+            return tf.reduce_mean(tf.square(original_image - inpainted_image))
+
+        else:
+
+            mse = cv.quality.QualityMSE_compute(original_image, inpainted_image)
+            return np.mean(mse[1]).item()
 
     @classmethod
-    def compute_psnr(cls, original_image: np.ndarray, inpainted_image: np.ndarray) -> float:
+    def compute_psnr(cls, original_image: np.ndarray | tf.Tensor, inpainted_image: np.ndarray | tf.Tensor) -> tf.Tensor | float:
         """
         Compute the PSNR of an inpainted image and the original image.
 
         Args:
-            original_image (np.ndarray): The original image
-            inpainted_image (np.ndarray): The inpainted image
+            original_image (np.ndarray | tf.Tensor): The original image.
+            inpainted_image (np.ndarray | tf.Tensor): The inpainted image.
 
         Returns:
             float: The PSNR
         """
 
-        return cv.quality.QualityPSNR_compute(original_image, inpainted_image)[0][0]
+        if isinstance(original_image, tf.Tensor) or isinstance(inpainted_image, tf.Tensor):
+
+            return tf.image.psnr(original_image, inpainted_image, 255)
+
+        else:
+
+            psnr = cv.quality.QualityPSNR_compute(original_image, inpainted_image)
+            return np.mean(psnr[1]).item()
 
     @classmethod
-    def compute_ssim(cls, original_image: np.ndarray, inpainted_image: np.ndarray) -> float:
+    def compute_ssim(cls, original_image: np.ndarray | tf.Tensor, inpainted_image: np.ndarray | tf.Tensor) -> tf.Tensor | float:
         """
         Compute the SSIM of an inpainted image and the original image.
 
         Args:
-            original_image (np.ndarray): The original image
-            inpainted_image (np.ndarray): The inpainted image
+            original_image (np.ndarray | tf.Tensor): The original image.
+            inpainted_image (np.ndarray | tf.Tensor): The inpainted image.
 
         Returns:
             float: The SSIM
         """
 
-        return cv.quality.QualitySSIM_compute(original_image, inpainted_image)[0][0]
+        if isinstance(original_image, tf.Tensor) or isinstance(inpainted_image, tf.Tensor):
+
+            return tf.image.ssim(original_image, inpainted_image, 255)
+
+        else:
+
+            ssim = cv.quality.QualitySSIM_compute(original_image, inpainted_image)
+            return np.mean(ssim[1]).item()
 
     @classmethod
     def compute_lpips(cls, original_image: np.ndarray, inpainted_image: np.ndarray) -> float:
@@ -139,7 +163,8 @@ class ImageComparator:
         std_ssim = compute_std((result[3] for result in results), average_ssim)
         std_lpips = compute_std((result[4] for result in results), average_lpips)
 
-        results = [(F'{values[0][:-4]}', F'{values[1]:.3f}', F'{values[2]:.3f}', F'{values[3]:.3f}', F'{values[4]:.3f}') for values in results]
+        results = [(F'{values[0][:-4]}', F'{values[1]:.3f}', F'{values[2]:.3f}',
+                    F'{values[3]:.3f}', F'{values[4]:.3f}') for values in results]
 
         averages = ('AVG', F'{average_mse:.3f}', F'{average_psnr:.3f}', F'{average_ssim:.3f}', F'{average_lpips:.3f}')
         results.append(averages)

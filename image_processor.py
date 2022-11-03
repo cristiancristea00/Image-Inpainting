@@ -17,28 +17,32 @@ class ImageProcessor:
         Apply a mask to an image.
 
         Args:
-            image (np.ndarray): The image to apply the mask to
-            ratio (tuple[float, float]): Percentage interval of the image that is covered by the mask. Defaults to DEFAULT_MASK_RATIO
-            color (MaskColor): The color of the mask
+            image (np.ndarray | tf.Tensor): The image to apply the mask to
+            ratio (tuple[float, float], optional): Percentage interval of the image that is covered by the mask. Defaults to DEFAULT_MASK_RATIO
+            color (MaskColor, optional): The color of the mask
 
         Returns:
             tuple[np.ndarray, np.ndarray]: The masked image and the mask
         """
         height, width, _ = image.shape
-        mask = MaskGenerator.generate_mask(mask_size=(height, width), ratio=ratio)
+        mask, count = MaskGenerator.generate_mask(mask_size=(height, width), ratio=ratio)
 
-        if type(image) == tf.Tensor or True:
+        if isinstance(image, tf.Tensor):
 
             mask = tf.stack([mask, mask, mask], axis=-1)
             mask = tf.where(mask)
 
             if color == MaskColor.WHITE:
 
-                update_values = tf.constant(MaskColor.WHITE.value, dtype=tf.float32, shape=(mask.shape[0]))
+                update_values = [MaskColor.WHITE.value] * count * 3
+                update_values = tf.convert_to_tensor(update_values, dtype=tf.int32)
+                update_values = tf.cast(update_values, dtype=tf.float32)
 
             elif color == MaskColor.BLACK:
 
-                update_values = tf.constant(MaskColor.BLACK.value, dtype=tf.float32, shape=(mask.shape[0]))
+                update_values = [MaskColor.BLACK.value] * count * 3
+                update_values = tf.convert_to_tensor(update_values, dtype=tf.int32)
+                update_values = tf.cast(update_values, dtype=tf.float32)
 
             else:
 
@@ -67,6 +71,17 @@ class ImageProcessor:
     @staticmethod
     def apply_mask(image: np.ndarray | tf.Tensor, ratio: tuple[float, float] = MaskGenerator.DEFAULT_MASK_RATIO,
                    color: MaskColor = MaskColor.WHITE) -> np.ndarray:
+        """
+        Apply a mask to an image.
+
+        Args:
+            image (np.ndarray | tf.Tensor): The image to apply the mask to
+            ratio (tuple[float, float], optional): Percentage interval of the image that is covered by the mask. Defaults to DEFAULT_MASK_RATIO
+            color (MaskColor, optional): The color of the mask. Defaults to MaskColor.WHITE
+
+        Returns:
+            np.ndarray: The masked image
+        """
         return ImageProcessor.apply_mask_with_return(image, ratio, color)[0]
 
     @staticmethod

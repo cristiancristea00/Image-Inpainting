@@ -233,7 +233,7 @@ class MaskGenerator:
         return 100 * np.count_nonzero(mask) / mask.size
 
     @classmethod
-    def __generate_mask_helper(cls, height: int, width: int, ratio_min: float, ratio_max: float, draw_scale: float) -> np.ndarray:
+    def __generate_mask_helper(cls, height: int, width: int, ratio_min: float, ratio_max: float, draw_scale: float) -> tuple(np.ndarray, int):
         """
         Helper method for the mask generation that can be called from the
         generator or from the class itself.
@@ -245,7 +245,7 @@ class MaskGenerator:
             max_objects (int): Upper limit of every type of drawing
 
         Returns:
-            np.ndarray: Mask
+            tuple(np.ndarray, int): Mask and the number of pixels in the mask
         """
         mask = np.zeros((height, width), dtype=np.uint8)
         size = int((width + height) * draw_scale)
@@ -272,7 +272,7 @@ class MaskGenerator:
                 break
             cls.__draw_ellipse(mask, size, height, width, MaskColor.BLACK)
 
-        return mask.astype(np.uint8)
+        return mask, np.count_nonzero(mask == MaskGenerator.MASK_VALUE)
 
     def __generate_mask(self) -> np.ndarray:
         """
@@ -337,12 +337,13 @@ class MaskGenerator:
             start_arc_angle = random.randint(0, 180)
             stop_arc_angle = random.randint(0, 180)
             thickness = random.randint(1, size)
-            cv.ellipse(mask, (center_x, center_y), (axis1, axis2), rotation_angle, start_arc_angle, stop_arc_angle, color.value, thickness)
+            cv.ellipse(mask, (center_x, center_y), (axis1, axis2), rotation_angle,
+                       start_arc_angle, stop_arc_angle, color.value, thickness)
 
     @classmethod
     @tf.autograph.experimental.do_not_convert
     def generate_mask(cls, mask_size: tuple[int, int], ratio: tuple[float, float] = DEFAULT_MASK_RATIO,
-                      draw_scale: float = DEFAULT_DRAW_SCALE) -> np.ndarray:
+                      draw_scale: float = DEFAULT_DRAW_SCALE) -> tuple(np.ndarray, int):
         """
         Generates a single random mask.
 
@@ -352,7 +353,7 @@ class MaskGenerator:
             draw_scale (float, optional): Drawing objects scaling factor. Defaults to DEFAULT_DRAW_SCALE
 
         Returns:
-            np.ndarray: Mask
+            tuple(np.ndarray, int): Mask and number of pixels in the mask
         """
         return cls.__generate_mask_helper(mask_size[0], mask_size[1], ratio[0], ratio[1], draw_scale)
 
