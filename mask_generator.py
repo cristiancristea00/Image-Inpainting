@@ -1,11 +1,13 @@
 from __future__ import annotations
+
+import random
 from typing import Final
-from utils import MaskColor
-import tensorflow as tf
 
 import cv2 as cv
 import numpy as np
-import random
+import tensorflow as tf
+
+from utils import MaskColor
 
 
 class MaskGenerator:
@@ -233,7 +235,7 @@ class MaskGenerator:
         return 100 * np.count_nonzero(mask) / mask.size
 
     @classmethod
-    def __generate_mask_helper(cls, height: int, width: int, ratio_min: float, ratio_max: float, draw_scale: float) -> tuple(np.ndarray, int):
+    def __generate_mask_helper(cls, height: int, width: int, ratio_min: float, ratio_max: float, draw_scale: float) -> tuple[np.ndarray, int]:
         """
         Helper method for the mask generation that can be called from the
         generator or from the class itself.
@@ -274,7 +276,7 @@ class MaskGenerator:
 
         return mask, np.count_nonzero(mask == MaskGenerator.MASK_VALUE)
 
-    def __generate_mask(self) -> np.ndarray:
+    def __generate_mask(self) -> tuple[np.ndarray, int]:
         """
         Generates a random mask.
 
@@ -343,7 +345,7 @@ class MaskGenerator:
     @classmethod
     @tf.autograph.experimental.do_not_convert
     def generate_mask(cls, mask_size: tuple[int, int], ratio: tuple[float, float] = DEFAULT_MASK_RATIO,
-                      draw_scale: float = DEFAULT_DRAW_SCALE) -> tuple(np.ndarray, int):
+                      draw_scale: float = DEFAULT_DRAW_SCALE) -> tuple[np.ndarray, int]:
         """
         Generates a single random mask.
 
@@ -378,6 +380,6 @@ class MaskGenerator:
         """
         if self.__current < self.count:
             self.__current += 1
-            return self.__generate_mask()
+            return self.__generate_mask()[0]
         else:
             raise StopIteration

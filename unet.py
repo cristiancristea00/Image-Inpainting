@@ -1,8 +1,9 @@
 from __future__ import annotations
-from typing import Final, TypeAlias
+
+from enum import Enum
+from typing import Final, Literal, TypeAlias
 
 import tensorflow as tf
-from enum import Enum
 
 LEAKY_RELU_ALPHA: Final[float] = 0.2
 
@@ -67,6 +68,7 @@ class UNet2DConvolutionBlock(tf.keras.layers.Layer):
         inputs = self.convolve(inputs)
         inputs = self.batch_norm(inputs)
         inputs = self.activation(inputs)
+        inputs = tf.keras.layers.Dropout(0.05)(inputs)
         return inputs
 
 
@@ -146,20 +148,22 @@ class UNet(tf.keras.Model):
 
         for i, (filter_num, kernel) in enumerate(zip(filters, kernels)):
             self.down_layers.append(
-                UNetDownLayer(filters=filter_num, kernel_size=kernel, stride=2, downsample_mode=downsample_mode, pad_mode=pad_mode,
-                              name=f'unet_down_{i}'))
+                UNetDownLayer(filters=filter_num, kernel_size=kernel, stride=2, downsample_mode=downsample_mode, pad_mode=pad_mode, name=f'unet_down_{i}')
+            )
 
         self.up_layers: list[tf.keras.layers.Layer] = []
 
         for i, (filter_num, kernel) in enumerate(zip(filters, kernels)):
             self.up_layers.append(
-                UNetUpLayer(filters=filter_num, kernel_size=kernel, upsample_mode=upsample_mode, pad_mode=pad_mode, name=f'unet_up_{i}'))
+                UNetUpLayer(filters=filter_num, kernel_size=kernel, upsample_mode=upsample_mode, pad_mode=pad_mode, name=f'unet_up_{i}')
+            )
 
         self.skip_layers: list[tf.keras.layers.Layer] = []
 
         for i, (filter_num, kernel) in enumerate(zip(skip_filters, skip_kernels)):
             self.skip_layers.append(
-                UNet2DConvolutionBlock(filters=filter_num, kernel_size=kernel, pad_mode=pad_mode, name=f'unet_skip_{i}'))
+                UNet2DConvolutionBlock(filters=filter_num, kernel_size=kernel, pad_mode=pad_mode, name=f'unet_skip_{i}')
+            )
 
         self.convolve = tf.keras.layers.Conv2D(filters=output_channels, kernel_size=1, strides=1, padding='same', use_bias=True)
 
@@ -188,7 +192,7 @@ class UNet(tf.keras.Model):
 
         return self.convolve(up_computed_0)
 
-    def name(self):
+    def name(self) -> Literal['UNet']:
         return 'UNet'
 
     def build_model(self, input_shape: tuple[int, int, int]) -> tf.keras.Model:

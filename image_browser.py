@@ -1,9 +1,11 @@
 from collections.abc import Iterator
-from utils import InpaintMethod
-from typing import Final
 from pathlib import Path
-import numpy as np
+from typing import Final
+
 import cv2 as cv
+import numpy as np
+
+from utils import InpaintMethod
 
 
 class ImageBrowser:
@@ -11,10 +13,10 @@ class ImageBrowser:
     Class for browsing images.
     """
 
-    __ORIGINAL_PATH: Final = Path('images/original')
-    __MASKED_PATH: Final = Path('images/masked')
-    __MASKS_PATH: Final = Path('images/masks')
-    __INPAINTED_PATH: Final = Path('images/inpainted')
+    __ORIGINAL_PATH: Final = Path('images', 'original', 'test')
+    __MASKED_PATH: Final = Path('images', 'masked')
+    __MASKS_PATH: Final = Path('images', 'masks')
+    __INPAINTED_PATH: Final = Path('images', 'inpainted')
 
     @classmethod
     def generate_originals(cls) -> Iterator[np.ndarray, str]:

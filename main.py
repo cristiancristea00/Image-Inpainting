@@ -21,7 +21,7 @@ def main() -> None:
 
     table = PrettyTable()
     table.set_style(MARKDOWN)
-    table.field_names = ['Image', 'MSE', 'PSNR', 'SSIM', 'LPIPS']
+    table.field_names = ['Image', 'MSE', 'MAE', 'PSNR', 'SSIM', 'LPIPS']
     table.add_rows(patch_match)
 
     with results_path.open('w') as file:
@@ -30,7 +30,7 @@ def main() -> None:
 
     table.clear()
     table.set_style(MARKDOWN)
-    table.field_names = ['Image', 'MSE', 'PSNR', 'SSIM', 'LPIPS']
+    table.field_names = ['Image', 'MSE', 'MAE', 'PSNR', 'SSIM', 'LPIPS']
     table.add_rows(navier_stokes)
 
     with results_path.open('a') as file:
@@ -39,7 +39,7 @@ def main() -> None:
 
     table.clear()
     table.set_style(MARKDOWN)
-    table.field_names = ['Image', 'MSE', 'PSNR', 'SSIM', 'LPIPS']
+    table.field_names = ['Image', 'MSE', 'MAE', 'PSNR', 'SSIM', 'LPIPS']
     table.add_rows(telea)
 
     with results_path.open('a') as file:

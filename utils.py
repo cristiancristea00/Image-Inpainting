@@ -1,8 +1,12 @@
-from enum import Enum, unique
+from __future__ import annotations
 
-import tensorflow as tf
-import numpy as np
+from enum import Enum, unique
+import json
 import random
+from typing import Any
+
+import numpy as np
+import tensorflow as tf
 
 
 def set_global_seed(seed: int) -> None:
@@ -31,3 +35,27 @@ class MaskColor(Enum):
     """
     WHITE: int = 255
     BLACK: int = 0
+
+
+class NumpyEncoder(json.JSONEncoder):
+    """
+    Custom JSON encoder for numpy arrays.
+    """
+
+    def default(self, obj: Any) -> Any | list | int | float:
+        """
+        Encode numpy data types to JSON compatible types.
+
+        Args:
+            obj (Any:): The object to encode
+
+        Returns:
+            Any | list | int | float: The encoded object
+        """
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        elif isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        return json.JSONEncoder.default(self, obj)

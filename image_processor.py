@@ -1,8 +1,9 @@
+import cv2 as cv
+import numpy as np
+import tensorflow as tf
+
 from mask_generator import MaskGenerator
 from utils import MaskColor
-import tensorflow as tf
-import numpy as np
-import cv2 as cv
 
 
 class ImageProcessor:

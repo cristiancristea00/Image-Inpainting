@@ -1,5 +1,6 @@
 from contextlib import redirect_stdout
 from datetime import datetime
+import json
 from pathlib import Path
 import time
 import traceback
@@ -9,21 +10,26 @@ from colorama import Fore, Style
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import tensorflow as tf
 
 from image_comparator import ImageComparator
 from image_processor import ImageProcessor
 from unet import UNet
-from utils import set_global_seed
+from utils import NumpyEncoder, set_global_seed
 
-EPOCHS: Final[int] = 1
+EPOCHS: Final[int] = 1000
 BATCH: Final[int] = 128
 PLOT_SIZE: Final[tuple[int, int]] = (16, 9)
 
 
 def get_dataset_pair(image_batch: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
-    return tf.cast(tf.map_fn(ImageProcessor.apply_mask, image_batch), tf.uint8), tf.cast(image_batch, tf.uint8)
+    masked_image = tf.cast(tf.map_fn(ImageProcessor.apply_mask, image_batch), tf.float32)
+    original_image = tf.cast(image_batch, tf.float32)
+    return masked_image, original_image
+
+
+def normalize(masked: tf.Tensor, original: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
+    return masked / 255.0, original / 255.0
 
 
 def ssim(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:
@@ -44,7 +50,7 @@ def run() -> None:
         monitor='val_loss',
         mode='min',
         min_delta=1e-3,
-        factor=0.5,
+        factor=0.2,
         patience=20,
         cooldown=10,
         min_lr=1e-6,
@@ -70,18 +76,22 @@ def run() -> None:
         save_freq='epoch'
     )
 
-    dataset = Path('images', 'CIFAR10-64')
+    dataset = Path('images', 'original')
 
     print(Fore.GREEN + 'Loading train dataset...' + Style.RESET_ALL)
     train_images = tf.keras.utils.image_dataset_from_directory(dataset / 'train', image_size=(64, 64), labels=None, batch_size=BATCH, shuffle=True)
-    train_images = train_images.map(get_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE).prefetch(tf.data.AUTOTUNE)
+    train_images = train_images.map(get_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
+    train_images = train_images.map(normalize, num_parallel_calls=tf.data.AUTOTUNE)
+    train_images = train_images.prefetch(tf.data.AUTOTUNE)
 
     print(Fore.GREEN + 'Loading test dataset...' + Style.RESET_ALL)
     test_images = tf.keras.utils.image_dataset_from_directory(dataset / 'test', image_size=(64, 64), labels=None, batch_size=BATCH)
-    test_images = test_images.map(get_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE).prefetch(tf.data.AUTOTUNE)
+    test_images = test_images.map(get_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
+    test_images = test_images.map(normalize, num_parallel_calls=tf.data.AUTOTUNE)
+    test_images = test_images.prefetch(tf.data.AUTOTUNE)
 
     print(Fore.GREEN + 'Creating model...' + Style.RESET_ALL)
-    unet = UNet(filters=[16, 32, 64, 128, 128, 128], kernels=[7, 7, 5, 5, 3, 3], skip_filters=[4] * 6, skip_kernels=[1] * 6)
+    unet = UNet(filters=[8, 16, 32, 64, 64, 64], kernels=[7, 7, 5, 5, 3, 3], skip_filters=[4] * 6, skip_kernels=[1] * 6)
     unet = unet.build_model(input_shape=(64, 64, 3))
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
@@ -113,8 +123,8 @@ def run() -> None:
 
     print(Fore.GREEN + 'Saving model training history...' + Style.RESET_ALL)
     with open(model_path / R'model_training.json', 'w') as file:
-        history = pd.DataFrame(model_training.history)
-        history.to_json(file, indent=4)
+        history = json.dumps(model_training.history, cls=NumpyEncoder, indent=4)
+        file.write(history)
 
     print(Fore.GREEN + 'Evaluating model...' + Style.RESET_ALL)
     print(Fore.CYAN)
@@ -129,8 +139,8 @@ def run() -> None:
 
     print(Fore.GREEN + 'Saving model evaluation...' + Style.RESET_ALL)
     with open(model_path / R'model_evaluation.json', 'w') as file:
-        evaluation = pd.DataFrame(model_evaluation, index=[0])
-        evaluation.to_json(file, indent=4)
+        evaluation = json.dumps(model_evaluation, cls=NumpyEncoder)
+        file.write(evaluation)
 
     mpl.rcParams['font.sans-serif'] = ['Readex Pro']
     plt.style.use('ggplot')
@@ -157,7 +167,6 @@ def run() -> None:
     for ax in (ax1, ax2, ax3):
         ax.set_xlim(xmin=1, xmax=length)
         ax.legend(fontsize=26, facecolor='white', framealpha=0.75)
-        ax.set_xticks(dims)
         ax.tick_params(axis='both', which='major', labelsize=20)
         ax.xaxis.label.set_size(28)
         ax.yaxis.label.set_size(28)
@@ -178,7 +187,7 @@ def main() -> None:
     try:
         run()
     except KeyboardInterrupt:
-        print(Fore.RED + 'Script interrupted by the user!' + Style.RESET_ALL)
+        print(Fore.RED + '\nScript interrupted by the user!' + Style.RESET_ALL)
     except:
         print(Fore.RED)
         print('Script failed with the following error:')
