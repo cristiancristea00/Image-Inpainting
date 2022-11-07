@@ -17,8 +17,8 @@ class MaskGenerator:
     """
     MASK_VALUE: Final = MaskColor.WHITE.value
 
-    DEFAULT_DRAW_SCALE: Final = 0.015
-    DEFAULT_MASK_RATIO: Final = (10, 15)
+    DEFAULT_DRAW_SCALE: Final[float] = 0.015
+    DEFAULT_MASK_RATIO: Final[tuple[float, float]] = (10, 15)
 
     def __init__(self, mask_size: tuple[int, int], count: int = 0, ratio: tuple[float, float] = DEFAULT_MASK_RATIO,
                  draw_scale: float = DEFAULT_DRAW_SCALE) -> None:

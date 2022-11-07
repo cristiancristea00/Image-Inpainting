@@ -34,13 +34,22 @@ class Padding2D(tf.keras.layers.Layer):
     def __init__(self, padding: int | tuple[int, int] = 1, pad_mode: PadMode = PadMode.CONSTANT, *args, **kwargs) -> None:
 
         super().__init__(*args, **kwargs)
-        self.pad_mode = pad_mode
-        self.input_spec = [tf.keras.layers.InputSpec(ndim=4)]
 
-        if type(padding) is int:
+        self.pad_mode = pad_mode
+
+        if isinstance(padding, int):
             self.padding = (padding, padding)
         else:
             self.padding = padding
+
+    def get_config(self):
+
+        config = super().get_config()
+        config.update({
+            'padding': self.padding,
+            'pad_mode': self.pad_mode
+        })
+        return config
 
     def compute_output_shape(self, shape) -> tuple[int, int, int, int]:
 
@@ -58,10 +67,28 @@ class UNet2DConvolutionBlock(tf.keras.layers.Layer):
     def __init__(self, filters: int, kernel_size: int, stride: int = 1, use_bias: bool = True, pad_mode: PadMode = PadMode.CONSTANT, *args,
                  **kwargs) -> None:
         super().__init__(*args, **kwargs)
+
+        self.filters = filters
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.use_bias = use_bias
+        self.pad_mode = pad_mode
+
         self.pad = Padding2D(padding=(kernel_size - 1) // 2, pad_mode=pad_mode)
         self.convolve = tf.keras.layers.Conv2D(filters=filters, kernel_size=kernel_size, strides=stride, padding='valid', use_bias=use_bias)
         self.batch_norm = tf.keras.layers.BatchNormalization()
         self.activation = tf.keras.layers.LeakyReLU(alpha=LEAKY_RELU_ALPHA)
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            'filters': self.filters,
+            'kernel_size': self.kernel_size,
+            'stride': self.stride,
+            'use_bias': self.use_bias,
+            'pad_mode': self.pad_mode
+        })
+        return config
 
     def call(self, inputs: tf.Tensor, *args, **kwargs) -> tf.Tensor:
         inputs = self.pad(inputs)
@@ -80,6 +107,13 @@ class UNetDownLayer(tf.keras.layers.Layer):
 
         super().__init__(*args, **kwargs)
 
+        self.filters = filters
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.use_bias = use_bias
+        self.downsample_mode = downsample_mode
+        self.pad_mode = pad_mode
+
         if downsample_mode is not DownsampleMode.STRIDE and stride != 1:
 
             if downsample_mode is DownsampleMode.MAX_POOL:
@@ -94,6 +128,18 @@ class UNetDownLayer(tf.keras.layers.Layer):
         self.batch_norm = tf.keras.layers.BatchNormalization()
         self.activation = tf.keras.layers.LeakyReLU(alpha=LEAKY_RELU_ALPHA)
         self.unet_conv_block = UNet2DConvolutionBlock(filters=filters, kernel_size=kernel_size, stride=stride, use_bias=use_bias, pad_mode=pad_mode)
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            'filters': self.filters,
+            'kernel_size': self.kernel_size,
+            'stride': self.stride,
+            'use_bias': self.use_bias,
+            'downsample_mode': self.downsample_mode,
+            'pad_mode': self.pad_mode
+        })
+        return config
 
     def call(self, inputs: tf.Tensor, *args, **kwargs) -> tf.Tensor:
 
@@ -110,7 +156,14 @@ class UNetUpLayer(tf.keras.layers.Layer):
 
     def __init__(self, filters: int, kernel_size: int, use_bias: bool = True, upsample_mode: UpsampleMode = UpsampleMode.DECONVOLUTION,
                  pad_mode: PadMode = PadMode.CONSTANT, *args, **kwargs) -> None:
+
         super().__init__(*args, **kwargs)
+
+        self.filters = filters
+        self.kernel_size = kernel_size
+        self.use_bias = use_bias
+        self.upsample_mode = upsample_mode
+        self.pad_mode = pad_mode
 
         self.batch_norm = tf.keras.layers.BatchNormalization()
         self.unet_conv_block_1 = UNet2DConvolutionBlock(filters=filters, kernel_size=kernel_size, stride=1, use_bias=use_bias, pad_mode=pad_mode)
@@ -123,6 +176,17 @@ class UNetUpLayer(tf.keras.layers.Layer):
         elif upsample_mode is UpsampleMode.BILINEAR or upsample_mode is UpsampleMode.NEAREST_NEIGHBOR:
 
             self.upsample = tf.keras.layers.UpSampling2D(size=2, interpolation=upsample_mode.value)
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            'filters': self.filters,
+            'kernel_size': self.kernel_size,
+            'use_bias': self.use_bias,
+            'upsample_mode': self.upsample_mode,
+            'pad_mode': self.pad_mode
+        })
+        return config
 
     def call(self, inputs: tf.Tensor, *args, **kwargs) -> tf.Tensor:
 
@@ -143,12 +207,20 @@ class UNet(tf.keras.Model):
         super().__init__(*args, **kwargs)
 
         self.filters = filters
+        self.kernels = kernels
+        self.skip_filters = skip_filters
+        self.skip_kernels = skip_kernels
+        self.output_channels = output_channels
+        self.downsample_mode = downsample_mode
+        self.pad_mode = pad_mode
+        self.upsample_mode = upsample_mode
 
         self.down_layers: list[tf.keras.layers.Layer] = []
 
         for i, (filter_num, kernel) in enumerate(zip(filters, kernels)):
             self.down_layers.append(
-                UNetDownLayer(filters=filter_num, kernel_size=kernel, stride=2, downsample_mode=downsample_mode, pad_mode=pad_mode, name=f'unet_down_{i}')
+                UNetDownLayer(filters=filter_num, kernel_size=kernel, stride=2, downsample_mode=downsample_mode, pad_mode=pad_mode,
+                              name=f'unet_down_{i}')
             )
 
         self.up_layers: list[tf.keras.layers.Layer] = []
@@ -166,6 +238,20 @@ class UNet(tf.keras.Model):
             )
 
         self.convolve = tf.keras.layers.Conv2D(filters=output_channels, kernel_size=1, strides=1, padding='same', use_bias=True)
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            'filters': self.filters,
+            'kernels': self.kernels,
+            'skip_filters': self.skip_filters,
+            'skip_kernels': self.skip_kernels,
+            'output_channels': self.output_channels,
+            'downsample_mode': self.downsample_mode,
+            'pad_mode': self.pad_mode,
+            'upsample_mode': self.upsample_mode
+        })
+        return config
 
     def call(self, inputs: tf.Tensor, *args, **kwargs) -> tf.Tensor:
 

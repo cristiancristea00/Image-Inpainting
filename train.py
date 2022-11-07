@@ -7,19 +7,16 @@ import traceback
 from typing import Final
 
 from colorama import Fore, Style
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import numpy as np
 import tensorflow as tf
 
+from graphs_generator import GraphsGenerator
 from image_comparator import ImageComparator
 from image_processor import ImageProcessor
 from unet import UNet
 from utils import NumpyEncoder, set_global_seed
 
-EPOCHS: Final[int] = 1000
+EPOCHS: Final[int] = 1
 BATCH: Final[int] = 128
-PLOT_SIZE: Final[tuple[int, int]] = (16, 9)
 
 
 def get_dataset_pair(image_batch: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
@@ -126,6 +123,8 @@ def run() -> None:
         history = json.dumps(model_training.history, cls=NumpyEncoder, indent=4)
         file.write(history)
 
+    unet.save(model_path / 'model.h5', save_format='h5')
+
     print(Fore.GREEN + 'Evaluating model...' + Style.RESET_ALL)
     print(Fore.CYAN)
     model_evaluation = unet.evaluate(
@@ -142,42 +141,9 @@ def run() -> None:
         evaluation = json.dumps(model_evaluation, cls=NumpyEncoder)
         file.write(evaluation)
 
-    mpl.rcParams['font.sans-serif'] = ['Readex Pro']
-    plt.style.use('ggplot')
-
-    fig1, ax1 = plt.subplots(1, 1, figsize=PLOT_SIZE)
-    fig2, ax2 = plt.subplots(1, 1, figsize=PLOT_SIZE)
-    fig3, ax3 = plt.subplots(1, 1, figsize=PLOT_SIZE)
-
-    length = len(model_training.history['loss'])
-    dims = np.arange(1, length + 1)
-
-    ax1.plot(dims, model_training.history['loss'], label='Training loss', color='green')
-    ax1.plot(dims, model_training.history['val_loss'], label='Validation loss', color='purple')
-    ax1.set(title='Loss (MSE)', xlabel='Epoch', ylabel='Loss')
-
-    ax2.plot(dims, model_training.history['ssim'], label='Training SSIM', color='green')
-    ax2.plot(dims, model_training.history['val_ssim'], label='Validation SSIM', color='purple')
-    ax2.set(title='SSIM', xlabel='Epoch', ylabel='SSIM')
-
-    ax3.plot(dims, model_training.history['psnr'], label='Training PSNR', color='green')
-    ax3.plot(dims, model_training.history['val_psnr'], label='Validation PSNR', color='purple')
-    ax3.set(title='PSNR', xlabel='Epoch', ylabel='PSNR')
-
-    for ax in (ax1, ax2, ax3):
-        ax.set_xlim(xmin=1, xmax=length)
-        ax.legend(fontsize=26, facecolor='white', framealpha=0.75)
-        ax.tick_params(axis='both', which='major', labelsize=20)
-        ax.xaxis.label.set_size(28)
-        ax.yaxis.label.set_size(28)
-        ax.xaxis.labelpad = 10
-        ax.yaxis.labelpad = 10
-        ax.title.set_size(32)
-
-    print(Fore.GREEN + 'Saving model history graphs...' + Style.RESET_ALL)
-    fig1.savefig(model_path / R'model_history_loss.png', dpi=100, bbox_inches='tight')
-    fig2.savefig(model_path / R'model_history_ssim.png', dpi=100, bbox_inches='tight')
-    fig3.savefig(model_path / R'model_history_psnr.png', dpi=100, bbox_inches='tight')
+    print(Fore.GREEN + 'Generating training graphs...' + Style.RESET_ALL)
+    graphs_generator = GraphsGenerator(model_training.history, model_path)
+    graphs_generator.create_all_graphs()
 
 
 def main() -> None:
