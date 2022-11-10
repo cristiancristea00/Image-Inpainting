@@ -3,7 +3,7 @@ from pathlib import Path
 
 from prettytable import MARKDOWN, PrettyTable
 
-from image_browser import InpaintMethod
+from image_browser import InpaintingMethod
 from image_comparator import ImageComparator
 
 
@@ -11,9 +11,9 @@ def main() -> None:
     results_path = Path('results/RESULTS.md')
 
     with ThreadPoolExecutor() as executor:
-        patch_match = executor.submit(ImageComparator.compute_results, InpaintMethod.PATCH_MATCH)
-        navier_stokes = executor.submit(ImageComparator.compute_results, InpaintMethod.NAVIER_STOKES)
-        telea = executor.submit(ImageComparator.compute_results, InpaintMethod.TELEA)
+        patch_match = executor.submit(ImageComparator.compute_results, InpaintingMethod.PATCH_MATCH)
+        navier_stokes = executor.submit(ImageComparator.compute_results, InpaintingMethod.NAVIER_STOKES)
+        telea = executor.submit(ImageComparator.compute_results, InpaintingMethod.TELEA)
 
         patch_match = patch_match.result()
         navier_stokes = navier_stokes.result()

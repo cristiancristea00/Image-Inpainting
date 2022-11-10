@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from contextlib import redirect_stdout
 from datetime import datetime
 import json
@@ -7,34 +9,31 @@ import traceback
 from typing import Final
 
 from colorama import Fore, Style
+import numpy as np
 import tensorflow as tf
 
 from graphs_generator import GraphsGenerator
-from image_comparator import ImageComparator
 from image_processor import ImageProcessor
+from metrics import PSNR, SSIM
 from unet import UNet
 from utils import NumpyEncoder, set_global_seed
 
 EPOCHS: Final[int] = 1
 BATCH: Final[int] = 128
+MASK_RATIO: Final[tuple[float, float]] = (5, 10)  # (15, 20) and (25, 30)
 
 
 def get_dataset_pair(image_batch: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
-    masked_image = tf.cast(tf.map_fn(ImageProcessor.apply_mask, image_batch), tf.float32)
+    def mask_transformer(image: tf.Tensor | np.ndarray) -> tf.Tensor | np.ndarray:
+        return ImageProcessor.apply_mask(image, ratio=MASK_RATIO)
+
+    masked_image = tf.cast(tf.map_fn(mask_transformer, image_batch), tf.float32)
     original_image = tf.cast(image_batch, tf.float32)
     return masked_image, original_image
 
 
 def normalize(masked: tf.Tensor, original: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
     return masked / 255.0, original / 255.0
-
-
-def ssim(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:
-    return tf.reduce_mean(ImageComparator.compute_ssim(y_true, y_pred))
-
-
-def psnr(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:
-    return tf.reduce_mean(ImageComparator.compute_psnr(y_true, y_pred))
 
 
 def run() -> None:
@@ -88,12 +87,12 @@ def run() -> None:
     test_images = test_images.prefetch(tf.data.AUTOTUNE)
 
     print(Fore.GREEN + 'Creating model...' + Style.RESET_ALL)
-    unet = UNet(filters=[8, 16, 32, 64, 64, 64], kernels=[7, 7, 5, 5, 3, 3], skip_filters=[4] * 6, skip_kernels=[1] * 6)
+    unet = UNet(filters=[16, 32, 64, 64, 64, 128], kernels=[7, 7, 5, 5, 3, 3], skip_filters=[4] * 6, skip_kernels=[1] * 6)
     unet = unet.build_model(input_shape=(64, 64, 3))
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
     loss = tf.keras.losses.MeanSquaredError()
-    metrics = [ssim, psnr]
+    metrics = [PSNR(), SSIM()]
 
     unet.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 

@@ -5,7 +5,7 @@ from typing import Final
 import cv2 as cv
 import numpy as np
 
-from utils import InpaintMethod
+from utils import InpaintingMethod
 
 
 class ImageBrowser:
@@ -52,7 +52,7 @@ class ImageBrowser:
             yield cv.imread(str(elem)), elem.name
 
     @classmethod
-    def __generate_inpainted(cls, inpaint_method: InpaintMethod) -> Iterator[np.ndarray, str]:
+    def __generate_inpainted(cls, inpaint_method: InpaintingMethod) -> Iterator[np.ndarray, str]:
         """
         Browses the inpainted images and yields them.
 
@@ -74,7 +74,7 @@ class ImageBrowser:
         Yields:
             Iterator[np.ndarray, str]: The inpainted image and its name
         """
-        yield from cls.__generate_inpainted(InpaintMethod.PATCH_MATCH)
+        yield from cls.__generate_inpainted(InpaintingMethod.PATCH_MATCH)
 
     @classmethod
     def generate_navier_stokes(cls) -> Iterator[np.ndarray, str]:
@@ -84,7 +84,7 @@ class ImageBrowser:
         Yields:
             Iterator[np.ndarray, str]: The inpainted image and its name
         """
-        yield from cls.__generate_inpainted(InpaintMethod.NAVIER_STOKES)
+        yield from cls.__generate_inpainted(InpaintingMethod.NAVIER_STOKES)
 
     @classmethod
     def generate_telea(cls) -> Iterator[np.ndarray, str]:
@@ -94,10 +94,10 @@ class ImageBrowser:
         Yields:
             Iterator[np.ndarray, str]: The inpainted image and its name
         """
-        yield from cls.__generate_inpainted(InpaintMethod.TELEA)
+        yield from cls.__generate_inpainted(InpaintingMethod.TELEA)
 
     @classmethod
-    def generate_all(cls, inpaint_method: InpaintMethod = InpaintMethod.PATCH_MATCH) -> Iterator[tuple[np.ndarray, np.ndarray, np.ndarray, str]]:
+    def generate_all(cls, inpaint_method: InpaintingMethod = InpaintingMethod.PATCH_MATCH) -> Iterator[tuple[np.ndarray, np.ndarray, np.ndarray, str]]:
         """
         Browses the original, masked and inpainted images and yields them.
 

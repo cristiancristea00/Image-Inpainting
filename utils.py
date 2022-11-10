@@ -22,7 +22,10 @@ def set_global_seed(seed: int) -> None:
 
 
 @unique
-class InpaintMethod(Enum):
+class InpaintingMethod(Enum):
+    """
+    The inpainting method to use.
+    """
     PATCH_MATCH: str = 'patch_match'
     NAVIER_STOKES: str = 'navier_stokes'
     TELEA: str = 'telea'

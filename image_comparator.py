@@ -8,7 +8,7 @@ import numpy as np
 import tensorflow as tf
 
 from image_browser import ImageBrowser
-from utils import InpaintMethod
+from utils import InpaintingMethod
 
 
 class ImageComparator:
@@ -125,7 +125,7 @@ class ImageComparator:
         return perceptual_loss(original, inpainted).item()
 
     @classmethod
-    def compute_results(cls, inpaint_method: InpaintMethod) -> list[tuple[str, str, str, str, str]]:
+    def compute_results(cls, inpaint_method: InpaintingMethod) -> list[tuple[str, str, str, str, str]]:
         """
         Compute the MSE, MAE, PSNR and SSIM of all images for a given inpaint method.
 
