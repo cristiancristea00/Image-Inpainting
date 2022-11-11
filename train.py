@@ -18,9 +18,9 @@ from metrics import PSNR, SSIM
 from unet import UNet
 from utils import NumpyEncoder, set_global_seed
 
-EPOCHS: Final[int] = 1
+EPOCHS: Final[int] = 1000
 BATCH: Final[int] = 128
-MASK_RATIO: Final[tuple[float, float]] = (5, 10)  # (15, 20) and (25, 30)
+MASK_RATIO: Final[tuple[float, float]] = (25, 30)  # (5, 10), (15, 20) and (25, 30)
 
 
 def get_dataset_pair(image_batch: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
