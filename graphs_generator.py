@@ -1,14 +1,36 @@
+from enum import Enum, unique
 from pathlib import Path
-from typing import Final
+from typing import Callable, Final
 
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 import numpy as np
 
 
+@unique
+class TransformType(Enum):
+    """
+    The type of transform to use.
+    """
+    CAPITALIZE: Callable[[str], str] = str.capitalize
+    UPPER: Callable[[str], str] = str.upper
+
+    def __call__(self, string: str) -> str:
+        """
+        Call the transform function.
+
+        Args:
+            string (str): The string to transform
+
+        Returns:
+            str: The transformed string
+        """
+        return self.value(string)
+
+
 class GraphsGenerator:
 
-    __PLOT_SIZE: Final[tuple[int, int]] = (16, 9)
+    __PLOT_SIZE: Final[tuple[int, int]] = (20, 9)
 
     __PRIMARY_COLOR: Final[str] = 'purple'
     __SECONDARY_COLOR: Final[str] = 'green'
@@ -27,6 +49,7 @@ class GraphsGenerator:
     __LEGEND_FONT_SIZE: Final[int] = 26
 
     __PLOT_SKIP_SIZE: Final[int] = 10
+    __PLOT_PAD: Final[float] = 1.5
 
     def __init__(self, history: dict, output_dir: Path) -> None:
         mpl.rcParams['font.sans-serif'] = ['Readex Pro']
@@ -51,21 +74,21 @@ class GraphsGenerator:
     def output_dir(self, value):
         self.__output_dir = value
 
-    def __create_graph(self, parameter: str, title: str, legend_position: str) -> plt.Figure:
+    def __create_graph(self, parameter: str, title: str, legend_position: str, transform: TransformType) -> plt.Figure:
         figure, axis = plt.subplots(1, 1, figsize=self.__PLOT_SIZE)
 
         length = len(self.history['loss'])
-        dims = np.arange(0, length)
-        ticks = np.arange(0, length + 1, self.__PLOT_SKIP_SIZE)
+        dims = np.arange(1, length + 1)
+        ticks = np.concatenate((np.asanyarray([1]), np.arange(self.__PLOT_SKIP_SIZE, length, self.__PLOT_SKIP_SIZE)))
 
         train_parameter = parameter
-        train_parameter_label = F'Training {train_parameter.capitalize()}'
+        train_parameter_label = F'Training {transform(train_parameter)}'
         val_parameter = F'val_{train_parameter}'
-        val_parameter_label = F'Validation {val_parameter.capitalize()}'
+        val_parameter_label = F'Validation {transform(train_parameter)}'
 
         axis.plot(dims, self.history[train_parameter], label=train_parameter_label, color=self.__PRIMARY_COLOR, linewidth=self.__LINE_THICKNESS)
         axis.plot(dims, self.history[val_parameter], label=val_parameter_label, color=self.__SECONDARY_COLOR, linewidth=self.__LINE_THICKNESS)
-        axis.set(xlabel='Epoch', ylabel=parameter.capitalize())
+        axis.set(xlabel='Epoch', ylabel=transform(parameter))
         axis.set_title(title, pad=self.__TITLE_PADDING, size=self.__TITLE_FONT_SIZE)
         axis.legend(fontsize=self.__LEGEND_FONT_SIZE, facecolor=self.__LEGEND_COLOR, framealpha=self.__LEGEND_ALPHA, loc=legend_position)
         axis.set_xlim(xmin=1, xmax=length)
@@ -75,6 +98,7 @@ class GraphsGenerator:
         axis.xaxis.labelpad = self.__LABEL_PADDING
         axis.yaxis.labelpad = self.__LABEL_PADDING
         axis.set_xticks(ticks)
+        axis.set_xlim(- self.__PLOT_PAD, length + self.__PLOT_PAD + 1)
 
         return figure
 
@@ -83,21 +107,24 @@ class GraphsGenerator:
         figure.savefig(save_path, dpi=100, bbox_inches='tight')
 
     def create_loss_graph(self) -> None:
+        transform = TransformType.CAPITALIZE
         parameter = 'loss'
-        title = parameter.capitalize()
-        figure = self.__create_graph(parameter, title, 'upper right')
+        title = transform(parameter)
+        figure = self.__create_graph(parameter, title, 'upper right', transform)
         self.__save_graph(figure, parameter)
 
     def create_psnr_graph(self) -> None:
+        transform = TransformType.UPPER
         parameter = 'psnr'
-        title = parameter.upper()
-        figure = self.__create_graph(parameter, title, 'lower right')
+        title = transform(parameter)
+        figure = self.__create_graph(parameter, title, 'lower right', transform)
         self.__save_graph(figure, parameter)
 
     def create_ssim_graph(self) -> None:
+        transform = TransformType.UPPER
         parameter = 'ssim'
-        title = parameter.upper()
-        figure = self.__create_graph(parameter, title, 'lower right')
+        title = transform(parameter)
+        figure = self.__create_graph(parameter, title, 'lower right', transform)
         self.__save_graph(figure, parameter)
 
     def create_all_graphs(self) -> None:
