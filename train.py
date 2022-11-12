@@ -91,7 +91,7 @@ def run() -> None:
     unet = unet.build_model(input_shape=(64, 64, 3))
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
-    loss = tf.keras.losses.MeanSquaredError()
+    loss = tf.keras.losses.MeanAbsoluteError()
     metrics = [PSNR(), SSIM()]
 
     unet.compile(optimizer=optimizer, loss=loss, metrics=metrics)
