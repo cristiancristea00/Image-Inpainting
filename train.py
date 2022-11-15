@@ -14,7 +14,7 @@ import tensorflow as tf
 
 from graphs_generator import GraphsGenerator
 from image_processor import ImageProcessor
-from metrics import PSNR, SSIM
+from metrics_and_losses import PSNR, SSIM
 from unet import UNet
 from utils import NumpyEncoder, set_global_seed
 
