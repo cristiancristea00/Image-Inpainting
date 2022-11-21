@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 from image_comparator import ImageComparator
+from tensorflow.python.ops import image_ops_impl, array_ops
 
 
 class SSIM(tf.keras.metrics.MeanMetricWrapper):
@@ -63,9 +64,9 @@ class PSNR(tf.keras.metrics.MeanMetricWrapper):
         return ImageComparator.compute_psnr(y_true, y_pred)
 
 
-class MS_SSIM_L1(tf.keras.losses.Loss):
+class SSIM_L1(tf.keras.losses.Loss):
     """
-    MS-SSIM + L1 loss.
+    SSIM + L1 loss.
 
     A version of the original one from the following paper:
     'Loss Functions for Image Restoration With Neural Networks'
@@ -73,9 +74,9 @@ class MS_SSIM_L1(tf.keras.losses.Loss):
     https://arxiv.org/pdf/1511.08861.pdf
     """
 
-    def __init__(self, name: str = 'ms_ssim_l1', alpha: float = 0.84) -> None:
+    def __init__(self, image_size: int, alpha: float = 0.84, name: str = 'ms_ssim_l1') -> None:
         """
-        Initialize the MS-SSIM + L1 loss.
+        Initialize the SSIM + L1 loss.
 
         Args:
             name (str, optional): The name of the loss. Defaults to 'ms_ssim_l1'.
@@ -83,6 +84,27 @@ class MS_SSIM_L1(tf.keras.losses.Loss):
         """
         super().__init__(name=name)
         self.alpha = alpha
+        self.image_size = image_size
+
+    @property
+    def image_size(self) -> int:
+        """
+        Get the image size.
+
+        Returns:
+            int: The image size
+        """
+        return self.__image_size
+
+    @image_size.setter
+    def image_size(self, image_size: int) -> None:
+        """
+        Set the image size.
+
+        Args:
+            image_size (int): The image size
+        """
+        self.__image_size = image_size
 
     @property
     def alpha(self) -> float:
@@ -106,15 +128,43 @@ class MS_SSIM_L1(tf.keras.losses.Loss):
             raise ValueError('Alpha must be between 0 and 1.')
         self.__alpha = alpha
 
-    def call(self, y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:
+    @staticmethod
+    def ssim_loss(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:
         """
-        Compute the MS-SSIM + L1 loss.
+        Compute the SSIM loss.
 
         Args:
             y_true (tf.Tensor): The ground truth
             y_pred (tf.Tensor): The prediction
 
         Returns:
-            tf.Tensor: The MS-SSIM + L1 loss
+            tf.Tensor: The SSIM loss
         """
-        return self.alpha * tf.image.ssim_multiscale(y_true, y_pred, 1) + (1 - self.alpha) * tf.reduce_mean(tf.abs(y_true - y_pred))
+        return 1 - tf.image.ssim(y_true, y_pred, max_val=1.0)
+
+    @staticmethod
+    def l1_loss(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:
+        """
+        Compute the L1 loss.
+
+        Args:
+            y_true (tf.Tensor): The ground truth
+            y_pred (tf.Tensor): The prediction
+
+        Returns:
+            tf.Tensor: The L1 loss
+        """
+        return tf.reduce_mean(tf.abs(y_true - y_pred))
+
+    def call(self, y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:
+        """
+        Compute the SSIM + L1 loss.
+
+        Args:
+            y_true (tf.Tensor): The ground truth
+            y_pred (tf.Tensor): The prediction
+
+        Returns:
+            tf.Tensor: The SSIM + L1 loss
+        """
+        return self.alpha * self.ssim_loss(y_true, y_pred) + (1 - self.alpha) * self.l1_loss(y_true, y_pred)
