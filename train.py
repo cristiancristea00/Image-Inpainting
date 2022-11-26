@@ -8,13 +8,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Final
 
-import numpy as np
 import tensorflow as tf
 from colorama import Fore, Style
 
 from graphs_generator import GraphsGenerator
-from image_processor import ImageProcessor
-from metrics_and_losses import SSIM_L1, PSNR, SSIM
+from image_browser import ImageBrowser
+from metrics_and_losses import PSNR, SSIM
 from unet import UNet
 from utils import NumpyEncoder, set_global_seed
 
@@ -22,19 +21,6 @@ EPOCHS: Final[int] = 1000
 BATCH: Final[int] = 128
 IMAGE_SIZE: Final[int] = 64
 MASK_RATIO: Final[tuple[float, float]] = (5, 10)  # (5, 10), (15, 20) and (25, 30)
-
-
-def get_dataset_pair(image_batch: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
-    def mask_transformer(image: tf.Tensor | np.ndarray) -> tf.Tensor | np.ndarray:
-        return ImageProcessor.apply_mask(image, ratio=MASK_RATIO)
-
-    masked_image = tf.cast(tf.map_fn(mask_transformer, image_batch), tf.float32)
-    original_image = tf.cast(image_batch, tf.float32)
-    return masked_image, original_image
-
-
-def normalize(masked: tf.Tensor, original: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
-    return masked / 255.0, original / 255.0
 
 
 def run() -> None:
@@ -73,27 +59,20 @@ def run() -> None:
         save_freq='epoch'
     )
 
-    dataset = Path('images', 'original')
+    image_browser = ImageBrowser(IMAGE_SIZE, BATCH, MASK_RATIO)
 
     print(Fore.GREEN + 'Loading train dataset...' + Style.RESET_ALL)
-    train_images = tf.keras.utils.image_dataset_from_directory(dataset / 'train', image_size=(IMAGE_SIZE, IMAGE_SIZE), labels=None, batch_size=BATCH,
-                                                               shuffle=True)
-    train_images = train_images.map(get_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
-    train_images = train_images.map(normalize, num_parallel_calls=tf.data.AUTOTUNE)
-    train_images = train_images.prefetch(tf.data.AUTOTUNE)
+    train_images = image_browser.get_train_dataset()
 
     print(Fore.GREEN + 'Loading test dataset...' + Style.RESET_ALL)
-    test_images = tf.keras.utils.image_dataset_from_directory(dataset / 'test', image_size=(IMAGE_SIZE, IMAGE_SIZE), labels=None, batch_size=BATCH)
-    test_images = test_images.map(get_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
-    test_images = test_images.map(normalize, num_parallel_calls=tf.data.AUTOTUNE)
-    test_images = test_images.prefetch(tf.data.AUTOTUNE)
+    test_images = image_browser.get_test_dataset()
 
     print(Fore.GREEN + 'Creating model...' + Style.RESET_ALL)
     unet = UNet(filters=[16, 32, 64, 64, 64, 128], kernels=[7, 7, 5, 5, 3, 3], skip_filters=[4] * 6, skip_kernels=[1] * 6)
     unet = unet.build_model(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3))
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
-    loss = SSIM_L1(IMAGE_SIZE)
+    loss = tf.keras.losses.MeanAbsoluteError()
     metrics = [PSNR(), SSIM()]
 
     unet.compile(optimizer=optimizer, loss=loss, metrics=metrics)

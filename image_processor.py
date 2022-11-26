@@ -27,6 +27,7 @@ class ImageProcessor:
         """
         height, width, _ = image.shape
         mask, count = MaskGenerator.generate_mask(mask_size=(height, width), ratio=ratio)
+        initial_mask = mask.copy()
 
         if isinstance(image, tf.Tensor):
 
@@ -50,7 +51,6 @@ class ImageProcessor:
                 raise ValueError('Invalid color')
 
             masked = tf.tensor_scatter_nd_update(image, mask, update_values)
-
         else:
 
             masked = image.copy()
@@ -67,7 +67,7 @@ class ImageProcessor:
 
                 raise ValueError('Invalid color')
 
-        return masked, mask
+        return masked, initial_mask
 
     @staticmethod
     def apply_mask(image: np.ndarray | tf.Tensor, ratio: tuple[float, float] = MaskGenerator.DEFAULT_MASK_RATIO,
@@ -86,31 +86,51 @@ class ImageProcessor:
         return ImageProcessor.apply_mask_with_return(image, ratio, color)[0]
 
     @staticmethod
-    def inpaint_navier_stokes(image: np.ndarray, mask: np.ndarray, radius: float = 3.0) -> np.ndarray:
+    def inpaint_navier_stokes(image: np.ndarray | tf.Tensor, mask: np.ndarray | tf.Tensor, radius: float = 3.0) -> np.ndarray:
         """
         Inpaint an image using the Navier-Stokes algorithm.
 
         Args:
-            image (np.ndarray): The image to inpaint
-            mask (np.ndarray): The mask to use
+            image (np.ndarray | tf.Tensor): The image to inpaint
+            mask (np.ndarray | tf.Tensor): The mask to use
             radius (float, optional): The inpaint radius to use. Defaults to 3.0.
 
         Returns:
             np.ndarray: The inpainted image
         """
-        return cv.inpaint(image, mask, radius, cv.INPAINT_NS)
+        if isinstance(image, tf.Tensor):
+
+            image = image.numpy().astype(np.uint8)
+
+        if isinstance(mask, tf.Tensor):
+
+            mask = mask.numpy().astype(np.uint8)
+
+        inpainted = cv.inpaint(image, mask, radius, cv.INPAINT_NS)
+
+        return inpainted.astype(np.float32)
 
     @staticmethod
-    def inpaint_telea(image: np.ndarray, mask: np.ndarray, radius: float = 3.0) -> np.ndarray:
+    def inpaint_telea(image: np.ndarray | tf.Tensor, mask: np.ndarray | tf.Tensor, radius: float = 3.0) -> np.ndarray:
         """
         Inpaint an image using the Telea algorithm.
 
         Args:
-            image (np.ndarray): The image to inpaint
-            mask (np.ndarray): The mask to use
+            image (np.ndarray | tf.Tensor): The image to inpaint
+            mask (np.ndarray | tf.Tensor): The mask to use
             radius (float, optional): The inpaint radius to use. Defaults to 3.0.
 
         Returns:
             np.ndarray: The inpainted image
         """
-        return cv.inpaint(image, mask, radius, cv.INPAINT_TELEA)
+        if isinstance(image, tf.Tensor):
+
+            image = image.numpy().astype(np.uint8)
+
+        if isinstance(mask, tf.Tensor):
+
+            mask = mask.numpy().astype(np.uint8)
+
+        inpainted = cv.inpaint(image, mask, radius, cv.INPAINT_TELEA)
+
+        return inpainted.astype(np.float32)
