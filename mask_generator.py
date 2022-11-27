@@ -5,7 +5,6 @@ from typing import Final
 
 import cv2 as cv
 import numpy as np
-import tensorflow as tf
 
 from utils import MaskColor
 
@@ -18,7 +17,7 @@ class MaskGenerator:
     MASK_VALUE: Final = MaskColor.WHITE.value
 
     DEFAULT_DRAW_SCALE: Final[float] = 0.015
-    DEFAULT_MASK_RATIO: Final[tuple[float, float]] = (10, 15)
+    DEFAULT_MASK_RATIO: Final[tuple[float, float]] = (5, 10)
 
     def __init__(self, mask_size: tuple[int, int], count: int = 0, ratio: tuple[float, float] = DEFAULT_MASK_RATIO,
                  draw_scale: float = DEFAULT_DRAW_SCALE) -> None:
@@ -232,7 +231,7 @@ class MaskGenerator:
         Returns:
             float: Ratio of the mask
         """
-        return 100 * np.count_nonzero(mask) / mask.size
+        return 100.0 * np.count_nonzero(mask) / mask.size
 
     @classmethod
     def __generate_mask_helper(cls, height: int, width: int, ratio_min: float, ratio_max: float, draw_scale: float) -> tuple[np.ndarray, int]:
@@ -243,14 +242,20 @@ class MaskGenerator:
         Args:
             height (int): Mask height
             width (int): Mask width
+            ratio_min (float): Minimum ratio
+            ratio_max (float): Maximum ratio
             draw_scale (float): Drawing objects scaling factor
-            max_objects (int): Upper limit of every type of drawing
 
         Returns:
             tuple(np.ndarray, int): Mask and the number of pixels in the mask
         """
         mask = np.zeros((height, width), dtype=np.uint8)
-        size = int((width + height) * draw_scale)
+
+        size = float(width + height) * draw_scale
+        size = int(size)
+
+        ratio_min = float(ratio_min)
+        ratio_max = float(ratio_max)
 
         while True:
             if cls.__compute_mask_ratio(mask) > ratio_min:
@@ -343,7 +348,6 @@ class MaskGenerator:
                        start_arc_angle, stop_arc_angle, color.value, thickness)
 
     @classmethod
-    @tf.autograph.experimental.do_not_convert
     def generate_mask(cls, mask_size: tuple[int, int], ratio: tuple[float, float] = DEFAULT_MASK_RATIO,
                       draw_scale: float = DEFAULT_DRAW_SCALE) -> tuple[np.ndarray, int]:
         """

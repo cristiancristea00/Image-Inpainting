@@ -26,8 +26,10 @@ class ImageProcessor:
             tuple[np.ndarray, np.ndarray]: The masked image and the mask
         """
         height, width, _ = image.shape
-        mask, count = MaskGenerator.generate_mask(mask_size=(height, width), ratio=ratio)
-        initial_mask = mask.copy()
+
+        mask, count = tf.py_function(MaskGenerator.generate_mask, inp=[(height, width), ratio], Tout=(tf.uint8, tf.int64))
+
+        initial_mask = mask
 
         if isinstance(image, tf.Tensor):
 
@@ -36,21 +38,20 @@ class ImageProcessor:
 
             if color == MaskColor.WHITE:
 
-                update_values = [MaskColor.WHITE.value] * count * 3
-                update_values = tf.convert_to_tensor(update_values, dtype=tf.int32)
-                update_values = tf.cast(update_values, dtype=tf.float32)
+                update_values = tf.fill((count * 3,), MaskColor.WHITE.value)
+                update_values = tf.cast(update_values, tf.float32)
 
             elif color == MaskColor.BLACK:
 
-                update_values = [MaskColor.BLACK.value] * count * 3
-                update_values = tf.convert_to_tensor(update_values, dtype=tf.int32)
-                update_values = tf.cast(update_values, dtype=tf.float32)
+                update_values = tf.fill((count * 3,), MaskColor.BLACK.value)
+                update_values = tf.cast(update_values, tf.float32)
 
             else:
 
                 raise ValueError('Invalid color')
 
             masked = tf.tensor_scatter_nd_update(image, mask, update_values)
+
         else:
 
             masked = image.copy()

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum, unique
 from pathlib import Path
 from typing import Callable, Final
 
@@ -8,6 +9,15 @@ import tensorflow as tf
 
 from image_processor import ImageProcessor
 from utils import InpaintingMethod
+
+
+@unique
+class CATEGORY(Enum):
+    """
+    Enum for the categories.
+    """
+    TRAIN: str = 'train'
+    TEST: str = 'test'
 
 
 class ImageBrowser:
@@ -134,20 +144,27 @@ class ImageBrowser:
         """
         return dataset.prefetch(tf.data.AUTOTUNE)
 
-    def __get_originals(self, category: str, shuffle: bool = False) -> tf.data.Dataset:
+    def __get_originals(self, category: CATEGORY, shuffle: bool = False) -> tf.data.Dataset:
         """
         Browses the original images and returns them as a dataset.
 
         Returns:
             tf.data.Dataset: The dataset of the original images
         """
-        return tf.keras.utils.image_dataset_from_directory(self.__DEFAULT_PATH / category, image_size=self.image_size, labels=None,
+        return tf.keras.utils.image_dataset_from_directory(self.__DEFAULT_PATH / category.value, image_size=self.image_size, labels=None,
                                                            batch_size=self.batch_size, shuffle=shuffle)
 
     @tf.autograph.experimental.do_not_convert
+    def __normalize_pair(self, dataset: tf.data.Dataset) -> tf.data.Dataset:
+        def normalize(image1: tf.Tensor, image2: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
+            return image1 / self.__MAX_IMAGE_VALUE, image2 / self.__MAX_IMAGE_VALUE
+
+        return dataset.map(normalize)
+
+    @tf.autograph.experimental.do_not_convert
     def __normalize(self, dataset: tf.data.Dataset) -> tf.data.Dataset:
-        def normalize(masked: tf.Tensor, original: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
-            return masked / self.__MAX_IMAGE_VALUE, original / self.__MAX_IMAGE_VALUE
+        def normalize(image: tf.Tensor) -> tf.Tensor:
+            return image / self.__MAX_IMAGE_VALUE
 
         return dataset.map(normalize)
 
@@ -172,6 +189,15 @@ class ImageBrowser:
         masked_image = tf.cast(masked_image, tf.float32)
         return masked_image, original_image
 
+    def __get_masked_dataset(self, image_batch: tf.Tensor) -> tf.Tensor:
+        def mask_transformer(image: tf.Tensor | np.ndarray) -> tf.Tensor | np.ndarray:
+            return ImageProcessor.apply_mask(image, ratio=self.mask_ratio)
+
+        image_batch = tf.cast(image_batch, tf.float32)
+        masked_image = tf.map_fn(mask_transformer, image_batch)
+        masked_image = tf.cast(masked_image, tf.float32)
+        return masked_image
+
     def __get_masked(self) -> tf.data.Dataset:
         """
         Browses the original images and returns them as a dataset along with the
@@ -180,7 +206,7 @@ class ImageBrowser:
         Returns:
             tf.data.Dataset: The dataset of the masked images
         """
-        originals = self.__get_originals('test')
+        originals = self.__get_originals(CATEGORY.TEST)
         masked = originals.map(self.__get_masked_dataset_tuple, num_parallel_calls=tf.data.AUTOTUNE)
         return self.__prefetch(masked)
 
@@ -225,7 +251,8 @@ class ImageBrowser:
         inpaint_transformer = self.__get_inpaint_transformer(InpaintingMethod.NAVIER_STOKES)
         masked_dataset = self.__get_masked()
         inpainted_dataset = masked_dataset.map(inpaint_transformer, num_parallel_calls=tf.data.AUTOTUNE)
-        return self.__prefetch(inpainted_dataset)
+        normalized = self.__normalize_pair(inpainted_dataset)
+        return self.__prefetch(normalized)
 
     def get_telea(self) -> tf.data.Dataset:
         """
@@ -238,7 +265,8 @@ class ImageBrowser:
         inpaint_transformer = self.__get_inpaint_transformer(InpaintingMethod.TELEA)
         masked_dataset = self.__get_masked()
         inpainted_dataset = masked_dataset.map(inpaint_transformer, num_parallel_calls=tf.data.AUTOTUNE)
-        return self.__prefetch(inpainted_dataset)
+        normalized = self.__normalize_pair(inpainted_dataset)
+        return self.__prefetch(normalized)
 
     def get_train_dataset(self) -> tf.data.Dataset:
         """
@@ -248,9 +276,9 @@ class ImageBrowser:
         Returns:
             tf.data.Dataset: The dataset of the masked images
         """
-        originals = self.__get_originals('train', shuffle=True)
+        originals = self.__get_originals(CATEGORY.TRAIN, shuffle=True)
         masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
-        normalized = self.__normalize(masked)
+        normalized = self.__normalize_pair(masked)
         return self.__prefetch(normalized)
 
     def get_test_dataset(self) -> tf.data.Dataset:
@@ -261,7 +289,13 @@ class ImageBrowser:
         Returns:
             tf.data.Dataset: The dataset of the masked images
         """
-        originals = self.__get_originals('test')
+        originals = self.__get_originals(CATEGORY.TEST)
         masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
+        normalized = self.__normalize_pair(masked)
+        return self.__prefetch(normalized)
+
+    def get_test_imgages(self):
+        images = self.__get_originals(CATEGORY.TEST)
+        masked = images.map(self.__get_masked_dataset, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize(masked)
         return self.__prefetch(normalized)
