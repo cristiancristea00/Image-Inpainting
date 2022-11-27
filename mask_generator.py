@@ -252,7 +252,7 @@ class MaskGenerator:
         mask = np.zeros((height, width), dtype=np.uint8)
 
         size = float(width + height) * draw_scale
-        size = int(size)
+        size = int(size + 1e-6)
 
         ratio_min = float(ratio_min)
         ratio_max = float(ratio_max)

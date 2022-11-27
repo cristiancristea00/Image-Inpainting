@@ -173,7 +173,7 @@ class ImageBrowser:
             return ImageProcessor.apply_mask_with_return(image, ratio=self.mask_ratio)
 
         image_batch = tf.cast(image_batch, tf.float32)
-        masked_image, mask = tf.map_fn(mask_transformer, image_batch, fn_output_signature=(tf.float32, tf.float32))
+        masked_image, mask = tf.map_fn(mask_transformer, image_batch, fn_output_signature=(tf.float32, tf.uint8))
         original_image = tf.cast(image_batch, tf.float32)
         masked_image = tf.cast(masked_image, tf.float32)
         mask = tf.cast(mask, tf.float32)
@@ -189,16 +189,7 @@ class ImageBrowser:
         masked_image = tf.cast(masked_image, tf.float32)
         return masked_image, original_image
 
-    def __get_masked_dataset(self, image_batch: tf.Tensor) -> tf.Tensor:
-        def mask_transformer(image: tf.Tensor | np.ndarray) -> tf.Tensor | np.ndarray:
-            return ImageProcessor.apply_mask(image, ratio=self.mask_ratio)
-
-        image_batch = tf.cast(image_batch, tf.float32)
-        masked_image = tf.map_fn(mask_transformer, image_batch)
-        masked_image = tf.cast(masked_image, tf.float32)
-        return masked_image
-
-    def __get_masked(self) -> tf.data.Dataset:
+    def __get_masked_tuple(self) -> tf.data.Dataset:
         """
         Browses the original images and returns them as a dataset along with the
         masked version.
@@ -208,6 +199,18 @@ class ImageBrowser:
         """
         originals = self.__get_originals(CATEGORY.TEST)
         masked = originals.map(self.__get_masked_dataset_tuple, num_parallel_calls=tf.data.AUTOTUNE)
+        return self.__prefetch(masked)
+
+    def __get_masked_pair(self) -> tf.data.Dataset:
+        """
+        Browses the original images and returns them as a dataset along with the
+        masked version.
+
+        Returns:
+            tf.data.Dataset: The dataset of the masked images
+        """
+        originals = self.__get_originals(CATEGORY.TEST)
+        masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
         return self.__prefetch(masked)
 
     @classmethod
@@ -249,7 +252,7 @@ class ImageBrowser:
         """
 
         inpaint_transformer = self.__get_inpaint_transformer(InpaintingMethod.NAVIER_STOKES)
-        masked_dataset = self.__get_masked()
+        masked_dataset = self.__get_masked_tuple()
         inpainted_dataset = masked_dataset.map(inpaint_transformer, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(inpainted_dataset)
         return self.__prefetch(normalized)
@@ -263,7 +266,7 @@ class ImageBrowser:
         """
 
         inpaint_transformer = self.__get_inpaint_transformer(InpaintingMethod.TELEA)
-        masked_dataset = self.__get_masked()
+        masked_dataset = self.__get_masked_tuple()
         inpainted_dataset = masked_dataset.map(inpaint_transformer, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(inpainted_dataset)
         return self.__prefetch(normalized)
@@ -294,8 +297,18 @@ class ImageBrowser:
         normalized = self.__normalize_pair(masked)
         return self.__prefetch(normalized)
 
-    def get_test_imgages(self):
-        images = self.__get_originals(CATEGORY.TEST)
-        masked = images.map(self.__get_masked_dataset, num_parallel_calls=tf.data.AUTOTUNE)
-        normalized = self.__normalize(masked)
-        return self.__prefetch(normalized)
+    def get_model_inpainted(self, model: tf.keras.Model) -> tf.data.Dataset:
+        """
+        Browses the images and inpaints them using the model and returns them as
+        a dataset.
+
+        Args:
+            model (tf.keras.Model): The model to use for inpainting
+
+        Returns:
+            tf.data.Dataset: The dataset of the inpainted images
+        """
+        masked_dataset = self.__get_masked_pair()
+        normalized = self.__normalize_pair(masked_dataset)
+        inpainted_dataset = normalized.map(lambda masked, original: (model(masked), original), num_parallel_calls=tf.data.AUTOTUNE)
+        return self.__prefetch(inpainted_dataset)
