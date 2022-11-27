@@ -224,7 +224,6 @@ class ImageBrowser:
 
         inpaint_transformer = self.__get_inpaint_transformer(InpaintingMethod.NAVIER_STOKES)
         masked_dataset = self.__get_masked()
-        inpaint_transformer = tf.function(inpaint_transformer, )
         inpainted_dataset = masked_dataset.map(inpaint_transformer, num_parallel_calls=tf.data.AUTOTUNE)
         return self.__prefetch(inpainted_dataset)
 
