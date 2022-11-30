@@ -1,24 +1,10 @@
 from __future__ import annotations
 
-from enum import Enum, unique
 import json
-import random
+from enum import Enum, unique
 from typing import Any
 
 import numpy as np
-import tensorflow as tf
-
-
-def set_global_seed(seed: int) -> None:
-    """
-    Set the global seed for numpy, random, and tensorflow.
-
-    Args:
-        seed (int): The seed to use
-    """
-    tf.random.set_seed(seed)
-    np.random.seed(seed)
-    random.seed(seed)
 
 
 @unique

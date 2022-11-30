@@ -1,8 +1,5 @@
 import tensorflow as tf
 
-from image_comparator import ImageComparator
-from tensorflow.python.ops import image_ops_impl, array_ops
-
 
 class SSIM(tf.keras.metrics.MeanMetricWrapper):
     """

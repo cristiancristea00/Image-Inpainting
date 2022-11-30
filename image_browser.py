@@ -29,41 +29,17 @@ class ImageBrowser:
 
     __MAX_IMAGE_VALUE: Final[float] = 255.0
 
-    def __init__(self, image_size: int, batch_size: int, mask_ratio: tuple[float, float], path: Path = __DEFAULT_PATH) -> None:
+    def __init__(self, batch_size: int, image_processor: ImageProcessor, path: Path = __DEFAULT_PATH) -> None:
         """
         Args:
-            image_size (int): The size of the images
             batch_size (int): The size of the batch
-            mask_ratio (tuple[float, float]): The ratio of the mask
+            image_processor (ImageProcessor): The image processor
+            path (Path, optional): The path to the images. Defaults to __DEFAULT_PATH.
         """
-        self.image_size = image_size
+
         self.batch_size = batch_size
-        self.mask_ratio = mask_ratio
+        self.image_processor = image_processor
         self.path = path
-
-    @property
-    def image_size(self) -> tuple[int, int]:
-        """
-        Get the size of the images.
-
-        Returns:
-            int: The size of the images
-        """
-        return self.__image_size
-
-    @image_size.setter
-    def image_size(self, image_size: int) -> None:
-        """
-        Set the size of the images.
-
-        Args:
-            image_size (int): The size of the images
-        """
-        if image_size <= 0:
-            raise ValueError('The image size must be positive.')
-        if image_size < 64 or image_size > 512:
-            raise ValueError('The image size must be between 64 and 512.')
-        self.__image_size = (image_size, image_size)
 
     @property
     def batch_size(self) -> int:
@@ -73,6 +49,7 @@ class ImageBrowser:
         Returns:
             int: The size of the batch
         """
+
         return self.__batch_size
 
     @batch_size.setter
@@ -83,31 +60,34 @@ class ImageBrowser:
         Args:
             batch_size (int): The size of the batch
         """
+
         if batch_size < 1:
             raise ValueError('The batch size must be at least 1')
         self.__batch_size = batch_size
 
     @property
-    def mask_ratio(self) -> tuple[float, float]:
+    def image_processor(self) -> ImageProcessor:
         """
-        Get the ratio of the mask.
+        Get the image processor.
 
         Returns:
-            tuple[float, float]: The ratio of the mask
+            ImageProcessor: The image processor
         """
-        return self.__mask_ratio
 
-    @mask_ratio.setter
-    def mask_ratio(self, mask_ratio: tuple[float, float]) -> None:
+        return self.__image_processor
+
+    @image_processor.setter
+    def image_processor(self, image_processor: ImageProcessor) -> None:
         """
-        Set the ratio of the mask.
+        Set the image processor.
 
         Args:
-            mask_ratio (tuple[float, float]): The ratio of the mask
+            image_processor (ImageProcessor): The image processor
         """
-        if mask_ratio[0] < 0 or mask_ratio[1] > 100 or mask_ratio[0] > mask_ratio[1]:
-            raise ValueError('The mask ratio values must be between 0 and 100')
-        self.__mask_ratio = mask_ratio
+
+        if image_processor is None:
+            raise ValueError('The image processor cannot be None.')
+        self.__image_processor = image_processor
 
     @property
     def path(self) -> Path:
@@ -117,6 +97,7 @@ class ImageBrowser:
         Returns:
             Path: The path of the images
         """
+
         return self.__path
 
     @path.setter
@@ -127,6 +108,7 @@ class ImageBrowser:
         Args:
             path (Path): The path of the images
         """
+
         if not path.exists():
             raise FileNotFoundError('The path does not exist')
         self.__path = path
@@ -142,6 +124,7 @@ class ImageBrowser:
         Returns:
             tf.data.Dataset: The prefetched dataset
         """
+
         return dataset.prefetch(tf.data.AUTOTUNE)
 
     def __get_originals(self, category: CATEGORY, shuffle: bool = False) -> tf.data.Dataset:
@@ -151,26 +134,88 @@ class ImageBrowser:
         Returns:
             tf.data.Dataset: The dataset of the original images
         """
-        return tf.keras.utils.image_dataset_from_directory(self.__DEFAULT_PATH / category.value, image_size=self.image_size, labels=None,
-                                                           batch_size=self.batch_size, shuffle=shuffle)
+
+        return tf.keras.utils.image_dataset_from_directory(self.__DEFAULT_PATH / category.value, image_size=self.image_processor.image_size,
+                                                           labels=None, batch_size=self.batch_size, shuffle=shuffle)
 
     @tf.autograph.experimental.do_not_convert
     def __normalize_pair(self, dataset: tf.data.Dataset) -> tf.data.Dataset:
+        """
+        Normalizes the dataset.
+
+        Args:
+            dataset (tf.data.Dataset): The dataset to normalize
+
+        Returns:
+            tf.data.Dataset: The normalized dataset
+        """
+
         def normalize(image1: tf.Tensor, image2: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
+            """
+            Normalizes the images.
+
+            Args:
+                image1 (tf.Tensor): The first image
+                image2 (tf.Tensor): The second image
+
+            Returns:
+                tuple[tf.Tensor, tf.Tensor]: The normalized images
+            """
+
             return image1 / self.__MAX_IMAGE_VALUE, image2 / self.__MAX_IMAGE_VALUE
 
         return dataset.map(normalize)
 
     @tf.autograph.experimental.do_not_convert
     def __normalize(self, dataset: tf.data.Dataset) -> tf.data.Dataset:
+        """
+        Normalizes the dataset.
+
+        Args:
+            dataset (tf.data.Dataset): The dataset to normalize
+
+        Returns:
+            tf.data.Dataset: The normalized dataset
+        """
+
         def normalize(image: tf.Tensor) -> tf.Tensor:
+            """
+            Normalizes the image.
+
+            Args:
+                image (tf.Tensor): The image
+
+            Returns:
+                tf.Tensor: The normalized image
+            """
+
             return image / self.__MAX_IMAGE_VALUE
 
         return dataset.map(normalize)
 
     def __get_masked_dataset_tuple(self, image_batch: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor, tf.Tensor]:
+        """
+        Gets the masked dataset tuple.
+
+        Args:
+            image_batch (tf.Tensor): The image batch
+
+        Returns:
+            tuple[tf.Tensor, tf.Tensor, tf.Tensor]: The masked dataset tuple
+        """
+
         def mask_transformer(image: tf.Tensor | np.ndarray) -> tuple[tf.Tensor, tf.Tensor] | tuple[np.ndarray, np.ndarray]:
-            return ImageProcessor.apply_mask_with_return(image, ratio=self.mask_ratio)
+            """
+            Transforms the image into a masked image and a mask.
+
+            Args:
+                image (tf.Tensor | np.ndarray): The image
+
+            Returns:
+                tuple[tf.Tensor, tf.Tensor] | tuple[np.ndarray, np.ndarray]: The masked image and the mask
+            """
+
+            return self.image_processor.apply_mask_with_return(image)
 
         image_batch = tf.cast(image_batch, tf.float32)
         masked_image, mask = tf.map_fn(mask_transformer, image_batch, fn_output_signature=(tf.float32, tf.uint8))
@@ -180,8 +225,28 @@ class ImageBrowser:
         return masked_image, original_image, mask
 
     def __get_masked_dataset_pair(self, image_batch: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
+        """
+        Gets the masked dataset pair.
+
+        Args:
+            image_batch (tf.Tensor): The image batch
+
+        Returns:
+            tuple[tf.Tensor, tf.Tensor]: The masked dataset pair
+        """
+
         def mask_transformer(image: tf.Tensor | np.ndarray) -> tf.Tensor | np.ndarray:
-            return ImageProcessor.apply_mask(image, ratio=self.mask_ratio)
+            """
+            Transforms the image into a masked image.
+
+            Args:
+                image (tf.Tensor | np.ndarray): The image
+
+            Returns:
+                tf.Tensor | np.ndarray: The masked image
+            """
+
+            return self.image_processor.apply_mask(image)
 
         image_batch = tf.cast(image_batch, tf.float32)
         masked_image = tf.map_fn(mask_transformer, image_batch)
@@ -197,6 +262,7 @@ class ImageBrowser:
         Returns:
             tf.data.Dataset: The dataset of the masked images
         """
+
         originals = self.__get_originals(CATEGORY.TEST)
         masked = originals.map(self.__get_masked_dataset_tuple, num_parallel_calls=tf.data.AUTOTUNE)
         return self.__prefetch(masked)
@@ -209,12 +275,12 @@ class ImageBrowser:
         Returns:
             tf.data.Dataset: The dataset of the masked images
         """
+
         originals = self.__get_originals(CATEGORY.TEST)
         masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
         return self.__prefetch(masked)
 
-    @classmethod
-    def __get_inpaint_transformer(cls, inpaint_method: InpaintingMethod) -> Callable[[tf.Tensor, tf.Tensor, tf.Tensor], tuple[tf.Tensor, tf.Tensor]]:
+    def __get_inpaint_transformer(self, inpaint_method: InpaintingMethod) -> Callable[[tf.Tensor, tf.Tensor, tf.Tensor], tuple[tf.Tensor, tf.Tensor]]:
         """
         Returns a function that applies the inpainting method to the masked image.
 
@@ -224,17 +290,51 @@ class ImageBrowser:
         Returns:
             Callable[[tf.Tensor], tuple[tf.Tensor, tf.Tensor]]: The function that applies the inpainting method
         """
+
         if inpaint_method is InpaintingMethod.NAVIER_STOKES:
-            inpaint_func = ImageProcessor.inpaint_navier_stokes
+            inpaint_func = self.image_processor.inpaint_navier_stokes
         elif inpaint_method is InpaintingMethod.TELEA:
-            inpaint_func = ImageProcessor.inpaint_telea
+            inpaint_func = self.image_processor.inpaint_telea
         else:
             raise ValueError('The inpainting method is not valid')
 
         def inpaint_transformer(masked: tf.Tensor, original: tf.Tensor, mask: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
+            """
+            Applies the inpainting method to the masked image.
+
+            Args:
+                masked (tf.Tensor): The masked image
+                original (tf.Tensor): The original image
+                mask (tf.Tensor): The mask
+
+            Returns:
+                tuple[tf.Tensor, tf.Tensor]: The inpainted image and the original image
+            """
+
             def inner_transformer(masked_and_mask: tuple[tf.Tensor, tf.Tensor]) -> tuple[tf.Tensor, tf.Tensor]:
-                def transformer_wrapper(masked_image: tf.Tensor, mask_layers: tf.Tensor):
-                    return tf.py_function(inpaint_func, inp=[masked_image, mask_layers], Tout=tf.float32)
+                """
+                Applies the inpainting method to the masked image.
+
+                Args:
+                    masked_and_mask (tuple[tf.Tensor, tf.Tensor]): The masked image and the mask
+
+                Returns:
+                    tuple[tf.Tensor, tf.Tensor]: The inpainted image and the mask
+                """
+
+                def transformer_wrapper(masked_image: tf.Tensor, mask_layer: tf.Tensor) -> np.ndarray | tf.Tensor:
+                    """
+                    Wraps the inpaint function.
+
+                    Args:
+                        masked_image (tf.Tensor): The masked image
+                        mask_layer (tf.Tensor): The mask layer
+
+                    Returns:
+                        np.ndarray | tf.Tensor: The inpainted image
+                    """
+
+                    return tf.py_function(inpaint_func, inp=[masked_image, mask_layer], Tout=tf.float32)
 
                 return transformer_wrapper(masked_and_mask[0], masked_and_mask[1])
 
@@ -279,6 +379,7 @@ class ImageBrowser:
         Returns:
             tf.data.Dataset: The dataset of the masked images
         """
+
         originals = self.__get_originals(CATEGORY.TRAIN, shuffle=True)
         masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(masked)
@@ -292,6 +393,7 @@ class ImageBrowser:
         Returns:
             tf.data.Dataset: The dataset of the masked images
         """
+
         originals = self.__get_originals(CATEGORY.TEST)
         masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(masked)
@@ -308,6 +410,7 @@ class ImageBrowser:
         Returns:
             tf.data.Dataset: The dataset of the inpainted images
         """
+
         masked_dataset = self.__get_masked_pair()
         normalized = self.__normalize_pair(masked_dataset)
         inpainted_dataset = normalized.map(lambda masked, original: (model(masked), original), num_parallel_calls=tf.data.AUTOTUNE)

@@ -1,12 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
-
 import tensorflow as tf
 from lpips import LPIPS, im2tensor
-
-from image_browser import ImageBrowser
-from utils import InpaintingMethod
 
 
 class ImageComparator:
@@ -47,6 +42,17 @@ class ImageComparator:
         """
 
         def compute_mse(image_batch1: tf.Tensor, image_batch2: tf.Tensor) -> tf.Tensor:
+            """
+            Compute the mean squared error of the images.
+
+            Args:
+                image_batch1 (tf.Tensor): The first image batch
+                image_batch2 (tf.Tensor): The second image batch
+
+            Returns:
+                tf.Tensor: The mean squared error
+            """
+
             return tf.reduce_mean(tf.square(image_batch1 - image_batch2))
 
         dataset = dataset.map(compute_mse)
@@ -65,6 +71,17 @@ class ImageComparator:
         """
 
         def compute_mae(image_batch1: tf.Tensor, image_batch2: tf.Tensor) -> tf.Tensor:
+            """
+            Compute the mean absolute error of the images.
+
+            Args:
+                image_batch1 (tf.Tensor): The first image batch
+                image_batch2 (tf.Tensor): The second image batch
+
+            Returns:
+                tf.Tensor: The mean absolute error
+            """
+
             return tf.reduce_mean(tf.abs(image_batch1 - image_batch2))
 
         dataset = dataset.map(compute_mae)
@@ -84,6 +101,17 @@ class ImageComparator:
         """
 
         def compute_psnr(image_batch1: tf.Tensor, image_batch2: tf.Tensor) -> tf.Tensor:
+            """
+            Compute the peak signal-to-noise ratio of the images.
+
+            Args:
+                image_batch1 (tf.Tensor): The first image batch
+                image_batch2 (tf.Tensor): The second image batch
+
+            Returns:
+                tf.Tensor: The peak signal-to-noise ratio
+            """
+
             return tf.image.psnr(image_batch1, image_batch2, max_val=max_image_value)
 
         dataset = dataset.map(compute_psnr)
@@ -103,6 +131,17 @@ class ImageComparator:
         """
 
         def compute_ssim(image_batch1: tf.Tensor, image_batch2: tf.Tensor) -> tf.Tensor:
+            """
+            Compute the structural similarity index of the images.
+
+            Args:
+                image_batch1 (tf.Tensor): The first image batch
+                image_batch2 (tf.Tensor): The second image batch
+
+            Returns:
+                tf.Tensor: The structural similarity index
+            """
+
             return tf.image.ssim(image_batch1, image_batch2, max_val=max_image_value)
 
         dataset = dataset.map(compute_ssim)
@@ -125,7 +164,29 @@ class ImageComparator:
             cls.__perceptual_loss = LPIPS(net='vgg')
 
         def perceptual_loss_wrapper(image_batch1: tf.Tensor, image_batch2: tf.Tensor) -> tf.Tensor:
+            """
+            Compute the perceptual loss of the images.
+
+            Args:
+                image_batch1 (tf.Tensor): The first image batch
+                image_batch2 (tf.Tensor): The second image batch
+
+            Returns:
+                tf.Tensor: The perceptual loss
+            """
+
             def inner_perceptual_loss(inner_image_batch1: tf.Tensor, inner_image_batch2: tf.Tensor) -> float:
+                """
+                Compute the perceptual loss of the images.
+
+                Args:
+                    inner_image_batch1 (tf.Tensor): The first image batch
+                    inner_image_batch2 (tf.Tensor): The second image batch
+
+                Returns:
+                    float: The perceptual loss
+                """
+
                 inner_image_batch1 = inner_image_batch1.numpy()
                 inner_image_batch2 = inner_image_batch2.numpy()
                 inner_image_batch1 = im2tensor(inner_image_batch1)

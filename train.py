@@ -13,9 +13,11 @@ from colorama import Fore, Style
 
 from graphs_generator import GraphsGenerator
 from image_browser import ImageBrowser
+from image_processor import ImageProcessor
+from mask_generator import MaskGenerator
 from metrics_and_losses import PSNR, SSIM
 from unet import UNet
-from utils import NumpyEncoder, set_global_seed
+from utils import NumpyEncoder
 
 EPOCHS: Final[int] = 1000
 BATCH: Final[int] = 128
@@ -24,8 +26,6 @@ MASK_RATIO: Final[tuple[float, float]] = (5, 10)  # (5, 10), (15, 20) and (25, 3
 
 
 def run() -> None:
-
-    set_global_seed(42)
     now = datetime.now().strftime('%Y.%m.%d_%H:%M')
     model_path = Path('models', F'model_{now}')
 
@@ -59,7 +59,9 @@ def run() -> None:
         save_freq='epoch'
     )
 
-    image_browser = ImageBrowser(IMAGE_SIZE, BATCH, MASK_RATIO)
+    mask_generator = MaskGenerator(IMAGE_SIZE, MASK_RATIO)
+    image_processor = ImageProcessor(mask_generator)
+    image_browser = ImageBrowser(BATCH, image_processor)
 
     print(Fore.GREEN + 'Loading train dataset...' + Style.RESET_ALL)
     train_images = image_browser.get_train_dataset()
@@ -72,7 +74,7 @@ def run() -> None:
     unet = unet.build_model(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3))
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
-    loss = tf.keras.losses.MeanAbsoluteError()
+    loss = tf.keras.losses.MeanSquaredError()
     metrics = [PSNR(), SSIM()]
 
     unet.compile(optimizer=optimizer, loss=loss, metrics=metrics)
