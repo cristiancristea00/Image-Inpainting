@@ -11,13 +11,15 @@ class ImageProcessor:
     Class for processing images.
     """
 
-    def __init__(self, mask_generator: MaskGenerator) -> None:
+    def __init__(self, mask_generator: MaskGenerator, batch_size: int) -> None:
         """
         Initialize the ImageProcessor.
 
         Args:
             mask_generator (MaskGenerator): The mask generator to use
+            batch_size (int): The size of the batch
         """
+        self.batch_size = batch_size
 
         self.mask_generator = mask_generator
         mask_generator_dataset = tf.data.Dataset.from_generator(
@@ -29,6 +31,30 @@ class ImageProcessor:
         )
         mask_generator_dataset = mask_generator_dataset.prefetch(tf.data.AUTOTUNE)
         self.mask_generator_dataset = mask_generator_dataset
+
+    @property
+    def batch_size(self) -> int:
+        """
+        Get the size of the batch.
+
+        Returns:
+            int: The size of the batch
+        """
+
+        return self.__batch_size
+
+    @batch_size.setter
+    def batch_size(self, batch_size: int) -> None:
+        """
+        Set the size of the batch.
+
+        Args:
+            batch_size (int): The size of the batch
+        """
+
+        if batch_size < 1:
+            raise ValueError('The batch size must be at least 1')
+        self.__batch_size = batch_size
 
     @property
     def image_size(self) -> tuple[int, int]:

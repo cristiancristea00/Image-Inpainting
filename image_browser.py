@@ -29,41 +29,15 @@ class ImageBrowser:
 
     __MAX_IMAGE_VALUE: Final[float] = 255.0
 
-    def __init__(self, batch_size: int, image_processor: ImageProcessor, path: Path = __DEFAULT_PATH) -> None:
+    def __init__(self, image_processor: ImageProcessor, path: Path = __DEFAULT_PATH) -> None:
         """
         Args:
-            batch_size (int): The size of the batch
             image_processor (ImageProcessor): The image processor
             path (Path, optional): The path to the images. Defaults to __DEFAULT_PATH.
         """
 
-        self.batch_size = batch_size
         self.image_processor = image_processor
         self.path = path
-
-    @property
-    def batch_size(self) -> int:
-        """
-        Get the size of the batch.
-
-        Returns:
-            int: The size of the batch
-        """
-
-        return self.__batch_size
-
-    @batch_size.setter
-    def batch_size(self, batch_size: int) -> None:
-        """
-        Set the size of the batch.
-
-        Args:
-            batch_size (int): The size of the batch
-        """
-
-        if batch_size < 1:
-            raise ValueError('The batch size must be at least 1')
-        self.__batch_size = batch_size
 
     @property
     def image_processor(self) -> ImageProcessor:
@@ -136,7 +110,7 @@ class ImageBrowser:
         """
 
         return tf.keras.utils.image_dataset_from_directory(self.__DEFAULT_PATH / category.value, image_size=self.image_processor.image_size,
-                                                           labels=None, batch_size=self.batch_size, shuffle=shuffle)
+                                                           labels=None, batch_size=self.image_processor.batch_size, shuffle=shuffle)
 
     @tf.autograph.experimental.do_not_convert
     def __normalize_pair(self, dataset: tf.data.Dataset) -> tf.data.Dataset:

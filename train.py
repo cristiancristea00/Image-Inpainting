@@ -19,7 +19,7 @@ from metrics_and_losses import PSNR, SSIM
 from unet import UNet
 from utils import NumpyEncoder
 
-EPOCHS: Final[int] = 1000
+EPOCHS: Final[int] = 1
 BATCH: Final[int] = 128
 IMAGE_SIZE: Final[int] = 64
 MASK_RATIO: Final[tuple[float, float]] = (5, 10)  # (5, 10), (15, 20) and (25, 30)
@@ -28,6 +28,7 @@ MASK_RATIO: Final[tuple[float, float]] = (5, 10)  # (5, 10), (15, 20) and (25, 3
 def run() -> None:
     now = datetime.now().strftime('%Y.%m.%d_%H:%M')
     model_path = Path('models', F'model_{now}')
+    # logs_dir = model_path / 'logs'
 
     reduce_learning_rate_callback = tf.keras.callbacks.ReduceLROnPlateau(
         monitor='val_loss',
@@ -59,9 +60,15 @@ def run() -> None:
         save_freq='epoch'
     )
 
+    # tensorboard_callback = tf.keras.callbacks.TensorBoard(
+    #     log_dir=logs_dir,
+    #     histogram_freq=1,
+    #     profile_batch='20, 100'
+    # )
+
     mask_generator = MaskGenerator(IMAGE_SIZE, MASK_RATIO)
-    image_processor = ImageProcessor(mask_generator)
-    image_browser = ImageBrowser(BATCH, image_processor)
+    image_processor = ImageProcessor(mask_generator, BATCH)
+    image_browser = ImageBrowser(image_processor)
 
     print(Fore.GREEN + 'Loading train dataset...' + Style.RESET_ALL)
     train_images = image_browser.get_train_dataset()
@@ -76,6 +83,7 @@ def run() -> None:
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
     loss = tf.keras.losses.MeanSquaredError()
     metrics = [PSNR(), SSIM()]
+    callbacks = [reduce_learning_rate_callback, early_stopping_callback, checkpoint_callback]
 
     unet.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 
@@ -86,9 +94,9 @@ def run() -> None:
         validation_data=test_images,
         epochs=EPOCHS,
         use_multiprocessing=True,
-        workers=12,
+        workers=tf.data.AUTOTUNE,
         verbose=1,
-        callbacks=[reduce_learning_rate_callback, early_stopping_callback, checkpoint_callback]
+        callbacks=callbacks
     )
     print(Style.RESET_ALL)
 
@@ -112,7 +120,7 @@ def run() -> None:
     model_evaluation = unet.evaluate(
         test_images,
         use_multiprocessing=True,
-        workers=12,
+        workers=tf.data.AUTOTUNE,
         verbose=1,
         return_dict=True
     )
