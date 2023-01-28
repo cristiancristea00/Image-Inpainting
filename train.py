@@ -28,7 +28,6 @@ MASK_RATIO: Final[tuple[float, float]] = (5, 10)  # (5, 10), (15, 20) and (25, 3
 def run() -> None:
     now = datetime.now().strftime('%Y.%m.%d_%H:%M')
     model_path = Path('models', F'model_{now}')
-    # logs_dir = model_path / 'logs'
 
     reduce_learning_rate_callback = tf.keras.callbacks.ReduceLROnPlateau(
         monitor='val_loss',
@@ -59,12 +58,6 @@ def run() -> None:
         mode='auto',
         save_freq='epoch'
     )
-
-    # tensorboard_callback = tf.keras.callbacks.TensorBoard(
-    #     log_dir=logs_dir,
-    #     histogram_freq=1,
-    #     profile_batch='20, 100'
-    # )
 
     mask_generator = MaskGenerator(IMAGE_SIZE, MASK_RATIO)
     image_processor = ImageProcessor(mask_generator, BATCH)
