@@ -109,8 +109,13 @@ class ImageBrowser:
             tf.data.Dataset: The dataset of the original images
         """
 
-        return tf.keras.utils.image_dataset_from_directory(self.__DEFAULT_PATH / category.value, image_size=self.image_processor.image_size,
-                                                           labels=None, batch_size=self.image_processor.batch_size, shuffle=shuffle)
+        options = tf.data.Options()
+        options.experimental_distribute.auto_shard_policy = tf.data.experimental.AutoShardPolicy.DATA
+
+        dataset = tf.keras.utils.image_dataset_from_directory(self.__DEFAULT_PATH / category.value, image_size=self.image_processor.image_size,
+                                                              labels=None, batch_size=self.image_processor.batch_size, shuffle=shuffle)
+        dataset = dataset.with_options(options)
+        return self.__prefetch(dataset)
 
     @tf.autograph.experimental.do_not_convert
     def __normalize_pair(self, dataset: tf.data.Dataset) -> tf.data.Dataset:
@@ -329,7 +334,8 @@ class ImageBrowser:
         masked_dataset = self.__get_masked_tuple()
         inpainted_dataset = masked_dataset.map(inpaint_transformer, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(inpainted_dataset)
-        return self.__prefetch(normalized)
+        cached = normalized.cache()
+        return self.__prefetch(cached)
 
     def get_telea(self) -> tf.data.Dataset:
         """
@@ -343,7 +349,8 @@ class ImageBrowser:
         masked_dataset = self.__get_masked_tuple()
         inpainted_dataset = masked_dataset.map(inpaint_transformer, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(inpainted_dataset)
-        return self.__prefetch(normalized)
+        cached = normalized.cache()
+        return self.__prefetch(cached)
 
     def get_train_dataset(self) -> tf.data.Dataset:
         """
@@ -357,7 +364,8 @@ class ImageBrowser:
         originals = self.__get_originals(CATEGORY.TRAIN, shuffle=True)
         masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(masked)
-        return self.__prefetch(normalized)
+        cached = normalized.cache()
+        return self.__prefetch(cached)
 
     def get_test_dataset(self) -> tf.data.Dataset:
         """
@@ -368,10 +376,11 @@ class ImageBrowser:
             tf.data.Dataset: The dataset of the masked images
         """
 
-        originals = self.__get_originals(CATEGORY.TEST)
+        originals = self.__get_originals(CATEGORY.TEST, shuffle=False)
         masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(masked)
-        return self.__prefetch(normalized)
+        cached = normalized.cache()
+        return self.__prefetch(cached)
 
     def get_model_inpainted(self, model: tf.keras.Model) -> tf.data.Dataset:
         """
@@ -388,4 +397,5 @@ class ImageBrowser:
         masked_dataset = self.__get_masked_pair()
         normalized = self.__normalize_pair(masked_dataset)
         inpainted_dataset = normalized.map(lambda masked, original: (model(masked), original), num_parallel_calls=tf.data.AUTOTUNE)
-        return self.__prefetch(inpainted_dataset)
+        cached = inpainted_dataset.cache()
+        return self.__prefetch(cached)

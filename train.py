@@ -19,8 +19,8 @@ from metrics_and_losses import PSNR, SSIM
 from unet import UNet
 from utils import NumpyEncoder
 
-EPOCHS: Final[int] = 1
-BATCH: Final[int] = 128
+EPOCHS: Final[int] = 1000
+BATCH: Final[int] = 256
 IMAGE_SIZE: Final[int] = 64
 MASK_RATIO: Final[tuple[float, float]] = (5, 10)  # (5, 10), (15, 20) and (25, 30)
 
@@ -88,7 +88,7 @@ def run() -> None:
         epochs=EPOCHS,
         use_multiprocessing=True,
         workers=tf.data.AUTOTUNE,
-        verbose=1,
+        verbose=2,
         callbacks=callbacks
     )
     print(Style.RESET_ALL)
@@ -97,9 +97,6 @@ def run() -> None:
     with open(model_path / 'architecture.txt', 'w') as file:
         with redirect_stdout(file):
             unet.summary(expand_nested=True)
-
-    print(Fore.GREEN + 'Saving model architecture graph...' + Style.RESET_ALL)
-    tf.keras.utils.plot_model(unet, show_shapes=True, expand_nested=True, dpi=200, to_file=model_path / 'architecture.png')
 
     print(Fore.GREEN + 'Saving model training history...' + Style.RESET_ALL)
     with open(model_path / R'model_training.json', 'w') as file:
@@ -114,7 +111,7 @@ def run() -> None:
         test_images,
         use_multiprocessing=True,
         workers=tf.data.AUTOTUNE,
-        verbose=1,
+        verbose=2,
         return_dict=True
     )
     print(Style.RESET_ALL)
@@ -134,14 +131,23 @@ def main() -> None:
 
     start_time = time.time()
     try:
-        run()
+
+        gpus = tf.config.list_logical_devices('GPU')
+        strategy = tf.distribute.MirroredStrategy(gpus)
+        with strategy.scope():
+            run()
+
     except KeyboardInterrupt:
+
         print(Fore.RED + '\nScript interrupted by the user!' + Style.RESET_ALL)
+
     except:
+
         print(Fore.RED)
         print('Script failed with the following error:')
         traceback.print_exc()
         print(Style.RESET_ALL)
+
     end_time = time.time()
 
     elapsed_time = end_time - start_time
