@@ -22,7 +22,7 @@ from utils import NumpyEncoder
 EPOCHS: Final[int] = 1000
 BATCH: Final[int] = 256
 IMAGE_SIZE: Final[int] = 64
-MASK_RATIO: Final[tuple[float, float]] = (5, 10)  # (5, 10), (15, 20) and (25, 30)
+MASK_RATIO: Final[tuple[float, float]] = (35, 40)  # (5, 10), (15, 20) and (25, 30)
 
 
 def run() -> None:
@@ -74,7 +74,7 @@ def run() -> None:
     unet = unet.build_model(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3))
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
-    loss = tf.keras.losses.MeanSquaredError()
+    loss = tf.keras.losses.MeanAbsoluteError()
     metrics = [PSNR(), SSIM()]
     callbacks = [reduce_learning_rate_callback, early_stopping_callback, checkpoint_callback]
 
