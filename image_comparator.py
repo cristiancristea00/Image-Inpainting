@@ -27,7 +27,7 @@ class ImageComparator:
         for batch in dataset:
             mean.update_state(batch)
 
-        return mean.result().numpy().item()
+        return float(mean.result().numpy().item())
 
     @classmethod
     def compute_mse(cls, dataset: tf.data.Dataset) -> float:

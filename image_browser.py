@@ -197,7 +197,7 @@ class ImageBrowser:
             return self.image_processor.apply_mask_with_return(image)
 
         image_batch = tf.cast(image_batch, tf.float32)
-        masked_image, mask = tf.map_fn(mask_transformer, image_batch, fn_output_signature=(tf.float32, tf.uint8))
+        masked_image, mask = tf.map_fn(mask_transformer, image_batch, fn_output_signature=(tf.float32, tf.int64))
         original_image = tf.cast(image_batch, tf.float32)
         masked_image = tf.cast(masked_image, tf.float32)
         mask = tf.cast(mask, tf.float32)
@@ -271,10 +271,14 @@ class ImageBrowser:
         """
 
         if inpaint_method is InpaintingMethod.NAVIER_STOKES:
+
             inpaint_func = self.image_processor.inpaint_navier_stokes
+
         elif inpaint_method is InpaintingMethod.TELEA:
+
             inpaint_func = self.image_processor.inpaint_telea
         else:
+
             raise ValueError('The inpainting method is not valid')
 
         def inpaint_transformer(masked: tf.Tensor, original: tf.Tensor, mask: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:

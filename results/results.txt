@@ -1,0 +1,35 @@
+Mask ratio: (5, 10):
+Telea - PSNR: 38.9558
+Telea - SSIM: 0.9888
+Navier-Stokes - PSNR: 42.5658
+Navier-Stokes - SSIM: 0.9959
+
+
+Mask ratio: (15, 20):
+Telea - PSNR: 33.7351
+Telea - SSIM: 0.9652
+Navier-Stokes - PSNR: 36.7272
+Navier-Stokes - SSIM: 0.9857
+
+
+Mask ratio: (25, 30):
+Telea - PSNR: 31.0089
+Telea - SSIM: 0.9373
+Navier-Stokes - PSNR: 33.4464
+Navier-Stokes - SSIM: 0.9707
+
+
+Mask ratio: (35, 40):
+Telea - PSNR: 28.9527
+Telea - SSIM: 0.9043
+Navier-Stokes - PSNR: 30.8869
+Navier-Stokes - SSIM: 0.9491
+
+
+Mask ratio: (45, 50):
+Telea - PSNR: 27.2042
+Telea - SSIM: 0.8653
+Navier-Stokes - PSNR: 28.6794
+Navier-Stokes - SSIM: 0.9179
+
+
