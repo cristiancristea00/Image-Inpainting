@@ -194,7 +194,7 @@ class ImageComparator:
                     float: The perceptual loss
                 """
 
-                MAX_PIXEL_VALUE: Final[int] = 255
+                MAX_PIXEL_VALUE: Final[float] = 255.0
 
                 inner_image1 = inner_image1.numpy() * MAX_PIXEL_VALUE
                 inner_image2 = inner_image2.numpy() * MAX_PIXEL_VALUE

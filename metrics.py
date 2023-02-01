@@ -2,15 +2,17 @@ from __future__ import annotations
 
 import time
 import traceback
-from typing import Final
 from pathlib import Path
+from typing import Final
 
+import tensorflow as tf
 from colorama import Fore, Style
 
 from image_browser import ImageBrowser
 from image_comparator import ImageComparator
 from image_processor import ImageProcessor
 from mask_generator import MaskGenerator
+from metrics_and_losses import PSNR, SSIM
 
 BATCH: Final[int] = 256
 IMAGE_SIZE: Final[int] = 64
@@ -68,11 +70,34 @@ def run() -> None:
             print(navier_stokes_ssim, file=results_file)
             print(navier_stokes_lpips, file=results_file)
 
+            print(Fore.GREEN + 'Loading Inpainting with MAE (L1) loss dataset...' + Style.RESET_ALL)
+            model_path: Path = Path('models', F'UNet MAE {mask_ratio}')
+            model = tf.keras.models.load_model(model_path, custom_objects={'PSNR': PSNR, 'SSIM': SSIM})
+            mae_inpainted_images = image_browser.get_model_inpainted(model)
+
+            lpips_metric = ImageComparator.compute_lpips(mae_inpainted_images)
+
+            mae_inpainted_lpips: str = F'UNet MAE - LPIPS: {lpips_metric:.4f}'
+            print(Fore.CYAN + mae_inpainted_lpips + Style.RESET_ALL)
+            print(mae_inpainted_lpips, file=results_file)
+
+            print(Fore.GREEN + 'Loading Inpainting with MSE (L2) loss dataset...' + Style.RESET_ALL)
+            model_path: Path = Path('models', F'UNet MSE {mask_ratio}')
+            model = tf.keras.models.load_model(model_path, custom_objects={'PSNR': PSNR, 'SSIM': SSIM})
+            mse_inpainted_images = image_browser.get_model_inpainted(model)
+
+            lpips_metric = ImageComparator.compute_lpips(mse_inpainted_images)
+
+            mse_inpainted_lpips: str = F'UNet MSE - LPIPS: {lpips_metric:.4f}'
+            print(Fore.CYAN + mse_inpainted_lpips + Style.RESET_ALL)
+            print(mse_inpainted_lpips, file=results_file)
+
             print(end='\n\n')
             print(end='\n\n', file=results_file)
 
 
 def main() -> None:
+
     print(Fore.MAGENTA + 'Starting script...' + Style.RESET_ALL)
 
     start_time = time.time()
@@ -101,4 +126,5 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+
     main()

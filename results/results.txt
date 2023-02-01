@@ -5,6 +5,8 @@ Telea - LPIPS: 0.9911
 Navier-Stokes - PSNR: 42.5658
 Navier-Stokes - SSIM: 0.9959
 Navier-Stokes - LPIPS: 0.9977
+UNet MAE - LPIPS: 0.9775
+UNet MSE - LPIPS: 0.9707
 
 
 Mask ratio: (15, 20):
@@ -14,6 +16,8 @@ Telea - LPIPS: 0.9609
 Navier-Stokes - PSNR: 36.7272
 Navier-Stokes - SSIM: 0.9857
 Navier-Stokes - LPIPS: 0.9893
+UNet MAE - LPIPS: 0.9740
+UNet MSE - LPIPS: 0.9711
 
 
 Mask ratio: (25, 30):
@@ -23,6 +27,8 @@ Telea - LPIPS: 0.9196
 Navier-Stokes - PSNR: 33.4464
 Navier-Stokes - SSIM: 0.9707
 Navier-Stokes - LPIPS: 0.9733
+UNet MAE - LPIPS: 0.9653
+UNet MSE - LPIPS: 0.9557
 
 
 Mask ratio: (35, 40):
@@ -32,6 +38,8 @@ Telea - LPIPS: 0.8730
 Navier-Stokes - PSNR: 30.8869
 Navier-Stokes - SSIM: 0.9491
 Navier-Stokes - LPIPS: 0.9476
+UNet MAE - LPIPS: 0.9561
+UNet MSE - LPIPS: 0.9509
 
 
 Mask ratio: (45, 50):
@@ -41,3 +49,5 @@ Telea - LPIPS: 0.8267
 Navier-Stokes - PSNR: 28.6794
 Navier-Stokes - SSIM: 0.9179
 Navier-Stokes - LPIPS: 0.9110
+UNet MAE - LPIPS: 0.9426
+UNet MSE - LPIPS: 0.9286

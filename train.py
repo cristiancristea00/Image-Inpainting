@@ -26,6 +26,7 @@ MASK_RATIO: Final[tuple[float, float]] = (35, 40)  # (5, 10), (15, 20) and (25, 
 
 
 def run() -> None:
+
     now = datetime.now().strftime('%Y.%m.%d_%H:%M')
     model_path = Path('models', F'model_{now}')
 
@@ -127,6 +128,7 @@ def run() -> None:
 
 
 def main() -> None:
+
     print(Fore.MAGENTA + 'Starting script...' + Style.RESET_ALL)
 
     start_time = time.time()
@@ -158,4 +160,5 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+
     main()
