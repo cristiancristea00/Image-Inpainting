@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from os import environ
+from pathlib import Path
+from typing import Final
+
 import tensorflow as tf
 from lpips import LPIPS, im2tensor
 
@@ -161,39 +165,44 @@ class ImageComparator:
         """
 
         if cls.__perceptual_loss is None:
-            cls.__perceptual_loss = LPIPS(net='vgg')
 
-        def perceptual_loss_wrapper(image_batch1: tf.Tensor, image_batch2: tf.Tensor) -> tf.Tensor:
+            torch_home: Path = Path('..', 'torch').resolve()
+            environ['TORCH_HOME'] = str(torch_home)
+            cls.__perceptual_loss = LPIPS(verbose=False)
+
+        def perceptual_loss_wrapper(image1: tf.Tensor, image2: tf.Tensor) -> tf.Tensor:
             """
             Compute the perceptual loss of the images.
 
             Args:
-                image_batch1 (tf.Tensor): The first image batch
-                image_batch2 (tf.Tensor): The second image batch
+                image1 (tf.Tensor): The first image
+                image2 (tf.Tensor): The second image
 
             Returns:
                 tf.Tensor: The perceptual loss
             """
 
-            def inner_perceptual_loss(inner_image_batch1: tf.Tensor, inner_image_batch2: tf.Tensor) -> float:
+            def inner_perceptual_loss(inner_image1: tf.Tensor, inner_image2: tf.Tensor) -> float:
                 """
                 Compute the perceptual loss of the images.
 
                 Args:
-                    inner_image_batch1 (tf.Tensor): The first image batch
-                    inner_image_batch2 (tf.Tensor): The second image batch
+                    inner_image1 (tf.Tensor): The first image
+                    inner_image2 (tf.Tensor): The second image
 
                 Returns:
                     float: The perceptual loss
                 """
 
-                inner_image_batch1 = inner_image_batch1.numpy()
-                inner_image_batch2 = inner_image_batch2.numpy()
-                inner_image_batch1 = im2tensor(inner_image_batch1)
-                inner_image_batch2 = im2tensor(inner_image_batch2)
-                return cls.__perceptual_loss(inner_image_batch1, inner_image_batch2).item()
+                MAX_PIXEL_VALUE: Final[int] = 255
 
-            return tf.py_function(inner_perceptual_loss, inp=[image_batch1, image_batch2], Tout=float)
+                inner_image1 = inner_image1.numpy() * MAX_PIXEL_VALUE
+                inner_image2 = inner_image2.numpy() * MAX_PIXEL_VALUE
+                inner_image1 = im2tensor(inner_image1)
+                inner_image2 = im2tensor(inner_image2)
+                return 1 - float(cls.__perceptual_loss(inner_image1, inner_image2).item())
+
+            return tf.py_function(inner_perceptual_loss, inp=[image1, image2], Tout=float)
 
         dataset = dataset.unbatch()
         dataset = dataset.map(perceptual_loss_wrapper)

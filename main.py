@@ -39,26 +39,34 @@ def run() -> None:
 
             psnr_metric = ImageComparator.compute_psnr(telea_images)
             ssim_metric = ImageComparator.compute_ssim(telea_images)
+            lpips_metric = ImageComparator.compute_lpips(telea_images)
 
             telea_psnr: str = F'Telea - PSNR: {psnr_metric:.4f}'
             telea_ssim: str = F'Telea - SSIM: {ssim_metric:.4f}'
+            telea_lpips: str = F'Telea - LPIPS: {lpips_metric:.4f}'
             print(Fore.CYAN + telea_psnr + Style.RESET_ALL)
             print(Fore.CYAN + telea_ssim + Style.RESET_ALL)
+            print(Fore.CYAN + telea_lpips + Style.RESET_ALL)
             print(telea_psnr, file=results_file)
             print(telea_ssim, file=results_file)
+            print(telea_lpips, file=results_file)
 
             print(Fore.GREEN + 'Loading Navier-Stokes dataset...' + Style.RESET_ALL)
             navier_stokes_images = image_browser.get_navier_stokes()
 
             psnr_metric = ImageComparator.compute_psnr(navier_stokes_images)
             ssim_metric = ImageComparator.compute_ssim(navier_stokes_images)
+            lpips_metric = ImageComparator.compute_lpips(navier_stokes_images)
 
             navier_stokes_psnr: str = F'Navier-Stokes - PSNR: {psnr_metric:.4f}'
             navier_stokes_ssim: str = F'Navier-Stokes - SSIM: {ssim_metric:.4f}'
+            navier_stokes_lpips: str = F'Navier-Stokes - LPIPS: {lpips_metric:.4f}'
             print(Fore.CYAN + navier_stokes_psnr + Style.RESET_ALL)
             print(Fore.CYAN + navier_stokes_ssim + Style.RESET_ALL)
+            print(Fore.CYAN + navier_stokes_lpips + Style.RESET_ALL)
             print(navier_stokes_psnr, file=results_file)
             print(navier_stokes_ssim, file=results_file)
+            print(navier_stokes_lpips, file=results_file)
 
             print(end='\n\n')
             print(end='\n\n', file=results_file)
