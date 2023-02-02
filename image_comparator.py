@@ -165,7 +165,6 @@ class ImageComparator:
         """
 
         if cls.__perceptual_loss is None:
-
             torch_home: Path = Path('..', 'torch').resolve()
             environ['TORCH_HOME'] = str(torch_home)
             cls.__perceptual_loss = LPIPS(verbose=False)

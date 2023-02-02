@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import random
+from collections.abc import Iterable
 from typing import Final
 
 import cv2 as cv
@@ -32,7 +33,7 @@ class MaskGenerator:
             draw_scale (float, optional): Drawing objects scaling factor. Defaults to DEFAULT_DRAW_SCALE
         """
 
-        self.mask_size = mask_size
+        self.mask_size = mask_size  # type: ignore
         self.mask_ratio = ratio
         self.width, self.height = self.mask_size
         self.ratio_min, self.ratio_max = self.mask_ratio
@@ -100,9 +101,9 @@ class MaskGenerator:
 
         if ratio_min < 0 or ratio_max < 0:
             raise ValueError('Mask ratio must be positive')
-        elif ratio_min > ratio_max:
+        if ratio_min > ratio_max:
             raise ValueError('Ratio min must be less than ratio max')
-        elif ratio_min > 100 or ratio_max > 100:
+        if ratio_min > 100 or ratio_max > 100:
             raise ValueError('Mask ratio must be less than 100')
 
         self.__ratio = ratio
@@ -117,50 +118,6 @@ class MaskGenerator:
         """
 
         return self.__width
-
-    @property
-    def height(self) -> int:
-        """
-        Read only property for the mask height.
-
-        Returns:
-            int: Mask height
-        """
-
-        return self.__height
-
-    @property
-    def ratio_min(self) -> float:
-        """
-        Read only property for the minimum of the ratio.
-
-        Returns:
-            float: Minimum ratio
-        """
-
-        return self.__ratio_min
-
-    @property
-    def ratio_max(self) -> float:
-        """
-        Read only property for the maximum of the ratio.
-
-        Returns:
-            float: Maximum ratio
-        """
-
-        return self.__ratio_max
-
-    @property
-    def draw_scale(self) -> float:
-        """
-        Read only property for the drawing objects scaling factor.
-
-        Returns:
-            float: Drawing objects scaling factor
-        """
-
-        return self.__draw_scale
 
     @width.setter
     def width(self, value: int) -> None:
@@ -177,9 +134,20 @@ class MaskGenerator:
 
         if value <= 0:
             raise ValueError("Width value must be positive")
-        elif value < 28:
+        if value < 28:
             raise ValueError("Width value must be greater than 28")
         self.__width = value
+
+    @property
+    def height(self) -> int:
+        """
+        Read only property for the mask height.
+
+        Returns:
+            int: Mask height
+        """
+
+        return self.__height
 
     @height.setter
     def height(self, value: int) -> None:
@@ -196,9 +164,20 @@ class MaskGenerator:
 
         if value <= 0:
             raise ValueError("Height value must be positive")
-        elif value < 28:
+        if value < 28:
             raise ValueError("Height value must be greater than 28")
         self.__height = value
+
+    @property
+    def ratio_min(self) -> float:
+        """
+        Read only property for the minimum of the ratio.
+
+        Returns:
+            float: Minimum ratio
+        """
+
+        return self.__ratio_min
 
     @ratio_min.setter
     def ratio_min(self, value: float) -> None:
@@ -215,6 +194,17 @@ class MaskGenerator:
         if value < 0:
             raise ValueError("Minimum ratio value must be positive")
         self.__ratio_min = value
+
+    @property
+    def ratio_max(self) -> float:
+        """
+        Read only property for the maximum of the ratio.
+
+        Returns:
+            float: Maximum ratio
+        """
+
+        return self.__ratio_max
 
     @ratio_max.setter
     def ratio_max(self, value: float) -> None:
@@ -234,6 +224,17 @@ class MaskGenerator:
         if value > 100:
             raise ValueError("Maximum ratio value must be lower than 100")
         self.__ratio_max = value
+
+    @property
+    def draw_scale(self) -> float:
+        """
+        Read only property for the drawing objects scaling factor.
+
+        Returns:
+            float: Drawing objects scaling factor
+        """
+
+        return self.__draw_scale
 
     @draw_scale.setter
     def draw_scale(self, value: float) -> None:
@@ -431,7 +432,7 @@ class MaskGenerator:
 
         return self.__generate_mask()
 
-    def __call__(self) -> tuple[np.ndarray, int]:
+    def __call__(self) -> Iterable[tuple[np.ndarray, int]]:
         """
         Call method for the MaskGenerator class.
 

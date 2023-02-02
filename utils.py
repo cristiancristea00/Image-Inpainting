@@ -31,20 +31,20 @@ class NumpyEncoder(json.JSONEncoder):
     Custom JSON encoder for numpy arrays.
     """
 
-    def default(self, obj: Any) -> Any | list | int | float:
+    def default(self, o: Any) -> Any | list | int | float:
         """
         Encode numpy data types to JSON compatible types.
 
         Args:
-            obj (Any:): The object to encode
+            o (Any:): The object to encode
 
         Returns:
             Any | list | int | float: The encoded object
         """
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        elif isinstance(obj, np.integer):
-            return int(obj)
-        elif isinstance(obj, np.floating):
-            return float(obj)
-        return json.JSONEncoder.default(self, obj)
+        if isinstance(o, np.ndarray):
+            return o.tolist()
+        if isinstance(o, np.integer):
+            return int(o)
+        if isinstance(o, np.floating):
+            return float(o)
+        return json.JSONEncoder.default(self, o)

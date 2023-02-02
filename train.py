@@ -22,11 +22,10 @@ from utils import NumpyEncoder
 EPOCHS: Final[int] = 1000
 BATCH: Final[int] = 256
 IMAGE_SIZE: Final[int] = 64
-MASK_RATIO: Final[tuple[float, float]] = (35, 40)  # (5, 10), (15, 20) and (25, 30)
+MASK_RATIO: Final[tuple[float, float]] = (5, 10)
 
 
 def run() -> None:
-
     now = datetime.now().strftime('%Y.%m.%d_%H:%M')
     model_path = Path('models', F'model_{now}')
 
@@ -71,11 +70,11 @@ def run() -> None:
     test_images = image_browser.get_test_dataset()
 
     print(Fore.GREEN + 'Creating model...' + Style.RESET_ALL)
-    unet = UNet(filters=[16, 32, 64, 64, 64, 128], kernels=[7, 7, 5, 5, 3, 3], skip_filters=[4] * 6, skip_kernels=[1] * 6)
+    unet = UNet(filters=(16, 32, 64, 64, 64, 128), kernels=(7, 7, 5, 5, 3, 3), skip_filters=(4,) * 6, skip_kernels=(1,) * 6)
     unet = unet.build_model(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3))
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
-    loss = tf.keras.losses.MeanAbsoluteError()
+    loss = tf.keras.losses.MeanSquaredError()
     metrics = [PSNR(), SSIM()]
     callbacks = [reduce_learning_rate_callback, early_stopping_callback, checkpoint_callback]
 
@@ -95,12 +94,12 @@ def run() -> None:
     print(Style.RESET_ALL)
 
     print(Fore.GREEN + 'Saving model architecture text summary...' + Style.RESET_ALL)
-    with open(model_path / 'architecture.txt', 'w') as file:
+    with open(model_path / 'architecture.txt', 'w', encoding='UTF-8') as file:
         with redirect_stdout(file):
             unet.summary(expand_nested=True)
 
     print(Fore.GREEN + 'Saving model training history...' + Style.RESET_ALL)
-    with open(model_path / R'model_training.json', 'w') as file:
+    with open(model_path / R'model_training.json', 'w', encoding='UTF-8') as file:
         history = json.dumps(model_training.history, cls=NumpyEncoder, indent=4)
         file.write(history)
 
@@ -118,7 +117,7 @@ def run() -> None:
     print(Style.RESET_ALL)
 
     print(Fore.GREEN + 'Saving model evaluation...' + Style.RESET_ALL)
-    with open(model_path / R'model_evaluation.json', 'w') as file:
+    with open(model_path / R'model_evaluation.json', 'w', encoding='UTF-8') as file:
         evaluation = json.dumps(model_evaluation, cls=NumpyEncoder)
         file.write(evaluation)
 
@@ -128,10 +127,9 @@ def run() -> None:
 
 
 def main() -> None:
-
     print(Fore.MAGENTA + 'Starting script...' + Style.RESET_ALL)
 
-    start_time = time.time()
+    start_time = time.perf_counter()
     try:
 
         gpus = tf.config.list_logical_devices('GPU')
@@ -143,22 +141,21 @@ def main() -> None:
 
         print(Fore.RED + '\nScript interrupted by the user!' + Style.RESET_ALL)
 
-    except:
+    except Exception:
 
         print(Fore.RED)
         print('Script failed with the following error:')
         traceback.print_exc()
         print(Style.RESET_ALL)
 
-    end_time = time.time()
+    end_time = time.perf_counter()
 
-    elapsed_time = end_time - start_time
-    elapsed_time = time.strftime('%H:%M:%S', time.gmtime(elapsed_time))
+    elapsed = end_time - start_time
+    elapsed_time = time.strftime('%H:%M:%S', time.gmtime(elapsed))
 
     print(Fore.YELLOW + F'Total time: {elapsed_time}' + Style.RESET_ALL)
     print(Fore.MAGENTA + 'Everything done!' + Style.RESET_ALL)
 
 
 if __name__ == '__main__':
-
     main()

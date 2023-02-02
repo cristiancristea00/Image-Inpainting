@@ -89,7 +89,7 @@ class ImageProcessor:
 
         if mask_generator_dataset is None:
             raise ValueError('Mask generator dataset cannot be None.')
-        elif not isinstance(mask_generator_dataset, tf.data.Dataset):
+        if not isinstance(mask_generator_dataset, tf.data.Dataset):
             raise TypeError('Mask generator dataset must be a tf.data.Dataset.')
         self.__mask_generator_dataset = mask_generator_dataset
 
@@ -177,11 +177,9 @@ class ImageProcessor:
         """
 
         if isinstance(image, tf.Tensor):
-
             image = image.numpy().astype(np.uint8)
 
         if isinstance(mask, tf.Tensor):
-
             mask = mask.numpy().astype(np.uint8)
 
         inpainted = cv.inpaint(image, mask, radius, cv.INPAINT_NS)
@@ -203,11 +201,9 @@ class ImageProcessor:
         """
 
         if isinstance(image, tf.Tensor):
-
             image = image.numpy().astype(np.uint8)
 
         if isinstance(mask, tf.Tensor):
-
             mask = mask.numpy().astype(np.uint8)
 
         inpainted = cv.inpaint(image, mask, radius, cv.INPAINT_TELEA)

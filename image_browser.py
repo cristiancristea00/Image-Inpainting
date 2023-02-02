@@ -145,33 +145,6 @@ class ImageBrowser:
 
         return dataset.map(normalize)
 
-    @tf.autograph.experimental.do_not_convert
-    def __normalize(self, dataset: tf.data.Dataset) -> tf.data.Dataset:
-        """
-        Normalizes the dataset.
-
-        Args:
-            dataset (tf.data.Dataset): The dataset to normalize
-
-        Returns:
-            tf.data.Dataset: The normalized dataset
-        """
-
-        def normalize(image: tf.Tensor) -> tf.Tensor:
-            """
-            Normalizes the image.
-
-            Args:
-                image (tf.Tensor): The image
-
-            Returns:
-                tf.Tensor: The normalized image
-            """
-
-            return image / self.__MAX_IMAGE_VALUE
-
-        return dataset.map(normalize)
-
     def __get_masked_dataset_tuple(self, image_batch: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor, tf.Tensor]:
         """
         Gets the masked dataset tuple.
@@ -294,7 +267,7 @@ class ImageBrowser:
                 tuple[tf.Tensor, tf.Tensor]: The inpainted image and the original image
             """
 
-            def inner_transformer(masked_and_mask: tuple[tf.Tensor, tf.Tensor]) -> tuple[tf.Tensor, tf.Tensor]:
+            def inner_transformer(masked_and_mask: tuple[tf.Tensor, tf.Tensor]) -> tf.Tensor:
                 """
                 Applies the inpainting method to the masked image.
 
@@ -302,10 +275,10 @@ class ImageBrowser:
                     masked_and_mask (tuple[tf.Tensor, tf.Tensor]): The masked image and the mask
 
                 Returns:
-                    tuple[tf.Tensor, tf.Tensor]: The inpainted image and the mask
+                    tf.Tensor: The inpainted image
                 """
 
-                def transformer_wrapper(masked_image: tf.Tensor, mask_layer: tf.Tensor) -> np.ndarray | tf.Tensor:
+                def transformer_wrapper(masked_image: tf.Tensor, mask_layer: tf.Tensor) -> tf.Tensor:
                     """
                     Wraps the inpaint function.
 
@@ -314,7 +287,7 @@ class ImageBrowser:
                         mask_layer (tf.Tensor): The mask layer
 
                     Returns:
-                        np.ndarray | tf.Tensor: The inpainted image
+                        tf.Tensor: The inpainted image
                     """
 
                     return tf.py_function(inpaint_func, inp=[masked_image, mask_layer], Tout=tf.float32)

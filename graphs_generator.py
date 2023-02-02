@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import Callable, Final
 
 import matplotlib as mpl
-from matplotlib import pyplot as plt
 import numpy as np
+from matplotlib import pyplot as plt
 
 
 @unique
@@ -29,7 +29,6 @@ class TransformType(Enum):
 
 
 class GraphsGenerator:
-
     __PLOT_SIZE: Final[tuple[int, int]] = (20, 9)
 
     __PRIMARY_COLOR: Final[str] = 'purple'

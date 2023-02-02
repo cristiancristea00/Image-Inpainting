@@ -26,7 +26,7 @@ class PadMode(Enum):
     SYMMETRIC = 'SYMMETRIC'
 
 
-UNetConfig: TypeAlias = list[int, int, int, int, int, int]
+UNetConfig: TypeAlias = tuple[int, int, int, int, int, int]
 
 
 class Padding2D(tf.keras.layers.Layer):
@@ -51,9 +51,9 @@ class Padding2D(tf.keras.layers.Layer):
         })
         return config
 
-    def compute_output_shape(self, shape) -> tuple[int, int, int, int]:
+    def compute_output_shape(self, input_shape) -> tuple[int, int, int, int]:
 
-        return shape[0], shape[1] + 2 * self.padding[0], shape[2] + 2 * self.padding[1], shape[3]
+        return input_shape[0], input_shape[1] + 2 * self.padding[0], input_shape[2] + 2 * self.padding[1], input_shape[3]
 
     def call(self, inputs: tf.Tensor, *args, **kwargs) -> tf.Tensor:
 
@@ -278,10 +278,11 @@ class UNet(tf.keras.Model):
 
         return self.convolve(up_computed_0)
 
+    @property
     def name(self) -> Literal['UNet']:
         return 'UNet'
 
     def build_model(self, input_shape: tuple[int, int, int]) -> tf.keras.Model:
 
         inputs = tf.keras.Input(shape=input_shape)
-        return tf.keras.Model(inputs=inputs, outputs=self.call(inputs), name=self.name())
+        return tf.keras.Model(inputs=inputs, outputs=self.call(inputs), name=self.name)

@@ -16,17 +16,14 @@ from metrics_and_losses import PSNR, SSIM
 
 BATCH: Final[int] = 256
 IMAGE_SIZE: Final[int] = 64
-MASK_RATIO: Final[tuple[tuple[float, float]]] = ((5, 10), (15, 20), (25, 30), (35, 40), (45, 50))
+MASK_RATIO: Final = ((5, 10), (15, 20), (25, 30), (35, 40), (45, 50))
 
 
 def run() -> None:
-
     results_path = Path('results', 'results.txt')
 
-    with open(results_path, 'w') as results_file:
-
+    with open(results_path, 'w', encoding='UTF-8') as results_file:
         for mask_ratio in MASK_RATIO:
-
             print(Fore.YELLOW + F'Processing dataset with mask ratio {mask_ratio}...' + Style.RESET_ALL, end='\n\n')
             print(F'Mask ratio: {mask_ratio}:', file=results_file)
 
@@ -97,10 +94,9 @@ def run() -> None:
 
 
 def main() -> None:
-
     print(Fore.MAGENTA + 'Starting script...' + Style.RESET_ALL)
 
-    start_time = time.time()
+    start_time = time.perf_counter()
     try:
 
         run()
@@ -109,22 +105,21 @@ def main() -> None:
 
         print(Fore.RED + '\nScript interrupted by the user!' + Style.RESET_ALL)
 
-    except:
+    except Exception:
 
         print(Fore.RED)
         print('Script failed with the following error:')
         traceback.print_exc()
         print(Style.RESET_ALL)
 
-    end_time = time.time()
+    end_time = time.perf_counter()
 
-    elapsed_time = end_time - start_time
-    elapsed_time = time.strftime('%H:%M:%S', time.gmtime(elapsed_time))
+    elapsed = end_time - start_time
+    elapsed_time = time.strftime('%H:%M:%S', time.gmtime(elapsed))
 
     print(Fore.YELLOW + F'Total time: {elapsed_time}' + Style.RESET_ALL)
     print(Fore.MAGENTA + 'Everything done!' + Style.RESET_ALL)
 
 
 if __name__ == '__main__':
-
     main()
