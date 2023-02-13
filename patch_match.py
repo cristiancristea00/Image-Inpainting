@@ -4,35 +4,72 @@ import multiprocessing as mp
 import subprocess as sp
 import time
 import traceback
+from functools import partial
 from pathlib import Path
 from typing import Final
 
-import numpy as np
+import cv2 as cv
 from colorama import Fore, Style
 
+from image_processor import ImageProcessor
 from mask_generator import MaskGenerator
 
 IMAGE_SIZE: Final[int] = 64
-MASK_RATIO: Final[tuple[float, float]] = (5, 10)
+MASK_RATIO: Final = ((5, 10), (15, 20), (25, 30), (35, 40), (45, 50))
+
+MASKED_PATH: Final[Path] = Path('..', 'images', 'masked').resolve()
+MASKS_PATH: Final[Path] = Path('..', 'images', 'masks').resolve()
+OUTPUT_PATH: Final[Path] = Path('..', 'images', 'patch_match').resolve()
+
+PATCH_MATCH_PATH: Final[Path] = Path('..', 'PatchMatch').resolve()
+
+MASK_GENERATOR: MaskGenerator = MaskGenerator(IMAGE_SIZE, (1, 1))
+IMAGE_PROCESSOR: ImageProcessor = ImageProcessor(MASK_GENERATOR)
 
 
-def print_path(path: Path, mask_and_size: tuple[np.ndarray, int]) -> None:
-    mask, no_pixels = mask_and_size
-    print(Fore.GREEN + F'Processing {path.name} with {no_pixels} pixels mask' + Style.RESET_ALL, flush=True)
+def mask_image(path: Path, mask_ratio: tuple[int, int]) -> None:
+    masked_path = MASKED_PATH / str(mask_ratio) / path.name
+    mask_path = MASKS_PATH / str(mask_ratio) / path.name
+    output_path = OUTPUT_PATH / str(mask_ratio) / path.name
+
+    image = cv.imread(str(path))
+    masked, mask = IMAGE_PROCESSOR.apply_mask_with_return_numpy(image)
+
+    cv.imwrite(str(masked_path), masked.astype('uint8'))
+    cv.imwrite(str(mask_path), mask.astype('uint8'))
+
+    patch_match_arguments = (PATCH_MATCH_PATH, masked_path, mask_path, output_path)
+
+    try:
+
+        sp.run(patch_match_arguments, check=True, capture_output=True)
+
+    except sp.CalledProcessError:
+
+        print(Fore.RED + F'PatchMatch failed for image {path.name} on {mask_ratio}!' + Style.RESET_ALL)
+
+    print(Fore.GREEN + F'Masked and PatchMatched image {path.name} on {mask_ratio}' + Style.RESET_ALL)
 
 
 def run() -> None:
-    path_match_path = Path('..', 'patch_match', 'PatchMatch').resolve()
     images_path = Path('..', 'images', 'original', 'test').resolve()
-    mask_generator = MaskGenerator(IMAGE_SIZE, MASK_RATIO)
 
-    try:
-        sp.run(path_match_path, check=True)
-    except sp.CalledProcessError:
-        print(Fore.RED + 'PatchMatch failed!' + Style.RESET_ALL)
+    for mask_ratio in MASK_RATIO:
+        global MASK_GENERATOR, IMAGE_PROCESSOR
 
-    with mp.Pool() as processes_pool:
-        processes_pool.starmap(print_path, zip(images_path.iterdir(), mask_generator()), chunksize=100)
+        MASK_GENERATOR = MaskGenerator(IMAGE_SIZE, mask_ratio)
+        IMAGE_PROCESSOR = ImageProcessor(MASK_GENERATOR)
+
+        masked_path = MASKED_PATH / str(mask_ratio)
+        masked_path.mkdir(parents=True, exist_ok=True)
+        mask_path = MASKS_PATH / str(mask_ratio)
+        mask_path.mkdir(parents=True, exist_ok=True)
+        output_path = OUTPUT_PATH / str(mask_ratio)
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        with mp.Pool() as processes_pool:
+            function = partial(mask_image, mask_ratio=mask_ratio)
+            processes_pool.map(function, images_path.iterdir(), chunksize=200)
 
 
 def main() -> None:
@@ -40,6 +77,7 @@ def main() -> None:
 
     start_time = time.perf_counter()
     try:
+        mp.set_start_method('fork')
         run()
 
     except KeyboardInterrupt:

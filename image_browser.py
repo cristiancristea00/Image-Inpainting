@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Generator
 from enum import Enum, unique
 from pathlib import Path
 from typing import Callable, Final
 
+import cv2 as cv
 import numpy as np
 import tensorflow as tf
 
@@ -12,7 +14,7 @@ from utils import InpaintingMethod
 
 
 @unique
-class CATEGORY(Enum):
+class Category(Enum):
     """
     Enum for the categories.
     """
@@ -101,7 +103,7 @@ class ImageBrowser:
 
         return dataset.prefetch(tf.data.AUTOTUNE)
 
-    def __get_originals(self, category: CATEGORY, shuffle: bool = False) -> tf.data.Dataset:
+    def __get_originals(self, category: Category, shuffle: bool = False) -> tf.data.Dataset:
         """
         Browses the original images and returns them as a dataset.
 
@@ -215,7 +217,7 @@ class ImageBrowser:
             tf.data.Dataset: The dataset of the masked images
         """
 
-        originals = self.__get_originals(CATEGORY.TEST)
+        originals = self.__get_originals(Category.TEST)
         masked = originals.map(self.__get_masked_dataset_tuple, num_parallel_calls=tf.data.AUTOTUNE)
         return self.__prefetch(masked)
 
@@ -228,7 +230,7 @@ class ImageBrowser:
             tf.data.Dataset: The dataset of the masked images
         """
 
-        originals = self.__get_originals(CATEGORY.TEST)
+        originals = self.__get_originals(Category.TEST)
         masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
         return self.__prefetch(masked)
 
@@ -329,33 +331,35 @@ class ImageBrowser:
         cached = normalized.cache()
         return self.__prefetch(cached)
 
-    def get_train_dataset(self) -> tf.data.Dataset:
+    def get_patch_match(self) -> tf.data.Dataset:
         """
-        Browses the original images and returns them as a dataset along with the
-        masked version.
+        Browses the inpainted images using PatchMatch and returns them as a dataset.
 
         Returns:
-            tf.data.Dataset: The dataset of the masked images
+            tf.data.Dataset: The dataset of the inpainted images
         """
 
-        originals = self.__get_originals(CATEGORY.TRAIN, shuffle=True)
-        masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
-        normalized = self.__normalize_pair(masked)
-        cached = normalized.cache()
-        return self.__prefetch(cached)
+        images_path = self.__DEFAULT_PATH / Category.TEST.value
 
-    def get_test_dataset(self) -> tf.data.Dataset:
-        """
-        Browses the original images and returns them as a dataset along with the
-        masked version.
+        def get_patch_match_images_generator() -> Generator[tuple[np.ndarray, np.ndarray], None, None]:
+            """
+            Browses the inpainted images using PatchMatch and returns them as a tuple.
 
-        Returns:
-            tf.data.Dataset: The dataset of the masked images
-        """
+            Yields:
+                tuple[np.ndarray, np.ndarray]: The inpainted image and the original image
+            """
 
-        originals = self.__get_originals(CATEGORY.TEST, shuffle=False)
-        masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
-        normalized = self.__normalize_pair(masked)
+            patch_match_path = Path('..', 'images', 'patch_match').resolve()
+            mask_ratio = self.image_processor.mask_generator.mask_ratio
+            inpainted_path = patch_match_path / str(mask_ratio)
+
+            for image_path in images_path.iterdir():
+                original = cv.imread(str(image_path)).astype(np.float64)
+                masked = cv.imread(str(inpainted_path / image_path.name)).astype(np.float64)
+                yield masked, original
+
+        inpainted_dataset = tf.data.Dataset.from_generator(get_patch_match_images_generator)
+        normalized = self.__normalize_pair(inpainted_dataset)
         cached = normalized.cache()
         return self.__prefetch(cached)
 
@@ -375,4 +379,34 @@ class ImageBrowser:
         normalized = self.__normalize_pair(masked_dataset)
         inpainted_dataset = normalized.map(lambda masked, original: (model(masked), original), num_parallel_calls=tf.data.AUTOTUNE)
         cached = inpainted_dataset.cache()
+        return self.__prefetch(cached)
+
+    def get_train_dataset(self) -> tf.data.Dataset:
+        """
+        Browses the original images and returns them as a dataset along with the
+        masked version.
+
+        Returns:
+            tf.data.Dataset: The dataset of the masked images
+        """
+
+        originals = self.__get_originals(Category.TRAIN, shuffle=True)
+        masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
+        normalized = self.__normalize_pair(masked)
+        cached = normalized.cache()
+        return self.__prefetch(cached)
+
+    def get_test_dataset(self) -> tf.data.Dataset:
+        """
+        Browses the original images and returns them as a dataset along with the
+        masked version.
+
+        Returns:
+            tf.data.Dataset: The dataset of the masked images
+        """
+
+        originals = self.__get_originals(Category.TEST, shuffle=False)
+        masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
+        normalized = self.__normalize_pair(masked)
+        cached = normalized.cache()
         return self.__prefetch(cached)

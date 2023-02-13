@@ -11,13 +11,13 @@ class ImageProcessor:
     Class for processing images.
     """
 
-    def __init__(self, mask_generator: MaskGenerator, batch_size: int) -> None:
+    def __init__(self, mask_generator: MaskGenerator, batch_size: int = 1) -> None:
         """
         Initialize the ImageProcessor.
 
         Args:
             mask_generator (MaskGenerator): The mask generator to use
-            batch_size (int): The size of the batch
+            batch_size (int, optional): The size of the batch. Defaults to 1.
         """
         self.batch_size = batch_size
 
@@ -93,71 +93,82 @@ class ImageProcessor:
             raise TypeError('Mask generator dataset must be a tf.data.Dataset.')
         self.__mask_generator_dataset = mask_generator_dataset
 
-    def apply_mask_with_return(self, image: np.ndarray | tf.Tensor, color: MaskColor = MaskColor.WHITE) -> tuple[np.ndarray, np.ndarray]:
+    def apply_mask_with_return(self, image: tf.Tensor, color: MaskColor = MaskColor.WHITE) -> tuple[tf.Tensor, tf.Tensor]:
         """
         Apply a mask to an image.
 
         Args:
-            image (np.ndarray | tf.Tensor): The image to apply the mask to
+            image (tf.Tensor): The image to apply the mask to
             color (MaskColor, optional): The color of the mask
 
         Returns:
-            tuple[np.ndarray, np.ndarray]: The masked image and the mask
+            tuple[tf.Tensor, tf.Tensor]: The masked image and the mask
         """
 
         mask_and_count = self.mask_generator_dataset.take(1)
         mask, count = next(iter(mask_and_count))
         initial_mask = mask
 
-        if isinstance(image, tf.Tensor):
+        mask = tf.stack([mask, mask, mask], axis=-1)
+        mask = tf.where(mask)
 
-            mask = tf.stack([mask, mask, mask], axis=-1)
-            mask = tf.where(mask)
+        if color == MaskColor.WHITE:
 
-            if color == MaskColor.WHITE:
+            update_values = tf.fill((count * 3,), MaskColor.WHITE.value)
+            update_values = tf.cast(update_values, tf.float32)
 
-                update_values = tf.fill((count * 3,), MaskColor.WHITE.value)
-                update_values = tf.cast(update_values, tf.float32)
+        elif color == MaskColor.BLACK:
 
-            elif color == MaskColor.BLACK:
-
-                update_values = tf.fill((count * 3,), MaskColor.BLACK.value)
-                update_values = tf.cast(update_values, tf.float32)
-
-            else:
-
-                raise ValueError('Invalid color')
-
-            masked = tf.tensor_scatter_nd_update(image, mask, update_values)
+            update_values = tf.fill((count * 3,), MaskColor.BLACK.value)
+            update_values = tf.cast(update_values, tf.float32)
 
         else:
 
-            masked = image.copy()
+            raise ValueError('Invalid colour')
 
-            if color == MaskColor.WHITE:
-
-                masked[mask == MaskGenerator.MASK_VALUE] = MaskColor.WHITE.value
-
-            elif color == MaskColor.BLACK:
-
-                masked[mask == MaskGenerator.MASK_VALUE] = MaskColor.BLACK.value
-
-            else:
-
-                raise ValueError('Invalid color')
+        masked = tf.tensor_scatter_nd_update(image, mask, update_values)
 
         return masked, initial_mask
 
-    def apply_mask(self, image: np.ndarray | tf.Tensor, color: MaskColor = MaskColor.WHITE) -> np.ndarray:
+    def apply_mask_with_return_numpy(self, image: np.ndarray, color: MaskColor = MaskColor.WHITE) -> tuple[np.ndarray, np.ndarray]:
         """
         Apply a mask to an image.
 
         Args:
-            image (np.ndarray | tf.Tensor): The image to apply the mask to
+            image (np.ndarray): The image to apply the mask to
+            color (MaskColor, optional): The color of the mask
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: The masked image and the mask
+        """
+
+        mask, _ = self.mask_generator.generate()
+        masked = image.copy()
+
+        if color == MaskColor.WHITE:
+
+            masked[mask == MaskGenerator.MASK_VALUE] = MaskColor.WHITE.value
+
+        elif color == MaskColor.BLACK:
+
+            masked[mask == MaskGenerator.MASK_VALUE] = MaskColor.BLACK.value
+
+        else:
+
+            raise ValueError('Invalid colour')
+
+        return masked, mask
+
+    def apply_mask(self, image: tf.Tensor, color: MaskColor = MaskColor.WHITE) -> tf.Tensor:
+        """
+        Apply a mask to an image.
+
+        Args:
+            image (tf.Tensor): The image to apply the mask to
             color (MaskColor, optional): The color of the mask. Defaults to MaskColor.WHITE
 
         Returns:
-            np.ndarray: The masked image
+            tf.Tensor: The masked image
         """
 
         return self.apply_mask_with_return(image, color)[0]
