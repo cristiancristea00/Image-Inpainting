@@ -5,6 +5,9 @@ Telea - LPIPS: 0.9911
 Navier-Stokes - PSNR: 42.5658
 Navier-Stokes - SSIM: 0.9959
 Navier-Stokes - LPIPS: 0.9977
+PatchMatch - PSNR: 39.3469
+PatchMatch - SSIM: 0.9899
+PatchMatch - LPIPS: 0.9901
 UNet MAE - LPIPS: 0.9775
 UNet MSE - LPIPS: 0.9707
 
@@ -16,6 +19,9 @@ Telea - LPIPS: 0.9609
 Navier-Stokes - PSNR: 36.7272
 Navier-Stokes - SSIM: 0.9857
 Navier-Stokes - LPIPS: 0.9893
+PatchMatch - PSNR: 34.4985
+PatchMatch - SSIM: 0.9704
+PatchMatch - LPIPS: 0.9551
 UNet MAE - LPIPS: 0.9740
 UNet MSE - LPIPS: 0.9711
 
@@ -27,6 +33,9 @@ Telea - LPIPS: 0.9196
 Navier-Stokes - PSNR: 33.4464
 Navier-Stokes - SSIM: 0.9707
 Navier-Stokes - LPIPS: 0.9733
+PatchMatch - PSNR: 32.1099
+PatchMatch - SSIM: 0.9495
+PatchMatch - LPIPS: 0.9125
 UNet MAE - LPIPS: 0.9653
 UNet MSE - LPIPS: 0.9557
 
@@ -38,6 +47,9 @@ Telea - LPIPS: 0.8730
 Navier-Stokes - PSNR: 30.8869
 Navier-Stokes - SSIM: 0.9491
 Navier-Stokes - LPIPS: 0.9476
+PatchMatch - PSNR: 30.4029
+PatchMatch - SSIM: 0.9262
+PatchMatch - LPIPS: 0.8709
 UNet MAE - LPIPS: 0.9561
 UNet MSE - LPIPS: 0.9509
 
@@ -49,5 +61,8 @@ Telea - LPIPS: 0.8267
 Navier-Stokes - PSNR: 28.6794
 Navier-Stokes - SSIM: 0.9179
 Navier-Stokes - LPIPS: 0.9110
+PatchMatch - PSNR: 28.8627
+PatchMatch - SSIM: 0.8975
+PatchMatch - LPIPS: 0.8303
 UNet MAE - LPIPS: 0.9426
 UNet MSE - LPIPS: 0.9286

@@ -5,14 +5,12 @@ import traceback
 from pathlib import Path
 from typing import Final
 
-import tensorflow as tf
 from colorama import Fore, Style
 
 from image_browser import ImageBrowser
 from image_comparator import ImageComparator
 from image_processor import ImageProcessor
 from mask_generator import MaskGenerator
-from metrics_and_losses import PSNR, SSIM
 
 BATCH: Final[int] = 256
 IMAGE_SIZE: Final[int] = 64
@@ -53,6 +51,8 @@ def run() -> None:
             print(Fore.GREEN + 'Loading Navier-Stokes dataset...' + Style.RESET_ALL)
             navier_stokes_images = image_browser.get_navier_stokes()
 
+            print(Fore.GREEN + 'Processing Navier-Stokes images...' + Style.RESET_ALL)
+
             psnr_metric = ImageComparator.compute_psnr(navier_stokes_images)
             ssim_metric = ImageComparator.compute_ssim(navier_stokes_images)
             lpips_metric = ImageComparator.compute_lpips(navier_stokes_images)
@@ -66,6 +66,25 @@ def run() -> None:
             print(navier_stokes_psnr, file=results_file)
             print(navier_stokes_ssim, file=results_file)
             print(navier_stokes_lpips, file=results_file)
+
+            print(Fore.GREEN + 'Loading PatchMatch dataset...' + Style.RESET_ALL)
+            patch_match_images = image_browser.get_patch_match()
+
+            print(Fore.GREEN + 'Processing PatchMatch images...' + Style.RESET_ALL)
+
+            psnr_metric = ImageComparator.compute_psnr(patch_match_images)
+            ssim_metric = ImageComparator.compute_ssim(patch_match_images)
+            lpips_metric = ImageComparator.compute_lpips(patch_match_images)
+
+            patch_match_psnr: str = F'PatchMatch - PSNR: {psnr_metric:.4f}'
+            patch_match_ssim: str = F'PatchMatch - SSIM: {ssim_metric:.4f}'
+            patch_match_lpips: str = F'PatchMatch - LPIPS: {lpips_metric:.4f}'
+            print(Fore.CYAN + patch_match_psnr + Style.RESET_ALL)
+            print(Fore.CYAN + patch_match_ssim + Style.RESET_ALL)
+            print(Fore.CYAN + patch_match_lpips + Style.RESET_ALL)
+            print(patch_match_psnr, file=results_file)
+            print(patch_match_ssim, file=results_file)
+            print(patch_match_lpips, file=results_file)
 
             print(Fore.GREEN + 'Loading Inpainting with MAE (L1) loss dataset...' + Style.RESET_ALL)
             model_path: Path = Path('models', F'UNet MAE {mask_ratio}')

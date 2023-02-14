@@ -355,10 +355,21 @@ class ImageBrowser:
 
             for image_path in images_path.iterdir():
                 original = cv.imread(str(image_path)).astype(np.float64)
+                original = np.expand_dims(original, axis=0)
                 masked = cv.imread(str(inpainted_path / image_path.name)).astype(np.float64)
+                masked = np.expand_dims(masked, axis=0)
+
                 yield masked, original
 
-        inpainted_dataset = tf.data.Dataset.from_generator(get_patch_match_images_generator)
+        image_size = self.image_processor.image_size[0]
+
+        inpainted_dataset = tf.data.Dataset.from_generator(
+            generator=get_patch_match_images_generator,
+            output_signature=(
+                tf.TensorSpec(shape=(None, image_size, image_size, 3), dtype=tf.float64),
+                tf.TensorSpec(shape=(None, image_size, image_size, 3), dtype=tf.float64)
+            )
+        )
         normalized = self.__normalize_pair(inpainted_dataset)
         cached = normalized.cache()
         return self.__prefetch(cached)
