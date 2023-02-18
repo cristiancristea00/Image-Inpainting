@@ -29,13 +29,13 @@ def run() -> None:
         raise ValueError('Invalid number of arguments!')
 
     prefix = argv[1]
-    min_value = float(argv[2])
-    max_value = float(argv[3])
+    min_value = argv[2]
+    max_value = argv[3]
     file_name: str = F'{prefix}_{min_value}-{max_value}'
 
     model_path = Path('models', F'model_{file_name}')
 
-    MASK_RATIO = (min_value, max_value)
+    MASK_RATIO = (float(min_value), float(max_value))
 
     reduce_learning_rate_callback = tf.keras.callbacks.ReduceLROnPlateau(
         monitor='val_loss',
