@@ -4,13 +4,12 @@ import json
 import time
 import traceback
 from contextlib import redirect_stdout
-from datetime import datetime
 from pathlib import Path
+from sys import argv
 from typing import Final
 
 import tensorflow as tf
 from colorama import Fore, Style
-
 from graphs_generator import GraphsGenerator
 from image_browser import ImageBrowser
 from image_processor import ImageProcessor
@@ -22,12 +21,21 @@ from utils import NumpyEncoder
 EPOCHS: Final[int] = 1000
 BATCH: Final[int] = 256
 IMAGE_SIZE: Final[int] = 64
-MASK_RATIO: Final[tuple[float, float]] = (5, 10)
+MASK_RATIO: tuple[float, float] = (0, 0)
 
 
 def run() -> None:
-    now = datetime.now().strftime('%Y.%m.%d_%H:%M')
-    model_path = Path('models', F'model_{now}')
+    if len(argv) != 4:
+        raise ValueError('Invalid number of arguments!')
+
+    prefix = argv[1]
+    min_value = float(argv[2])
+    max_value = float(argv[3])
+    file_name: str = F'{prefix}_{min_value}-{max_value}'
+
+    model_path = Path('models', F'model_{file_name}')
+
+    MASK_RATIO = (min_value, max_value)
 
     reduce_learning_rate_callback = tf.keras.callbacks.ReduceLROnPlateau(
         monitor='val_loss',

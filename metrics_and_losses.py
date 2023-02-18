@@ -75,7 +75,7 @@ class SSIM_L1(tf.keras.losses.Loss):
     https://arxiv.org/pdf/1511.08861.pdf
     """
 
-    def __init__(self, alpha: float = 0.84) -> None:
+    def __init__(self, alpha: float = 0.6) -> None:
         """
         Initialize the SSIM + L1 loss.
 
