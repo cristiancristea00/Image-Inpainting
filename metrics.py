@@ -5,12 +5,14 @@ import traceback
 from pathlib import Path
 from typing import Final
 
+import tensorflow as tf
 from colorama import Fore, Style
 
 from image_browser import ImageBrowser
 from image_comparator import ImageComparator
 from image_processor import ImageProcessor
 from mask_generator import MaskGenerator
+from metrics_and_losses import PSNR, SSIM, SSIM_L1
 
 BATCH: Final[int] = 256
 IMAGE_SIZE: Final[int] = 64
@@ -107,6 +109,17 @@ def run() -> None:
             mse_inpainted_lpips: str = F'UNet MSE - LPIPS: {lpips_metric:.4f}'
             print(Fore.CYAN + mse_inpainted_lpips + Style.RESET_ALL)
             print(mse_inpainted_lpips, file=results_file)
+
+            print(Fore.GREEN + 'Loading Inpainting with SSIM+L1 loss dataset...' + Style.RESET_ALL)
+            model_path: Path = Path('models', F'UNet SSIM+L1 {mask_ratio}')
+            model = tf.keras.models.load_model(model_path, custom_objects={'PSNR': PSNR, 'SSIM': SSIM, 'SSIM_L1': SSIM_L1})
+            ssim_l1_inpainted_images = image_browser.get_model_inpainted(model)
+
+            lpips_metric = ImageComparator.compute_lpips(ssim_l1_inpainted_images)
+
+            ssim_l1_inpainted_lpips: str = F'UNet SSIM+L1 - LPIPS: {lpips_metric:.4f}'
+            print(Fore.CYAN + ssim_l1_inpainted_lpips + Style.RESET_ALL)
+            print(ssim_l1_inpainted_lpips, file=results_file)
 
             print(end='\n\n')
             print(end='\n\n', file=results_file)
