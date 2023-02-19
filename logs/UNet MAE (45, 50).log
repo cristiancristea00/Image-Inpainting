@@ -1,0 +1,1092 @@
+2023-01-30 09:50:15.026731: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-01-30 09:50:22.233657: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory
+2023-01-30 09:50:22.234367: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory
+2023-01-30 09:50:22.234388: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+Matplotlib created a temporary config/cache directory at /tmp/matplotlib-2okbnedt because the default path (/home/cristec/.config/matplotlib) is not a writable directory; it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+2023-01-30 09:50:33.784392: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-01-30 09:50:36.848160: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1613] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 7414 MB memory:  -> device: 0, name: Quadro M4000, pci bus id: 0000:03:00.0, compute capability: 5.2
+2023-01-30 09:50:36.852514: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1613] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 7425 MB memory:  -> device: 1, name: Quadro M4000, pci bus id: 0000:04:00.0, compute capability: 5.2
+WARNING:tensorflow:From /shared_storage/cristec/conda/envs/ML/lib/python3.10/site-packages/tensorflow/python/autograph/pyct/static_analysis/liveness.py:83: Analyzer.lamba_check (from tensorflow.python.autograph.pyct.static_analysis.liveness) is deprecated and will be removed after 2023-09-23.
+Instructions for updating:
+Lambda fuctions will be no more assumed to be used in the statement where they are used, or at least in the same block. https://github.com/tensorflow/tensorflow/issues/56089
+[35mStarting script...[0m
+[32mLoading train dataset...[0m
+Found 50000 files belonging to 1 classes.
+[32mLoading test dataset...[0m
+Found 10000 files belonging to 1 classes.
+[32mCreating model...[0m
+[32mTraining model...[0m
+[36m
+Epoch 1/1000
+2023-01-30 09:51:17.720375: E tensorflow/core/grappler/optimizers/meta_optimizer.cc:954] layout failed: INVALID_ARGUMENT: Size of values 0 does not match size of permutation 4 @ fanin shape inUNet/unet_down_0/u_net2d_convolution_block/dropout/dropout/SelectV2-2-TransposeNHWCToNCHW-LayoutOptimizer
+2023-01-30 09:52:38.725123: I tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:428] Loaded cuDNN version 8101
+2023-01-30 09:52:39.199654: I tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:428] Loaded cuDNN version 8101
+2023-01-30 09:52:39.597261: I tensorflow/tsl/platform/default/subprocess.cc:304] Start cannot spawn child process: No such file or directory
+2023-01-30 09:52:43.949956: I tensorflow/compiler/xla/service/service.cc:173] XLA service 0x7fd4c31aec10 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2023-01-30 09:52:43.950001: I tensorflow/compiler/xla/service/service.cc:181]   StreamExecutor device (0): Quadro M4000, Compute Capability 5.2
+2023-01-30 09:52:43.950023: I tensorflow/compiler/xla/service/service.cc:181]   StreamExecutor device (1): Quadro M4000, Compute Capability 5.2
+2023-01-30 09:52:44.034845: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+2023-01-30 09:52:44.680496: I tensorflow/tsl/platform/default/subprocess.cc:304] Start cannot spawn child process: No such file or directory
+2023-01-30 09:52:44.798058: I tensorflow/compiler/jit/xla_compilation_cache.cc:477] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+
+Epoch 1: val_loss improved from inf to 0.23521, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 2307s - loss: 0.0911 - psnr: 19.3263 - ssim: 0.4859 - val_loss: 0.2352 - val_psnr: 11.1546 - val_ssim: 0.2385 - lr: 0.0100 - 2307s/epoch - 12s/step
+Epoch 2/1000
+
+Epoch 2: val_loss did not improve from 0.23521
+196/196 - 53s - loss: 0.0579 - psnr: 22.4481 - ssim: 0.6519 - val_loss: 3.1174 - val_psnr: -2.4735e+01 - val_ssim: 0.0847 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 3/1000
+
+Epoch 3: val_loss improved from 0.23521 to 0.09763, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 74s - loss: 0.0528 - psnr: 23.2312 - ssim: 0.6965 - val_loss: 0.0976 - val_psnr: 17.6352 - val_ssim: 0.6153 - lr: 0.0100 - 74s/epoch - 377ms/step
+Epoch 4/1000
+
+Epoch 4: val_loss improved from 0.09763 to 0.07221, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 74s - loss: 0.0504 - psnr: 23.6603 - ssim: 0.7170 - val_loss: 0.0722 - val_psnr: 20.0995 - val_ssim: 0.6806 - lr: 0.0100 - 74s/epoch - 380ms/step
+Epoch 5/1000
+
+Epoch 5: val_loss did not improve from 0.07221
+196/196 - 54s - loss: 0.0474 - psnr: 24.1067 - ssim: 0.7202 - val_loss: 0.0833 - val_psnr: 18.5631 - val_ssim: 0.5616 - lr: 0.0100 - 54s/epoch - 273ms/step
+Epoch 6/1000
+
+Epoch 6: val_loss did not improve from 0.07221
+196/196 - 53s - loss: 0.0452 - psnr: 24.4552 - ssim: 0.7282 - val_loss: 0.0934 - val_psnr: 18.3328 - val_ssim: 0.5672 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 7/1000
+
+Epoch 7: val_loss did not improve from 0.07221
+196/196 - 54s - loss: 0.0443 - psnr: 24.6278 - ssim: 0.7338 - val_loss: 0.1435 - val_psnr: 14.6731 - val_ssim: 0.4718 - lr: 0.0100 - 54s/epoch - 274ms/step
+Epoch 8/1000
+
+Epoch 8: val_loss improved from 0.07221 to 0.07026, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 74s - loss: 0.0439 - psnr: 24.7113 - ssim: 0.7368 - val_loss: 0.0703 - val_psnr: 19.9089 - val_ssim: 0.6557 - lr: 0.0100 - 74s/epoch - 378ms/step
+Epoch 9/1000
+
+Epoch 9: val_loss improved from 0.07026 to 0.05309, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 74s - loss: 0.0429 - psnr: 24.8937 - ssim: 0.7412 - val_loss: 0.0531 - val_psnr: 22.6549 - val_ssim: 0.7565 - lr: 0.0100 - 74s/epoch - 379ms/step
+Epoch 10/1000
+
+Epoch 10: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0426 - psnr: 24.9741 - ssim: 0.7443 - val_loss: 0.0904 - val_psnr: 18.1800 - val_ssim: 0.6104 - lr: 0.0100 - 53s/epoch - 271ms/step
+Epoch 11/1000
+
+Epoch 11: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0423 - psnr: 25.0351 - ssim: 0.7461 - val_loss: 0.1058 - val_psnr: 16.9682 - val_ssim: 0.5380 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 12/1000
+
+Epoch 12: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0418 - psnr: 25.1170 - ssim: 0.7478 - val_loss: 0.1166 - val_psnr: 16.1446 - val_ssim: 0.4783 - lr: 0.0100 - 53s/epoch - 271ms/step
+Epoch 13/1000
+
+Epoch 13: val_loss did not improve from 0.05309
+196/196 - 54s - loss: 0.0414 - psnr: 25.1873 - ssim: 0.7495 - val_loss: 0.0870 - val_psnr: 18.7180 - val_ssim: 0.6181 - lr: 0.0100 - 54s/epoch - 273ms/step
+Epoch 14/1000
+
+Epoch 14: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0411 - psnr: 25.2520 - ssim: 0.7516 - val_loss: 0.0775 - val_psnr: 19.7213 - val_ssim: 0.6810 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 15/1000
+
+Epoch 15: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0408 - psnr: 25.3180 - ssim: 0.7537 - val_loss: 0.0740 - val_psnr: 20.2768 - val_ssim: 0.7257 - lr: 0.0100 - 53s/epoch - 273ms/step
+Epoch 16/1000
+
+Epoch 16: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0405 - psnr: 25.3715 - ssim: 0.7553 - val_loss: 0.0698 - val_psnr: 20.7113 - val_ssim: 0.7486 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 17/1000
+
+Epoch 17: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0403 - psnr: 25.4101 - ssim: 0.7566 - val_loss: 0.0626 - val_psnr: 22.0628 - val_ssim: 0.8183 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 18/1000
+
+Epoch 18: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0401 - psnr: 25.4471 - ssim: 0.7579 - val_loss: 0.0608 - val_psnr: 22.6046 - val_ssim: 0.8388 - lr: 0.0100 - 53s/epoch - 273ms/step
+Epoch 19/1000
+
+Epoch 19: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0399 - psnr: 25.4823 - ssim: 0.7593 - val_loss: 0.0621 - val_psnr: 22.4891 - val_ssim: 0.8436 - lr: 0.0100 - 53s/epoch - 271ms/step
+Epoch 20/1000
+
+Epoch 20: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0397 - psnr: 25.5207 - ssim: 0.7606 - val_loss: 0.0598 - val_psnr: 22.8673 - val_ssim: 0.8471 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 21/1000
+
+Epoch 21: val_loss did not improve from 0.05309
+196/196 - 54s - loss: 0.0396 - psnr: 25.5558 - ssim: 0.7619 - val_loss: 0.0601 - val_psnr: 22.7098 - val_ssim: 0.8444 - lr: 0.0100 - 54s/epoch - 274ms/step
+Epoch 22/1000
+
+Epoch 22: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0394 - psnr: 25.5947 - ssim: 0.7632 - val_loss: 0.0587 - val_psnr: 22.9590 - val_ssim: 0.8530 - lr: 0.0100 - 53s/epoch - 273ms/step
+Epoch 23/1000
+
+Epoch 23: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0392 - psnr: 25.6267 - ssim: 0.7644 - val_loss: 0.0597 - val_psnr: 22.8905 - val_ssim: 0.8492 - lr: 0.0100 - 53s/epoch - 271ms/step
+Epoch 24/1000
+
+Epoch 24: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0391 - psnr: 25.6574 - ssim: 0.7654 - val_loss: 0.0568 - val_psnr: 23.2874 - val_ssim: 0.8559 - lr: 0.0100 - 53s/epoch - 271ms/step
+Epoch 25/1000
+
+Epoch 25: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0389 - psnr: 25.6856 - ssim: 0.7664 - val_loss: 0.0554 - val_psnr: 23.4100 - val_ssim: 0.8536 - lr: 0.0100 - 53s/epoch - 271ms/step
+Epoch 26/1000
+
+Epoch 26: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0387 - psnr: 25.7211 - ssim: 0.7675 - val_loss: 0.0565 - val_psnr: 23.2890 - val_ssim: 0.8539 - lr: 0.0100 - 53s/epoch - 271ms/step
+Epoch 27/1000
+
+Epoch 27: val_loss did not improve from 0.05309
+196/196 - 53s - loss: 0.0386 - psnr: 25.7420 - ssim: 0.7683 - val_loss: 0.0534 - val_psnr: 23.6815 - val_ssim: 0.8620 - lr: 0.0100 - 53s/epoch - 273ms/step
+Epoch 28/1000
+
+Epoch 28: val_loss improved from 0.05309 to 0.05192, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0385 - psnr: 25.7710 - ssim: 0.7693 - val_loss: 0.0519 - val_psnr: 23.8180 - val_ssim: 0.8612 - lr: 0.0100 - 75s/epoch - 382ms/step
+Epoch 29/1000
+
+Epoch 29: val_loss improved from 0.05192 to 0.05046, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0384 - psnr: 25.7995 - ssim: 0.7703 - val_loss: 0.0505 - val_psnr: 23.9847 - val_ssim: 0.8643 - lr: 0.0100 - 75s/epoch - 380ms/step
+Epoch 30/1000
+
+Epoch 30: val_loss improved from 0.05046 to 0.04931, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 74s - loss: 0.0383 - psnr: 25.8227 - ssim: 0.7712 - val_loss: 0.0493 - val_psnr: 24.1471 - val_ssim: 0.8664 - lr: 0.0100 - 74s/epoch - 378ms/step
+Epoch 31/1000
+
+Epoch 31: val_loss improved from 0.04931 to 0.04861, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0382 - psnr: 25.8459 - ssim: 0.7720 - val_loss: 0.0486 - val_psnr: 24.1573 - val_ssim: 0.8660 - lr: 0.0100 - 75s/epoch - 381ms/step
+Epoch 32/1000
+
+Epoch 32: val_loss improved from 0.04861 to 0.04848, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0381 - psnr: 25.8661 - ssim: 0.7727 - val_loss: 0.0485 - val_psnr: 24.1539 - val_ssim: 0.8660 - lr: 0.0100 - 75s/epoch - 382ms/step
+Epoch 33/1000
+
+Epoch 33: val_loss improved from 0.04848 to 0.04523, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 74s - loss: 0.0380 - psnr: 25.8891 - ssim: 0.7735 - val_loss: 0.0452 - val_psnr: 24.5539 - val_ssim: 0.8696 - lr: 0.0100 - 74s/epoch - 379ms/step
+Epoch 34/1000
+
+Epoch 34: val_loss did not improve from 0.04523
+196/196 - 54s - loss: 0.0379 - psnr: 25.9058 - ssim: 0.7740 - val_loss: 0.0453 - val_psnr: 24.6711 - val_ssim: 0.8729 - lr: 0.0100 - 54s/epoch - 274ms/step
+Epoch 35/1000
+
+Epoch 35: val_loss improved from 0.04523 to 0.04443, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 74s - loss: 0.0378 - psnr: 25.9286 - ssim: 0.7748 - val_loss: 0.0444 - val_psnr: 24.7439 - val_ssim: 0.8732 - lr: 0.0100 - 74s/epoch - 380ms/step
+Epoch 36/1000
+
+Epoch 36: val_loss did not improve from 0.04443
+196/196 - 53s - loss: 0.0377 - psnr: 25.9417 - ssim: 0.7754 - val_loss: 0.0456 - val_psnr: 24.4495 - val_ssim: 0.8662 - lr: 0.0100 - 53s/epoch - 271ms/step
+Epoch 37/1000
+
+Epoch 37: val_loss improved from 0.04443 to 0.04319, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0377 - psnr: 25.9592 - ssim: 0.7760 - val_loss: 0.0432 - val_psnr: 24.9159 - val_ssim: 0.8747 - lr: 0.0100 - 75s/epoch - 381ms/step
+Epoch 38/1000
+
+Epoch 38: val_loss improved from 0.04319 to 0.04242, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0376 - psnr: 25.9771 - ssim: 0.7765 - val_loss: 0.0424 - val_psnr: 25.0679 - val_ssim: 0.8754 - lr: 0.0100 - 75s/epoch - 382ms/step
+Epoch 39/1000
+
+Epoch 39: val_loss did not improve from 0.04242
+196/196 - 54s - loss: 0.0375 - psnr: 25.9898 - ssim: 0.7769 - val_loss: 0.0430 - val_psnr: 24.9822 - val_ssim: 0.8773 - lr: 0.0100 - 54s/epoch - 273ms/step
+Epoch 40/1000
+
+Epoch 40: val_loss improved from 0.04242 to 0.04143, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0374 - psnr: 26.0100 - ssim: 0.7775 - val_loss: 0.0414 - val_psnr: 25.3338 - val_ssim: 0.8819 - lr: 0.0100 - 75s/epoch - 380ms/step
+Epoch 41/1000
+
+Epoch 41: val_loss did not improve from 0.04143
+196/196 - 53s - loss: 0.0374 - psnr: 26.0250 - ssim: 0.7780 - val_loss: 0.0416 - val_psnr: 25.3278 - val_ssim: 0.8794 - lr: 0.0100 - 53s/epoch - 273ms/step
+Epoch 42/1000
+
+Epoch 42: val_loss improved from 0.04143 to 0.03941, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0373 - psnr: 26.0380 - ssim: 0.7785 - val_loss: 0.0394 - val_psnr: 25.7725 - val_ssim: 0.8830 - lr: 0.0100 - 75s/epoch - 381ms/step
+Epoch 43/1000
+
+Epoch 43: val_loss did not improve from 0.03941
+196/196 - 53s - loss: 0.0372 - psnr: 26.0557 - ssim: 0.7790 - val_loss: 0.0413 - val_psnr: 25.5424 - val_ssim: 0.8835 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 44/1000
+
+Epoch 44: val_loss did not improve from 0.03941
+196/196 - 53s - loss: 0.0371 - psnr: 26.0726 - ssim: 0.7795 - val_loss: 0.0397 - val_psnr: 25.8893 - val_ssim: 0.8864 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 45/1000
+
+Epoch 45: val_loss did not improve from 0.03941
+196/196 - 54s - loss: 0.0371 - psnr: 26.0854 - ssim: 0.7800 - val_loss: 0.0408 - val_psnr: 25.7401 - val_ssim: 0.8852 - lr: 0.0100 - 54s/epoch - 274ms/step
+Epoch 46/1000
+
+Epoch 46: val_loss did not improve from 0.03941
+196/196 - 53s - loss: 0.0370 - psnr: 26.1003 - ssim: 0.7804 - val_loss: 0.0413 - val_psnr: 25.7413 - val_ssim: 0.8851 - lr: 0.0100 - 53s/epoch - 273ms/step
+Epoch 47/1000
+
+Epoch 47: val_loss improved from 0.03941 to 0.03839, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0369 - psnr: 26.1151 - ssim: 0.7808 - val_loss: 0.0384 - val_psnr: 26.3115 - val_ssim: 0.8853 - lr: 0.0100 - 75s/epoch - 380ms/step
+Epoch 48/1000
+
+Epoch 48: val_loss improved from 0.03839 to 0.03749, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 74s - loss: 0.0369 - psnr: 26.1300 - ssim: 0.7812 - val_loss: 0.0375 - val_psnr: 26.4900 - val_ssim: 0.8848 - lr: 0.0100 - 74s/epoch - 380ms/step
+Epoch 49/1000
+
+Epoch 49: val_loss improved from 0.03749 to 0.03594, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0368 - psnr: 26.1428 - ssim: 0.7816 - val_loss: 0.0359 - val_psnr: 26.7261 - val_ssim: 0.8792 - lr: 0.0100 - 75s/epoch - 382ms/step
+Epoch 50/1000
+
+Epoch 50: val_loss improved from 0.03594 to 0.03568, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0367 - psnr: 26.1609 - ssim: 0.7819 - val_loss: 0.0357 - val_psnr: 26.7518 - val_ssim: 0.8782 - lr: 0.0100 - 75s/epoch - 382ms/step
+Epoch 51/1000
+
+Epoch 51: val_loss did not improve from 0.03568
+196/196 - 54s - loss: 0.0367 - psnr: 26.1677 - ssim: 0.7823 - val_loss: 0.0361 - val_psnr: 26.5368 - val_ssim: 0.8707 - lr: 0.0100 - 54s/epoch - 273ms/step
+Epoch 52/1000
+
+Epoch 52: val_loss improved from 0.03568 to 0.03488, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0367 - psnr: 26.1802 - ssim: 0.7826 - val_loss: 0.0349 - val_psnr: 26.5488 - val_ssim: 0.8634 - lr: 0.0100 - 75s/epoch - 380ms/step
+Epoch 53/1000
+
+Epoch 53: val_loss improved from 0.03488 to 0.03402, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0366 - psnr: 26.1873 - ssim: 0.7828 - val_loss: 0.0340 - val_psnr: 26.8874 - val_ssim: 0.8744 - lr: 0.0100 - 75s/epoch - 381ms/step
+Epoch 54/1000
+
+Epoch 54: val_loss improved from 0.03402 to 0.03392, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0366 - psnr: 26.1978 - ssim: 0.7831 - val_loss: 0.0339 - val_psnr: 27.0777 - val_ssim: 0.8830 - lr: 0.0100 - 75s/epoch - 381ms/step
+Epoch 55/1000
+
+Epoch 55: val_loss improved from 0.03392 to 0.03362, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0365 - psnr: 26.2083 - ssim: 0.7834 - val_loss: 0.0336 - val_psnr: 26.8448 - val_ssim: 0.8723 - lr: 0.0100 - 75s/epoch - 382ms/step
+Epoch 56/1000
+
+Epoch 56: val_loss did not improve from 0.03362
+196/196 - 53s - loss: 0.0365 - psnr: 26.2097 - ssim: 0.7835 - val_loss: 0.0345 - val_psnr: 26.9472 - val_ssim: 0.8852 - lr: 0.0100 - 53s/epoch - 273ms/step
+Epoch 57/1000
+
+Epoch 57: val_loss improved from 0.03362 to 0.03269, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0365 - psnr: 26.2085 - ssim: 0.7836 - val_loss: 0.0327 - val_psnr: 27.1876 - val_ssim: 0.8850 - lr: 0.0100 - 75s/epoch - 382ms/step
+Epoch 58/1000
+
+Epoch 58: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0365 - psnr: 26.2157 - ssim: 0.7837 - val_loss: 0.0334 - val_psnr: 27.0326 - val_ssim: 0.8849 - lr: 0.0100 - 53s/epoch - 273ms/step
+Epoch 59/1000
+
+Epoch 59: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0365 - psnr: 26.2227 - ssim: 0.7839 - val_loss: 0.0372 - val_psnr: 26.3919 - val_ssim: 0.8922 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 60/1000
+
+Epoch 60: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0364 - psnr: 26.2310 - ssim: 0.7841 - val_loss: 0.0377 - val_psnr: 26.2878 - val_ssim: 0.8926 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 61/1000
+
+Epoch 61: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0364 - psnr: 26.2328 - ssim: 0.7843 - val_loss: 0.0430 - val_psnr: 25.2080 - val_ssim: 0.8806 - lr: 0.0100 - 53s/epoch - 273ms/step
+Epoch 62/1000
+
+Epoch 62: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0364 - psnr: 26.2333 - ssim: 0.7844 - val_loss: 0.0456 - val_psnr: 24.6764 - val_ssim: 0.8716 - lr: 0.0100 - 53s/epoch - 271ms/step
+Epoch 63/1000
+
+Epoch 63: val_loss did not improve from 0.03269
+196/196 - 54s - loss: 0.0364 - psnr: 26.2414 - ssim: 0.7846 - val_loss: 0.0498 - val_psnr: 23.9080 - val_ssim: 0.8560 - lr: 0.0100 - 54s/epoch - 274ms/step
+Epoch 64/1000
+
+Epoch 64: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0364 - psnr: 26.2470 - ssim: 0.7848 - val_loss: 0.0537 - val_psnr: 23.2234 - val_ssim: 0.8384 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 65/1000
+
+Epoch 65: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0364 - psnr: 26.2544 - ssim: 0.7851 - val_loss: 0.0518 - val_psnr: 23.4407 - val_ssim: 0.8413 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 66/1000
+
+Epoch 66: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0364 - psnr: 26.2563 - ssim: 0.7852 - val_loss: 0.0564 - val_psnr: 22.6216 - val_ssim: 0.8167 - lr: 0.0100 - 53s/epoch - 273ms/step
+Epoch 67/1000
+
+Epoch 67: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0363 - psnr: 26.2689 - ssim: 0.7855 - val_loss: 0.0534 - val_psnr: 23.0412 - val_ssim: 0.8300 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 68/1000
+
+Epoch 68: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0363 - psnr: 26.2673 - ssim: 0.7857 - val_loss: 0.0493 - val_psnr: 23.6294 - val_ssim: 0.8424 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 69/1000
+
+Epoch 69: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0363 - psnr: 26.2769 - ssim: 0.7858 - val_loss: 0.0506 - val_psnr: 23.2977 - val_ssim: 0.8339 - lr: 0.0100 - 53s/epoch - 271ms/step
+Epoch 70/1000
+
+Epoch 70: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0363 - psnr: 26.2854 - ssim: 0.7861 - val_loss: 0.0512 - val_psnr: 23.1352 - val_ssim: 0.8290 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 71/1000
+
+Epoch 71: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0362 - psnr: 26.2947 - ssim: 0.7863 - val_loss: 0.0476 - val_psnr: 23.6951 - val_ssim: 0.8434 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 72/1000
+
+Epoch 72: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0362 - psnr: 26.3024 - ssim: 0.7865 - val_loss: 0.0446 - val_psnr: 24.1922 - val_ssim: 0.8534 - lr: 0.0100 - 53s/epoch - 271ms/step
+Epoch 73/1000
+
+Epoch 73: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0361 - psnr: 26.3133 - ssim: 0.7868 - val_loss: 0.0438 - val_psnr: 24.3654 - val_ssim: 0.8604 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 74/1000
+
+Epoch 74: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0361 - psnr: 26.3161 - ssim: 0.7869 - val_loss: 0.0423 - val_psnr: 24.6340 - val_ssim: 0.8658 - lr: 0.0100 - 53s/epoch - 273ms/step
+Epoch 75/1000
+
+Epoch 75: ReduceLROnPlateau reducing learning rate to 0.0019999999552965165.
+
+Epoch 75: val_loss did not improve from 0.03269
+196/196 - 53s - loss: 0.0361 - psnr: 26.3268 - ssim: 0.7872 - val_loss: 0.0431 - val_psnr: 24.5161 - val_ssim: 0.8654 - lr: 0.0100 - 53s/epoch - 272ms/step
+Epoch 76/1000
+
+Epoch 76: val_loss improved from 0.03269 to 0.02788, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0347 - psnr: 26.5943 - ssim: 0.7897 - val_loss: 0.0279 - val_psnr: 28.6597 - val_ssim: 0.9094 - lr: 0.0020 - 75s/epoch - 381ms/step
+Epoch 77/1000
+
+Epoch 77: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0345 - psnr: 26.6310 - ssim: 0.7897 - val_loss: 0.0293 - val_psnr: 28.3671 - val_ssim: 0.9071 - lr: 0.0020 - 53s/epoch - 271ms/step
+Epoch 78/1000
+
+Epoch 78: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0344 - psnr: 26.6406 - ssim: 0.7898 - val_loss: 0.0293 - val_psnr: 28.3720 - val_ssim: 0.9071 - lr: 0.0020 - 53s/epoch - 273ms/step
+Epoch 79/1000
+
+Epoch 79: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0344 - psnr: 26.6486 - ssim: 0.7898 - val_loss: 0.0292 - val_psnr: 28.3927 - val_ssim: 0.9075 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 80/1000
+
+Epoch 80: val_loss did not improve from 0.02788
+196/196 - 54s - loss: 0.0343 - psnr: 26.6555 - ssim: 0.7898 - val_loss: 0.0292 - val_psnr: 28.3593 - val_ssim: 0.9073 - lr: 0.0020 - 54s/epoch - 274ms/step
+Epoch 81/1000
+
+Epoch 81: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0343 - psnr: 26.6591 - ssim: 0.7899 - val_loss: 0.0292 - val_psnr: 28.3687 - val_ssim: 0.9081 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 82/1000
+
+Epoch 82: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0342 - psnr: 26.6673 - ssim: 0.7900 - val_loss: 0.0289 - val_psnr: 28.4463 - val_ssim: 0.9083 - lr: 0.0020 - 53s/epoch - 273ms/step
+Epoch 83/1000
+
+Epoch 83: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0342 - psnr: 26.6756 - ssim: 0.7901 - val_loss: 0.0293 - val_psnr: 28.3437 - val_ssim: 0.9079 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 84/1000
+
+Epoch 84: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0341 - psnr: 26.6878 - ssim: 0.7901 - val_loss: 0.0290 - val_psnr: 28.4157 - val_ssim: 0.9083 - lr: 0.0020 - 53s/epoch - 273ms/step
+Epoch 85/1000
+
+Epoch 85: val_loss did not improve from 0.02788
+196/196 - 54s - loss: 0.0341 - psnr: 26.6879 - ssim: 0.7902 - val_loss: 0.0290 - val_psnr: 28.4399 - val_ssim: 0.9082 - lr: 0.0020 - 54s/epoch - 273ms/step
+Epoch 86/1000
+
+Epoch 86: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0341 - psnr: 26.6946 - ssim: 0.7901 - val_loss: 0.0288 - val_psnr: 28.4762 - val_ssim: 0.9083 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 87/1000
+
+Epoch 87: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0341 - psnr: 26.6861 - ssim: 0.7903 - val_loss: 0.0293 - val_psnr: 28.3455 - val_ssim: 0.9081 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 88/1000
+
+Epoch 88: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0341 - psnr: 26.6973 - ssim: 0.7903 - val_loss: 0.0293 - val_psnr: 28.3277 - val_ssim: 0.9086 - lr: 0.0020 - 53s/epoch - 271ms/step
+Epoch 89/1000
+
+Epoch 89: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0340 - psnr: 26.7048 - ssim: 0.7904 - val_loss: 0.0292 - val_psnr: 28.3562 - val_ssim: 0.9086 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 90/1000
+
+Epoch 90: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0340 - psnr: 26.7162 - ssim: 0.7904 - val_loss: 0.0286 - val_psnr: 28.5015 - val_ssim: 0.9094 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 91/1000
+
+Epoch 91: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0339 - psnr: 26.7204 - ssim: 0.7905 - val_loss: 0.0284 - val_psnr: 28.5588 - val_ssim: 0.9099 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 92/1000
+
+Epoch 92: val_loss did not improve from 0.02788
+196/196 - 54s - loss: 0.0340 - psnr: 26.7146 - ssim: 0.7905 - val_loss: 0.0287 - val_psnr: 28.5155 - val_ssim: 0.9093 - lr: 0.0020 - 54s/epoch - 274ms/step
+Epoch 93/1000
+
+Epoch 93: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0339 - psnr: 26.7240 - ssim: 0.7906 - val_loss: 0.0283 - val_psnr: 28.5750 - val_ssim: 0.9100 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 94/1000
+
+Epoch 94: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0339 - psnr: 26.7285 - ssim: 0.7907 - val_loss: 0.0280 - val_psnr: 28.6633 - val_ssim: 0.9106 - lr: 0.0020 - 53s/epoch - 271ms/step
+Epoch 95/1000
+
+Epoch 95: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0339 - psnr: 26.7271 - ssim: 0.7908 - val_loss: 0.0286 - val_psnr: 28.5114 - val_ssim: 0.9097 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 96/1000
+
+Epoch 96: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0339 - psnr: 26.7220 - ssim: 0.7908 - val_loss: 0.0284 - val_psnr: 28.5581 - val_ssim: 0.9099 - lr: 0.0020 - 53s/epoch - 271ms/step
+Epoch 97/1000
+
+Epoch 97: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0338 - psnr: 26.7424 - ssim: 0.7909 - val_loss: 0.0283 - val_psnr: 28.5751 - val_ssim: 0.9107 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 98/1000
+
+Epoch 98: val_loss did not improve from 0.02788
+196/196 - 54s - loss: 0.0338 - psnr: 26.7406 - ssim: 0.7909 - val_loss: 0.0283 - val_psnr: 28.5785 - val_ssim: 0.9105 - lr: 0.0020 - 54s/epoch - 273ms/step
+Epoch 99/1000
+
+Epoch 99: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0338 - psnr: 26.7469 - ssim: 0.7910 - val_loss: 0.0282 - val_psnr: 28.6043 - val_ssim: 0.9110 - lr: 0.0020 - 53s/epoch - 272ms/step
+Epoch 100/1000
+
+Epoch 100: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0338 - psnr: 26.7454 - ssim: 0.7910 - val_loss: 0.0279 - val_psnr: 28.6731 - val_ssim: 0.9112 - lr: 0.0020 - 53s/epoch - 271ms/step
+Epoch 101/1000
+
+Epoch 101: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0338 - psnr: 26.7420 - ssim: 0.7911 - val_loss: 0.0286 - val_psnr: 28.5205 - val_ssim: 0.9106 - lr: 0.0020 - 53s/epoch - 273ms/step
+Epoch 102/1000
+
+Epoch 102: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0338 - psnr: 26.7542 - ssim: 0.7912 - val_loss: 0.0282 - val_psnr: 28.6014 - val_ssim: 0.9114 - lr: 0.0020 - 53s/epoch - 273ms/step
+Epoch 103/1000
+
+Epoch 103: val_loss did not improve from 0.02788
+196/196 - 53s - loss: 0.0338 - psnr: 26.7538 - ssim: 0.7912 - val_loss: 0.0283 - val_psnr: 28.5821 - val_ssim: 0.9111 - lr: 0.0020 - 53s/epoch - 273ms/step
+Epoch 104/1000
+
+Epoch 104: ReduceLROnPlateau reducing learning rate to 0.0003999999724328518.
+
+Epoch 104: val_loss did not improve from 0.02788
+196/196 - 54s - loss: 0.0337 - psnr: 26.7622 - ssim: 0.7913 - val_loss: 0.0282 - val_psnr: 28.6018 - val_ssim: 0.9114 - lr: 0.0020 - 54s/epoch - 273ms/step
+Epoch 105/1000
+
+Epoch 105: val_loss improved from 0.02788 to 0.02754, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0335 - psnr: 26.8060 - ssim: 0.7915 - val_loss: 0.0275 - val_psnr: 28.7234 - val_ssim: 0.9117 - lr: 4.0000e-04 - 75s/epoch - 380ms/step
+Epoch 106/1000
+
+Epoch 106: val_loss did not improve from 0.02754
+196/196 - 53s - loss: 0.0335 - psnr: 26.8128 - ssim: 0.7917 - val_loss: 0.0276 - val_psnr: 28.6921 - val_ssim: 0.9115 - lr: 4.0000e-04 - 53s/epoch - 273ms/step
+Epoch 107/1000
+
+Epoch 107: val_loss improved from 0.02754 to 0.02752, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0335 - psnr: 26.8126 - ssim: 0.7916 - val_loss: 0.0275 - val_psnr: 28.7275 - val_ssim: 0.9117 - lr: 4.0000e-04 - 75s/epoch - 382ms/step
+Epoch 108/1000
+
+Epoch 108: val_loss improved from 0.02752 to 0.02752, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0335 - psnr: 26.8136 - ssim: 0.7916 - val_loss: 0.0275 - val_psnr: 28.7302 - val_ssim: 0.9117 - lr: 4.0000e-04 - 75s/epoch - 381ms/step
+Epoch 109/1000
+
+Epoch 109: val_loss improved from 0.02752 to 0.02749, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0334 - psnr: 26.8148 - ssim: 0.7917 - val_loss: 0.0275 - val_psnr: 28.7341 - val_ssim: 0.9118 - lr: 4.0000e-04 - 75s/epoch - 382ms/step
+Epoch 110/1000
+
+Epoch 110: val_loss did not improve from 0.02749
+196/196 - 53s - loss: 0.0334 - psnr: 26.8136 - ssim: 0.7917 - val_loss: 0.0275 - val_psnr: 28.7230 - val_ssim: 0.9117 - lr: 4.0000e-04 - 53s/epoch - 272ms/step
+Epoch 111/1000
+
+Epoch 111: val_loss improved from 0.02749 to 0.02730, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0334 - psnr: 26.8135 - ssim: 0.7917 - val_loss: 0.0273 - val_psnr: 28.7978 - val_ssim: 0.9123 - lr: 4.0000e-04 - 75s/epoch - 383ms/step
+Epoch 112/1000
+
+Epoch 112: val_loss did not improve from 0.02730
+196/196 - 53s - loss: 0.0334 - psnr: 26.8165 - ssim: 0.7917 - val_loss: 0.0273 - val_psnr: 28.7944 - val_ssim: 0.9122 - lr: 4.0000e-04 - 53s/epoch - 273ms/step
+Epoch 113/1000
+
+Epoch 113: val_loss did not improve from 0.02730
+196/196 - 53s - loss: 0.0334 - psnr: 26.8168 - ssim: 0.7917 - val_loss: 0.0276 - val_psnr: 28.7138 - val_ssim: 0.9118 - lr: 4.0000e-04 - 53s/epoch - 272ms/step
+Epoch 114/1000
+
+Epoch 114: val_loss improved from 0.02730 to 0.02723, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 74s - loss: 0.0334 - psnr: 26.8176 - ssim: 0.7918 - val_loss: 0.0272 - val_psnr: 28.8183 - val_ssim: 0.9124 - lr: 4.0000e-04 - 74s/epoch - 379ms/step
+Epoch 115/1000
+
+Epoch 115: val_loss improved from 0.02723 to 0.02720, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0334 - psnr: 26.8189 - ssim: 0.7918 - val_loss: 0.0272 - val_psnr: 28.8344 - val_ssim: 0.9127 - lr: 4.0000e-04 - 75s/epoch - 382ms/step
+Epoch 116/1000
+
+Epoch 116: val_loss did not improve from 0.02720
+196/196 - 53s - loss: 0.0334 - psnr: 26.8194 - ssim: 0.7917 - val_loss: 0.0275 - val_psnr: 28.7488 - val_ssim: 0.9121 - lr: 4.0000e-04 - 53s/epoch - 271ms/step
+Epoch 117/1000
+
+Epoch 117: val_loss did not improve from 0.02720
+196/196 - 53s - loss: 0.0334 - psnr: 26.8190 - ssim: 0.7917 - val_loss: 0.0274 - val_psnr: 28.7751 - val_ssim: 0.9123 - lr: 4.0000e-04 - 53s/epoch - 272ms/step
+Epoch 118/1000
+
+Epoch 118: val_loss did not improve from 0.02720
+196/196 - 54s - loss: 0.0334 - psnr: 26.8207 - ssim: 0.7918 - val_loss: 0.0274 - val_psnr: 28.7700 - val_ssim: 0.9123 - lr: 4.0000e-04 - 54s/epoch - 274ms/step
+Epoch 119/1000
+
+Epoch 119: val_loss improved from 0.02720 to 0.02719, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 75s - loss: 0.0334 - psnr: 26.8216 - ssim: 0.7918 - val_loss: 0.0272 - val_psnr: 28.8368 - val_ssim: 0.9126 - lr: 4.0000e-04 - 75s/epoch - 382ms/step
+Epoch 120/1000
+
+Epoch 120: val_loss did not improve from 0.02719
+196/196 - 53s - loss: 0.0334 - psnr: 26.8229 - ssim: 0.7919 - val_loss: 0.0273 - val_psnr: 28.8078 - val_ssim: 0.9125 - lr: 4.0000e-04 - 53s/epoch - 271ms/step
+Epoch 121/1000
+
+Epoch 121: val_loss did not improve from 0.02719
+196/196 - 54s - loss: 0.0334 - psnr: 26.8237 - ssim: 0.7919 - val_loss: 0.0273 - val_psnr: 28.8041 - val_ssim: 0.9125 - lr: 4.0000e-04 - 54s/epoch - 273ms/step
+Epoch 122/1000
+
+Epoch 122: val_loss did not improve from 0.02719
+196/196 - 53s - loss: 0.0334 - psnr: 26.8244 - ssim: 0.7919 - val_loss: 0.0273 - val_psnr: 28.7959 - val_ssim: 0.9125 - lr: 4.0000e-04 - 53s/epoch - 272ms/step
+Epoch 123/1000
+
+Epoch 123: val_loss improved from 0.02719 to 0.02716, saving model to models/model_2023.01.30_09:50
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, conv2d_layer_call_fn, conv2d_layer_call_and_return_conditional_losses, _jit_compiled_convolution_op, leaky_re_lu_layer_call_fn while saving (showing 5 of 241). These functions will not be directly callable after loading.
+196/196 - 74s - loss: 0.0334 - psnr: 26.8252 - ssim: 0.7919 - val_loss: 0.0272 - val_psnr: 28.8471 - val_ssim: 0.9129 - lr: 4.0000e-04 - 74s/epoch - 380ms/step
+Epoch 124/1000
+
+Epoch 124: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0334 - psnr: 26.8253 - ssim: 0.7919 - val_loss: 0.0272 - val_psnr: 28.8383 - val_ssim: 0.9127 - lr: 4.0000e-04 - 53s/epoch - 272ms/step
+Epoch 125/1000
+
+Epoch 125: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0334 - psnr: 26.8264 - ssim: 0.7919 - val_loss: 0.0272 - val_psnr: 28.8382 - val_ssim: 0.9127 - lr: 4.0000e-04 - 53s/epoch - 272ms/step
+Epoch 126/1000
+
+Epoch 126: val_loss did not improve from 0.02716
+196/196 - 54s - loss: 0.0334 - psnr: 26.8263 - ssim: 0.7919 - val_loss: 0.0272 - val_psnr: 28.8316 - val_ssim: 0.9128 - lr: 4.0000e-04 - 54s/epoch - 273ms/step
+Epoch 127/1000
+
+Epoch 127: val_loss did not improve from 0.02716
+196/196 - 54s - loss: 0.0334 - psnr: 26.8270 - ssim: 0.7919 - val_loss: 0.0273 - val_psnr: 28.8161 - val_ssim: 0.9127 - lr: 4.0000e-04 - 54s/epoch - 274ms/step
+Epoch 128/1000
+
+Epoch 128: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0334 - psnr: 26.8283 - ssim: 0.7920 - val_loss: 0.0273 - val_psnr: 28.7951 - val_ssim: 0.9127 - lr: 4.0000e-04 - 53s/epoch - 272ms/step
+Epoch 129/1000
+
+Epoch 129: val_loss did not improve from 0.02716
+196/196 - 54s - loss: 0.0334 - psnr: 26.8278 - ssim: 0.7920 - val_loss: 0.0272 - val_psnr: 28.8480 - val_ssim: 0.9129 - lr: 4.0000e-04 - 54s/epoch - 273ms/step
+Epoch 130/1000
+
+Epoch 130: val_loss did not improve from 0.02716
+196/196 - 54s - loss: 0.0334 - psnr: 26.8291 - ssim: 0.7920 - val_loss: 0.0273 - val_psnr: 28.8230 - val_ssim: 0.9128 - lr: 4.0000e-04 - 54s/epoch - 273ms/step
+Epoch 131/1000
+
+Epoch 131: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0334 - psnr: 26.8312 - ssim: 0.7921 - val_loss: 0.0273 - val_psnr: 28.8217 - val_ssim: 0.9128 - lr: 4.0000e-04 - 53s/epoch - 273ms/step
+Epoch 132/1000
+
+Epoch 132: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0334 - psnr: 26.8304 - ssim: 0.7920 - val_loss: 0.0272 - val_psnr: 28.8286 - val_ssim: 0.9128 - lr: 4.0000e-04 - 53s/epoch - 271ms/step
+Epoch 133/1000
+
+Epoch 133: ReduceLROnPlateau reducing learning rate to 7.999999215826393e-05.
+
+Epoch 133: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0334 - psnr: 26.8321 - ssim: 0.7920 - val_loss: 0.0273 - val_psnr: 28.8209 - val_ssim: 0.9129 - lr: 4.0000e-04 - 53s/epoch - 272ms/step
+Epoch 134/1000
+
+Epoch 134: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8434 - ssim: 0.7922 - val_loss: 0.0280 - val_psnr: 28.6290 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 135/1000
+
+Epoch 135: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8402 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6201 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 136/1000
+
+Epoch 136: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8421 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6182 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 271ms/step
+Epoch 137/1000
+
+Epoch 137: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8408 - ssim: 0.7921 - val_loss: 0.0280 - val_psnr: 28.6292 - val_ssim: 0.9116 - lr: 8.0000e-05 - 53s/epoch - 273ms/step
+Epoch 138/1000
+
+Epoch 138: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8434 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6189 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 273ms/step
+Epoch 139/1000
+
+Epoch 139: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8423 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6128 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 140/1000
+
+Epoch 140: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8425 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6193 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 273ms/step
+Epoch 141/1000
+
+Epoch 141: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8408 - ssim: 0.7920 - val_loss: 0.0280 - val_psnr: 28.6276 - val_ssim: 0.9116 - lr: 8.0000e-05 - 53s/epoch - 273ms/step
+Epoch 142/1000
+
+Epoch 142: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8426 - ssim: 0.7921 - val_loss: 0.0280 - val_psnr: 28.6302 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 143/1000
+
+Epoch 143: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8416 - ssim: 0.7921 - val_loss: 0.0280 - val_psnr: 28.6293 - val_ssim: 0.9116 - lr: 8.0000e-05 - 53s/epoch - 271ms/step
+Epoch 144/1000
+
+Epoch 144: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8434 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6184 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 145/1000
+
+Epoch 145: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8435 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6070 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 271ms/step
+Epoch 146/1000
+
+Epoch 146: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8436 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6091 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 147/1000
+
+Epoch 147: val_loss did not improve from 0.02716
+196/196 - 54s - loss: 0.0333 - psnr: 26.8433 - ssim: 0.7921 - val_loss: 0.0280 - val_psnr: 28.6273 - val_ssim: 0.9115 - lr: 8.0000e-05 - 54s/epoch - 273ms/step
+Epoch 148/1000
+
+Epoch 148: val_loss did not improve from 0.02716
+196/196 - 54s - loss: 0.0333 - psnr: 26.8427 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6250 - val_ssim: 0.9116 - lr: 8.0000e-05 - 54s/epoch - 273ms/step
+Epoch 149/1000
+
+Epoch 149: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8447 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6160 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 150/1000
+
+Epoch 150: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8440 - ssim: 0.7921 - val_loss: 0.0280 - val_psnr: 28.6264 - val_ssim: 0.9116 - lr: 8.0000e-05 - 53s/epoch - 271ms/step
+Epoch 151/1000
+
+Epoch 151: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8441 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6089 - val_ssim: 0.9114 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 152/1000
+
+Epoch 152: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8437 - ssim: 0.7921 - val_loss: 0.0280 - val_psnr: 28.6303 - val_ssim: 0.9116 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 153/1000
+
+Epoch 153: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8460 - ssim: 0.7922 - val_loss: 0.0281 - val_psnr: 28.6117 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 271ms/step
+Epoch 154/1000
+
+Epoch 154: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8449 - ssim: 0.7921 - val_loss: 0.0280 - val_psnr: 28.6296 - val_ssim: 0.9116 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 155/1000
+
+Epoch 155: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8442 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6029 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 156/1000
+
+Epoch 156: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8423 - ssim: 0.7920 - val_loss: 0.0281 - val_psnr: 28.6213 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 271ms/step
+Epoch 157/1000
+
+Epoch 157: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8455 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6146 - val_ssim: 0.9116 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 158/1000
+
+Epoch 158: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8472 - ssim: 0.7922 - val_loss: 0.0281 - val_psnr: 28.6045 - val_ssim: 0.9114 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 159/1000
+
+Epoch 159: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8471 - ssim: 0.7922 - val_loss: 0.0281 - val_psnr: 28.6270 - val_ssim: 0.9117 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 160/1000
+
+Epoch 160: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8476 - ssim: 0.7922 - val_loss: 0.0280 - val_psnr: 28.6282 - val_ssim: 0.9115 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 161/1000
+
+Epoch 161: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8455 - ssim: 0.7921 - val_loss: 0.0280 - val_psnr: 28.6374 - val_ssim: 0.9117 - lr: 8.0000e-05 - 53s/epoch - 272ms/step
+Epoch 162/1000
+
+Epoch 162: ReduceLROnPlateau reducing learning rate to 1.599999814061448e-05.
+
+Epoch 162: val_loss did not improve from 0.02716
+196/196 - 54s - loss: 0.0333 - psnr: 26.8449 - ssim: 0.7921 - val_loss: 0.0281 - val_psnr: 28.6258 - val_ssim: 0.9116 - lr: 8.0000e-05 - 54s/epoch - 273ms/step
+Epoch 163/1000
+
+Epoch 163: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8456 - ssim: 0.7922 - val_loss: 0.0282 - val_psnr: 28.6127 - val_ssim: 0.9120 - lr: 1.6000e-05 - 53s/epoch - 272ms/step
+Epoch 164/1000
+
+Epoch 164: val_loss did not improve from 0.02716
+196/196 - 53s - loss: 0.0333 - psnr: 26.8492 - ssim: 0.7922 - val_loss: 0.0281 - val_psnr: 28.6191 - val_ssim: 0.9120 - lr: 1.6000e-05 - 53s/epoch - 271ms/step
+Epoch 165/1000
+Restoring model weights from the end of the best epoch: 115.
+
+Epoch 165: val_loss did not improve from 0.02716
+196/196 - 54s - loss: 0.0333 - psnr: 26.8502 - ssim: 0.7922 - val_loss: 0.0281 - val_psnr: 28.6174 - val_ssim: 0.9120 - lr: 1.6000e-05 - 54s/epoch - 273ms/step
+Epoch 165: early stopping
+[0m
+[32mSaving model architecture text summary...[0m
+[32mSaving model training history...[0m
+[32mEvaluating model...[0m
+[36m
+40/40 - 4s - loss: 0.0272 - psnr: 28.8348 - ssim: 0.9127 - 4s/epoch - 106ms/step
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+WARNING:matplotlib.font_manager:findfont: Generic family 'sans-serif' not found because none of the following families were found: Readex Pro
+[0m
+[32mSaving model evaluation...[0m
+[32mGenerating training graphs...[0m
+[33mTotal time: 03:17:13[0m
+[35mEverything done![0m
