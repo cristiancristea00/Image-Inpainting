@@ -130,3 +130,4 @@ class GraphsGenerator:
         for method in dir(self):
             if method.startswith('create_') and method.endswith('_graph'):
                 getattr(self, method)()
+        plt.close('all')
