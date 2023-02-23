@@ -25,7 +25,7 @@ PatchMatch - SSIM: 0.9704
 PatchMatch - LPIPS: 0.9551
 UNet MAE - LPIPS: 0.9740
 UNet MSE - LPIPS: 0.9711
-UNet SSIM+L1 - LPIPS: 0.8995
+UNet SSIM+L1 - LPIPS: 0.9656
 
 
 Mask ratio: (25, 30):

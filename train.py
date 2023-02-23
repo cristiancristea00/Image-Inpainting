@@ -82,7 +82,7 @@ def run() -> None:
     unet = unet.build_model(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3))
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
-    loss = SSIM_L1()
+    loss = SSIM_L1(alpha=0.50)
     metrics = [PSNR(), SSIM()]
     callbacks = [reduce_learning_rate_callback, early_stopping_callback, checkpoint_callback]
 
