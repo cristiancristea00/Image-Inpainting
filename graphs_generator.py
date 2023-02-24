@@ -102,7 +102,7 @@ class GraphsGenerator:
         return figure
 
     def __save_graph(self, figure: plt.Figure, parameter: str) -> None:
-        save_path = self.output_dir / F'model_history_{parameter}.png'
+        save_path = self.output_dir / F'model_history_{parameter}.pdf'
         figure.savefig(save_path, dpi=100, bbox_inches='tight')
 
     def create_loss_graph(self) -> None:
