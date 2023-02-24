@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shutil
 from collections.abc import Generator
 from enum import Enum, unique
 from pathlib import Path
@@ -19,6 +20,7 @@ class Category(Enum):
     Enum for the categories.
     """
     TRAIN: str = 'train'
+    VALIDATION: str = 'val'
     TEST: str = 'test'
 
 
@@ -27,19 +29,24 @@ class ImageBrowser:
     Class for browsing images.
     """
 
-    __DEFAULT_PATH: Final[Path] = Path('..', 'images', 'original')
+    __DEFAULT_PATH: Final[Path] = Path('..', 'images', 'coco')
 
     __MAX_IMAGE_VALUE: Final[float] = 255.0
 
-    def __init__(self, image_processor: ImageProcessor, path: Path = __DEFAULT_PATH) -> None:
+    def __init__(self, image_processor: ImageProcessor, path: Path = __DEFAULT_PATH, batch_size: int = 1, should_crop: bool = False) -> None:
         """
         Args:
             image_processor (ImageProcessor): The image processor
             path (Path, optional): The path to the images. Defaults to __DEFAULT_PATH.
+            batch_size (int, optional): The size of the batch. Defaults to 1.
+            should_crop (bool, optional): Whether the images should be cropped. Defaults to False.
         """
 
         self.image_processor = image_processor
-        self.path = path
+        self.path = path.resolve()
+        self.cache_path = self.path / 'cache'
+        self.batch_size = batch_size
+        self.should_crop = should_crop
 
     @property
     def image_processor(self) -> ImageProcessor:
@@ -89,19 +96,125 @@ class ImageBrowser:
             raise FileNotFoundError('The path does not exist')
         self.__path = path
 
-    @staticmethod
-    def __prefetch(dataset: tf.data.Dataset) -> tf.data.Dataset:
+    @property
+    def cache_path(self) -> Path:
         """
-        Prefetches the dataset.
-
-        Args:
-            dataset (tf.data.Dataset): The dataset to prefetch
+        Get the path of the cache.
 
         Returns:
-            tf.data.Dataset: The prefetched dataset
+            Path: The path of the cache
         """
 
-        return dataset.prefetch(tf.data.AUTOTUNE)
+        return self.__cache_path
+
+    @cache_path.setter
+    def cache_path(self, cache_path: Path) -> None:
+        """
+        Set the path of the cache.
+
+        Args:
+            cache_path (Path): The path of the cache
+        """
+
+        if cache_path.exists():
+            shutil.rmtree(cache_path)
+
+        cache_path.mkdir(parents=True)
+        self.__cache_path = cache_path
+
+    @property
+    def batch_size(self) -> int:
+        """
+        Get the size of the batch.
+
+        Returns:
+            int: The size of the batch
+        """
+
+        return self.__batch_size
+
+    @batch_size.setter
+    def batch_size(self, batch_size: int) -> None:
+        """
+        Set the size of the batch.
+
+        Args:
+            batch_size (int): The size of the batch
+        """
+
+        if batch_size < 1:
+            raise ValueError('The batch size must be at least 1')
+        self.__batch_size = batch_size
+
+    @property
+    def should_crop(self) -> bool:
+        """
+        Get whether the images should be cropped.
+
+        Returns:
+            bool: Whether the images should be cropped
+        """
+
+        return self.__should_crop
+
+    @should_crop.setter
+    def should_crop(self, should_crop: bool) -> None:
+        """
+        Set whether the images should be cropped.
+
+        Args:
+            should_crop (bool): Whether the images should be cropped
+        """
+
+        if not isinstance(should_crop, bool):
+            raise TypeError('The should_crop must be a boolean.')
+        self.__should_crop = should_crop
+
+    @property
+    def mask_ratio(self) -> tuple[int, int]:
+        """
+        Get the ratio of the mask.
+
+        Returns:
+            int: The ratio of the mask
+        """
+
+        return self.image_processor.mask_generator.mask_ratio
+
+    def __prefetch_and_batch(self, dataset: tf.data.Dataset) -> tf.data.Dataset:
+        """
+        Prefetches and batches the dataset.
+
+        Args:
+            dataset (tf.data.Dataset): The dataset
+
+        Returns:
+            tf.data.Dataset: The prefetched and batched dataset
+        """
+
+        batched = dataset.batch(self.batch_size)
+        return batched.prefetch(tf.data.AUTOTUNE)
+
+    def __load_image(self, filepath: Path | str) -> tf.Tensor:
+        """
+        Loads an image from the filepath.
+
+        Args:
+            filepath (Path | str): The filepath of the image
+
+        Returns:
+            tf.Tensor: The image
+        """
+
+        image = tf.io.read_file(filepath)
+        image = tf.image.decode_image(image, channels=3)
+
+        if self.should_crop:
+
+            image_size: Final[int] = self.image_processor.image_size[0]
+            image = tf.image.random_crop(image, size=(image_size, image_size, 3))
+
+        return image
 
     def __get_originals(self, category: Category, shuffle: bool = False) -> tf.data.Dataset:
         """
@@ -114,10 +227,10 @@ class ImageBrowser:
         options = tf.data.Options()
         options.experimental_distribute.auto_shard_policy = tf.data.experimental.AutoShardPolicy.DATA
 
-        dataset = tf.keras.utils.image_dataset_from_directory(self.__DEFAULT_PATH / category.value, image_size=self.image_processor.image_size,
-                                                              labels=None, batch_size=self.image_processor.batch_size, shuffle=shuffle)
-        dataset = dataset.with_options(options)
-        return self.__prefetch(dataset)
+        files_path: Final[str] = str(self.path / category.value / '*')
+        dataset = tf.data.Dataset.list_files(files_path, shuffle=shuffle).with_options(options)
+        dataset = dataset.map(self.__load_image, num_parallel_calls=tf.data.AUTOTUNE)
+        return dataset.prefetch(tf.data.AUTOTUNE)
 
     @tf.autograph.experimental.do_not_convert
     def __normalize_pair(self, dataset: tf.data.Dataset) -> tf.data.Dataset:
@@ -143,16 +256,18 @@ class ImageBrowser:
                 tuple[tf.Tensor, tf.Tensor]: The normalized images
             """
 
+            image1 = tf.cast(image1, tf.float32)
+            image2 = tf.cast(image2, tf.float32)
             return image1 / self.__MAX_IMAGE_VALUE, image2 / self.__MAX_IMAGE_VALUE
 
         return dataset.map(normalize)
 
-    def __get_masked_dataset_tuple(self, image_batch: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor, tf.Tensor]:
+    def __get_masked_dataset_tuple(self, image: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor, tf.Tensor]:
         """
         Gets the masked dataset tuple.
 
         Args:
-            image_batch (tf.Tensor): The image batch
+            image (tf.Tensor): The image
 
         Returns:
             tuple[tf.Tensor, tf.Tensor, tf.Tensor]: The masked dataset tuple
@@ -171,19 +286,22 @@ class ImageBrowser:
 
             return self.image_processor.apply_mask_with_return(image)
 
-        image_batch = tf.cast(image_batch, tf.float32)
-        masked_image, mask = tf.map_fn(mask_transformer, image_batch, fn_output_signature=(tf.float32, tf.int64))
-        original_image = tf.cast(image_batch, tf.float32)
+        image = tf.cast(image, tf.float32)
+        image = tf.expand_dims(image, axis=0)
+        masked_image, mask = tf.map_fn(mask_transformer, image, fn_output_signature=(tf.float32, tf.int64))
+        masked_image = tf.squeeze(masked_image)
+        image = tf.squeeze(image)
+        original_image = tf.cast(image, tf.float32)
         masked_image = tf.cast(masked_image, tf.float32)
         mask = tf.cast(mask, tf.float32)
         return masked_image, original_image, mask
 
-    def __get_masked_dataset_pair(self, image_batch: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
+    def __get_masked_dataset_pair(self, image: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
         """
         Gets the masked dataset pair.
 
         Args:
-            image_batch (tf.Tensor): The image batch
+            image (tf.Tensor): The image
 
         Returns:
             tuple[tf.Tensor, tf.Tensor]: The masked dataset pair
@@ -202,9 +320,12 @@ class ImageBrowser:
 
             return self.image_processor.apply_mask(image)
 
-        image_batch = tf.cast(image_batch, tf.float32)
-        masked_image = tf.map_fn(mask_transformer, image_batch)
-        original_image = tf.cast(image_batch, tf.float32)
+        image = tf.cast(image, tf.float32)
+        image = tf.expand_dims(image, axis=0)
+        masked_image = tf.map_fn(mask_transformer, image)
+        masked_image = tf.squeeze(masked_image)
+        image = tf.squeeze(image)
+        original_image = tf.cast(image, tf.float32)
         masked_image = tf.cast(masked_image, tf.float32)
         return masked_image, original_image
 
@@ -219,7 +340,7 @@ class ImageBrowser:
 
         originals = self.__get_originals(Category.TEST)
         masked = originals.map(self.__get_masked_dataset_tuple, num_parallel_calls=tf.data.AUTOTUNE)
-        return self.__prefetch(masked)
+        return masked.prefetch(tf.data.AUTOTUNE)
 
     def __get_masked_pair(self) -> tf.data.Dataset:
         """
@@ -232,7 +353,7 @@ class ImageBrowser:
 
         originals = self.__get_originals(Category.TEST)
         masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
-        return self.__prefetch(masked)
+        return masked.prefetch(tf.data.AUTOTUNE)
 
     def __get_inpaint_transformer(self, inpaint_method: InpaintingMethod) -> Callable[[tf.Tensor, tf.Tensor, tf.Tensor], tuple[tf.Tensor, tf.Tensor]]:
         """
@@ -313,8 +434,7 @@ class ImageBrowser:
         masked_dataset = self.__get_masked_tuple()
         inpainted_dataset = masked_dataset.map(inpaint_transformer, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(inpainted_dataset)
-        cached = normalized.cache()
-        return self.__prefetch(cached)
+        return self.__prefetch_and_batch(normalized)
 
     def get_telea(self) -> tf.data.Dataset:
         """
@@ -328,8 +448,7 @@ class ImageBrowser:
         masked_dataset = self.__get_masked_tuple()
         inpainted_dataset = masked_dataset.map(inpaint_transformer, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(inpainted_dataset)
-        cached = normalized.cache()
-        return self.__prefetch(cached)
+        return self.__prefetch_and_batch(normalized)
 
     def get_patch_match(self) -> tf.data.Dataset:
         """
@@ -371,8 +490,7 @@ class ImageBrowser:
             )
         )
         normalized = self.__normalize_pair(inpainted_dataset)
-        cached = normalized.cache()
-        return self.__prefetch(cached)
+        return self.__prefetch_and_batch(normalized)
 
     def get_model_inpainted(self, model: tf.keras.Model) -> tf.data.Dataset:
         """
@@ -389,35 +507,57 @@ class ImageBrowser:
         masked_dataset = self.__get_masked_pair()
         normalized = self.__normalize_pair(masked_dataset)
         inpainted_dataset = normalized.map(lambda masked, original: (model(masked), original), num_parallel_calls=tf.data.AUTOTUNE)
-        cached = inpainted_dataset.cache()
-        return self.__prefetch(cached)
+        return self.__prefetch_and_batch(inpainted_dataset)
 
-    def get_train_dataset(self) -> tf.data.Dataset:
+    def get_train_dataset(self, shuffle: bool = True) -> tf.data.Dataset:
         """
-        Browses the original images and returns them as a dataset along with the
-        masked version.
+        Browses the original images and returns the train ones as a dataset
+        along with the masked version.
+
+        Args:
+            shuffle (bool): Whether to shuffle the dataset
 
         Returns:
             tf.data.Dataset: The dataset of the masked images
         """
 
-        originals = self.__get_originals(Category.TRAIN, shuffle=True)
+        originals = self.__get_originals(Category.TRAIN, shuffle=shuffle)
         masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(masked)
         cached = normalized.cache()
-        return self.__prefetch(cached)
+        return self.__prefetch_and_batch(cached)
 
-    def get_test_dataset(self) -> tf.data.Dataset:
+    def get_val_dataset(self, shuffle: bool = False) -> tf.data.Dataset:
         """
-        Browses the original images and returns them as a dataset along with the
-        masked version.
+        Browses the original images and returns the validation ones as a dataset
+        along with the masked version.
+
+        Args:
+            shuffle (bool): Whether to shuffle the dataset
 
         Returns:
             tf.data.Dataset: The dataset of the masked images
         """
 
-        originals = self.__get_originals(Category.TEST, shuffle=False)
+        originals = self.__get_originals(Category.VALIDATION, shuffle=shuffle)
         masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
         normalized = self.__normalize_pair(masked)
         cached = normalized.cache()
-        return self.__prefetch(cached)
+        return self.__prefetch_and_batch(cached)
+
+    def get_test_dataset(self, shuffle: bool = False) -> tf.data.Dataset:
+        """
+        Browses the original images and returns the test ones as a dataset along
+        with the masked version.
+
+        Args:
+            shuffle (bool): Whether to shuffle the dataset
+
+        Returns:
+            tf.data.Dataset: The dataset of the masked images
+        """
+
+        originals = self.__get_originals(Category.TEST, shuffle=shuffle)
+        masked = originals.map(self.__get_masked_dataset_pair, num_parallel_calls=tf.data.AUTOTUNE)
+        normalized = self.__normalize_pair(masked)
+        return self.__prefetch_and_batch(normalized)

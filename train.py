@@ -15,13 +15,13 @@ from graphs_generator import GraphsGenerator
 from image_browser import ImageBrowser
 from image_processor import ImageProcessor
 from mask_generator import MaskGenerator
-from metrics_and_losses import PSNR, SSIM, SSIM_L1
+from metrics_and_losses import PSNR, SSIM
 from unet import UNet
 from utils import NumpyEncoder
 
-EPOCHS: Final[int] = 1000
-BATCH: Final[int] = 256
-IMAGE_SIZE: Final[int] = 64
+EPOCHS: Final[int] = 5000
+BATCH: Final[int] = 64
+IMAGE_SIZE: Final[int] = 128
 
 
 def run() -> None:
@@ -43,7 +43,7 @@ def run() -> None:
         min_delta=1e-3,
         factor=0.2,
         patience=20,
-        cooldown=10,
+        cooldown=5,
         min_lr=1e-6,
         verbose=1
     )
@@ -68,13 +68,16 @@ def run() -> None:
     )
 
     mask_generator = MaskGenerator(IMAGE_SIZE, MASK_RATIO)
-    image_processor = ImageProcessor(mask_generator, BATCH)
-    image_browser = ImageBrowser(image_processor)
+    image_processor = ImageProcessor(mask_generator)
+    image_browser = ImageBrowser(image_processor, batch_size=BATCH, should_crop=True)
 
-    print(Fore.GREEN + 'Loading train dataset...' + Style.RESET_ALL)
+    print(Fore.GREEN + 'Loading train dataset information...' + Style.RESET_ALL)
     train_images = image_browser.get_train_dataset()
 
-    print(Fore.GREEN + 'Loading test dataset...' + Style.RESET_ALL)
+    print(Fore.GREEN + 'Loading validation dataset information...' + Style.RESET_ALL)
+    val_images = image_browser.get_val_dataset()
+
+    print(Fore.GREEN + 'Loading test dataset information...' + Style.RESET_ALL)
     test_images = image_browser.get_test_dataset()
 
     print(Fore.GREEN + 'Creating model...' + Style.RESET_ALL)
@@ -82,7 +85,7 @@ def run() -> None:
     unet = unet.build_model(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3))
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
-    loss = SSIM_L1(alpha=0.50)
+    loss = tf.keras.losses.MeanAbsoluteError()
     metrics = [PSNR(), SSIM()]
     callbacks = [reduce_learning_rate_callback, early_stopping_callback, checkpoint_callback]
 
@@ -92,7 +95,7 @@ def run() -> None:
     print(Fore.CYAN)
     model_training = unet.fit(
         train_images,
-        validation_data=test_images,
+        validation_data=val_images,
         epochs=EPOCHS,
         use_multiprocessing=True,
         workers=tf.data.AUTOTUNE,
