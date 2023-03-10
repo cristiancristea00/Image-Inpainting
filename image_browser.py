@@ -373,6 +373,7 @@ class ImageBrowser:
         elif inpaint_method is InpaintingMethod.TELEA:
 
             inpaint_func = self.image_processor.inpaint_telea
+
         else:
 
             raise ValueError('The inpainting method is not valid')
@@ -417,6 +418,7 @@ class ImageBrowser:
 
                 return transformer_wrapper(masked_and_mask[0], masked_and_mask[1])
 
+            masked = tf.expand_dims(masked, axis=0)
             inpainted_image = tf.map_fn(inner_transformer, (masked, mask), fn_output_signature=tf.float32)
             return inpainted_image, original
 
@@ -506,7 +508,7 @@ class ImageBrowser:
 
         masked_dataset = self.__get_masked_pair()
         normalized = self.__normalize_pair(masked_dataset)
-        inpainted_dataset = normalized.map(lambda masked, original: (model(masked), original), num_parallel_calls=tf.data.AUTOTUNE)
+        inpainted_dataset = normalized.map(lambda masked, original: (model(tf.expand_dims(masked, axis=0)), original), num_parallel_calls=tf.data.AUTOTUNE)
         return self.__prefetch_and_batch(inpainted_dataset)
 
     def get_train_dataset(self, shuffle: bool = True) -> tf.data.Dataset:

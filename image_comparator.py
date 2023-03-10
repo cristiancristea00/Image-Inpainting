@@ -4,6 +4,7 @@ from os import environ
 from pathlib import Path
 from typing import Final
 
+import numpy as np
 import tensorflow as tf
 from lpips import LPIPS, im2tensor
 
@@ -197,8 +198,8 @@ class ImageComparator:
 
                 inner_image1 = inner_image1.numpy() * max_pixel_value
                 inner_image2 = inner_image2.numpy() * max_pixel_value
-                inner_image1 = im2tensor(inner_image1)
-                inner_image2 = im2tensor(inner_image2)
+                inner_image1 = im2tensor(np.squeeze(inner_image1))
+                inner_image2 = im2tensor(np.squeeze(inner_image2))
                 return 1 - float(cls.__perceptual_loss(inner_image1, inner_image2).item())
 
             return tf.py_function(inner_perceptual_loss, inp=[image1, image2], Tout=float)
