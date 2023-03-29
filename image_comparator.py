@@ -58,9 +58,11 @@ class ImageComparator:
                 tf.Tensor: The mean squared error
             """
 
+            image_batch1 = tf.squeeze(image_batch1)
+            image_batch2 = tf.squeeze(image_batch2)
             return tf.reduce_mean(tf.square(image_batch1 - image_batch2))
 
-        dataset = dataset.map(compute_mse)
+        dataset = dataset.map(compute_mse, num_parallel_calls=tf.data.AUTOTUNE)
         return cls.__compute_mean(dataset)
 
     @classmethod
@@ -87,9 +89,11 @@ class ImageComparator:
                 tf.Tensor: The mean absolute error
             """
 
+            image_batch1 = tf.squeeze(image_batch1)
+            image_batch2 = tf.squeeze(image_batch2)
             return tf.reduce_mean(tf.abs(image_batch1 - image_batch2))
 
-        dataset = dataset.map(compute_mae)
+        dataset = dataset.map(compute_mae, num_parallel_calls=tf.data.AUTOTUNE)
         return cls.__compute_mean(dataset)
 
     @classmethod
@@ -117,9 +121,27 @@ class ImageComparator:
                 tf.Tensor: The peak signal-to-noise ratio
             """
 
-            return tf.image.psnr(image_batch1, image_batch2, max_val=max_image_value)
+            image_batch1 = tf.squeeze(image_batch1)
+            image_batch2 = tf.squeeze(image_batch2)
+            batch_psnr = tf.image.psnr(image_batch1, image_batch2, max_val=max_image_value)
+            return remove_infinity(batch_psnr)
 
-        dataset = dataset.map(compute_psnr)
+        def remove_infinity(psnr: tf.Tensor) -> tf.Tensor:
+            """
+            Remove infinity values.
+
+            Args:
+                psnr (tf.Tensor): The psnr
+
+            Returns:
+                tf.Tensor: The psnr without infinity values
+            """
+
+            mask = tf.math.is_finite(psnr)
+            mask.set_shape((None,))
+            return tf.boolean_mask(psnr, mask)
+
+        dataset = dataset.map(compute_psnr, num_parallel_calls=tf.data.AUTOTUNE)
         return cls.__compute_mean(dataset)
 
     @classmethod
@@ -147,9 +169,11 @@ class ImageComparator:
                 tf.Tensor: The structural similarity index
             """
 
+            image_batch1 = tf.squeeze(image_batch1)
+            image_batch2 = tf.squeeze(image_batch2)
             return tf.image.ssim(image_batch1, image_batch2, max_val=max_image_value)
 
-        dataset = dataset.map(compute_ssim)
+        dataset = dataset.map(compute_ssim, num_parallel_calls=tf.data.AUTOTUNE)
         return cls.__compute_mean(dataset)
 
     @classmethod
@@ -205,5 +229,5 @@ class ImageComparator:
             return tf.py_function(inner_perceptual_loss, inp=[image1, image2], Tout=float)
 
         dataset = dataset.unbatch()
-        dataset = dataset.map(perceptual_loss_wrapper)
+        dataset = dataset.map(perceptual_loss_wrapper, num_parallel_calls=tf.data.AUTOTUNE)
         return cls.__compute_mean(dataset)

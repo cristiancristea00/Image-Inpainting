@@ -1,0 +1,30 @@
+Mask ratio (5, 10):
+PSNR: 17.3061
+SSIM: 0.8137
+LPIPS: 0.6505
+
+
+Mask ratio (15, 20):
+PSNR: 12.9044
+SSIM: 0.5743
+LPIPS: 0.5198
+
+
+Mask ratio (25, 30):
+PSNR: 10.7504
+SSIM: 0.4080
+LPIPS: 0.4650
+
+
+Mask ratio (35, 40):
+PSNR: 9.3139
+SSIM: 0.2962
+LPIPS: 0.4274
+
+
+Mask ratio (45, 50):
+PSNR: 8.2717
+SSIM: 0.2210
+LPIPS: 0.3911
+
+

@@ -1,4 +1,4 @@
-Mask ratio: (5, 10):
+Mask ratio (5, 10):
 Telea - PSNR: 38.9558
 Telea - SSIM: 0.9888
 Telea - LPIPS: 0.9911
@@ -13,7 +13,7 @@ UNet MSE - LPIPS: 0.9707
 UNet SSIM+L1 - LPIPS: 0.9674
 
 
-Mask ratio: (15, 20):
+Mask ratio (15, 20):
 Telea - PSNR: 33.7351
 Telea - SSIM: 0.9652
 Telea - LPIPS: 0.9609
@@ -28,7 +28,7 @@ UNet MSE - LPIPS: 0.9711
 UNet SSIM+L1 - LPIPS: 0.9656
 
 
-Mask ratio: (25, 30):
+Mask ratio (25, 30):
 Telea - PSNR: 31.0089
 Telea - SSIM: 0.9373
 Telea - LPIPS: 0.9196
@@ -43,7 +43,7 @@ UNet MSE - LPIPS: 0.9557
 UNet SSIM+L1 - LPIPS: 0.9523
 
 
-Mask ratio: (35, 40):
+Mask ratio (35, 40):
 Telea - PSNR: 28.9527
 Telea - SSIM: 0.9043
 Telea - LPIPS: 0.8730
@@ -58,7 +58,7 @@ UNet MSE - LPIPS: 0.9509
 UNet SSIM+L1 - LPIPS: 0.9492
 
 
-Mask ratio: (45, 50):
+Mask ratio (45, 50):
 Telea - PSNR: 27.2042
 Telea - SSIM: 0.8653
 Telea - LPIPS: 0.8267

@@ -9,12 +9,13 @@ from pathlib import Path
 from typing import Final
 
 import cv2 as cv
+import tensorflow as tf
 from colorama import Fore, Style
 
 from image_processor import ImageProcessor
 from mask_generator import MaskGenerator
 
-IMAGE_SIZE: Final[int] = 64
+IMAGE_SIZE: Final[int] = 128
 MASK_RATIO: Final = ((5, 10), (15, 20), (25, 30), (35, 40), (45, 50))
 
 MASKED_PATH: Final[Path] = Path('..', 'images', 'masked').resolve()
@@ -28,12 +29,15 @@ IMAGE_PROCESSOR: ImageProcessor = ImageProcessor(MASK_GENERATOR)
 
 
 def mask_image(path: Path, mask_ratio: tuple[int, int]) -> None:
-    masked_path = MASKED_PATH / str(mask_ratio) / path.name
-    mask_path = MASKS_PATH / str(mask_ratio) / path.name
-    output_path = OUTPUT_PATH / str(mask_ratio) / path.name
+    path_name = path.with_suffix('.png').name
+
+    masked_path = MASKED_PATH / str(mask_ratio) / path_name
+    mask_path = MASKS_PATH / str(mask_ratio) / path_name
+    output_path = OUTPUT_PATH / str(mask_ratio) / path_name
 
     image = cv.imread(str(path))
-    masked, mask = IMAGE_PROCESSOR.apply_mask_with_return_numpy(image)
+    cropped = tf.image.random_crop(image, size=(IMAGE_SIZE, IMAGE_SIZE, 3)).numpy()
+    masked, mask = IMAGE_PROCESSOR.apply_mask_with_return_numpy(cropped)
 
     cv.imwrite(str(masked_path), masked.astype('uint8'))
     cv.imwrite(str(mask_path), mask.astype('uint8'))

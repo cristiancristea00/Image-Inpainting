@@ -20,13 +20,48 @@ IMAGE_SIZE: Final[int] = 128
 MASK_RATIO: Final = ((5, 10), (15, 20), (25, 30), (35, 40), (45, 50))
 
 
-def run() -> None:
+def baseline() -> None:
+    baseline_path = Path('results', F'baseline_{DATASET.lower()}.txt')
+
+    with open(baseline_path, 'w', encoding='UTF-8') as results_file:
+        for mask_ratio in MASK_RATIO:
+            print(Fore.YELLOW + F'Processing {DATASET} dataset with mask ratio {mask_ratio}...' + Style.RESET_ALL, end='\n\n', flush=True)
+            print(F'Mask ratio {mask_ratio}:', file=results_file, flush=True)
+
+            mask_generator = MaskGenerator(IMAGE_SIZE, mask_ratio)
+            image_processor = ImageProcessor(mask_generator)
+            image_browser = ImageBrowser(image_processor, batch_size=BATCH, should_crop=True)
+
+            print(Fore.GREEN + 'Loading dataset...' + Style.RESET_ALL, flush=True)
+            images = image_browser.get_test_dataset()
+
+            print(Fore.GREEN + 'Processing images...' + Style.RESET_ALL, flush=True)
+
+            psnr_metric = ImageComparator.compute_psnr(images)
+            ssim_metric = ImageComparator.compute_ssim(images)
+            lpips_metric = ImageComparator.compute_lpips(images)
+
+            psnr: str = F'PSNR: {psnr_metric:.4f}'
+            ssim: str = F'SSIM: {ssim_metric:.4f}'
+            lpips: str = F'LPIPS: {lpips_metric:.4f}'
+            print(Fore.CYAN + psnr + Style.RESET_ALL, flush=True)
+            print(Fore.CYAN + ssim + Style.RESET_ALL, flush=True)
+            print(Fore.CYAN + lpips + Style.RESET_ALL, flush=True)
+            print(psnr, file=results_file, flush=True)
+            print(ssim, file=results_file, flush=True)
+            print(lpips, file=results_file, flush=True)
+
+            print(end='\n\n', flush=True)
+            print(end='\n\n', file=results_file, flush=True)
+
+
+def results() -> None:
     results_path = Path('results', F'results_{DATASET.lower()}.txt')
 
     with open(results_path, 'w', encoding='UTF-8') as results_file:
         for mask_ratio in MASK_RATIO:
             print(Fore.YELLOW + F'Processing {DATASET} dataset with mask ratio {mask_ratio}...' + Style.RESET_ALL, end='\n\n', flush=True)
-            print(F'Mask ratio: {mask_ratio}:', file=results_file, flush=True)
+            print(F'Mask ratio {mask_ratio}:', file=results_file, flush=True)
 
             mask_generator = MaskGenerator(IMAGE_SIZE, mask_ratio)
             image_processor = ImageProcessor(mask_generator)
@@ -132,7 +167,8 @@ def main() -> None:
     start_time = time.perf_counter()
     try:
 
-        run()
+        baseline()
+        results()
 
     except KeyboardInterrupt:
 

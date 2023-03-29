@@ -19,6 +19,7 @@ class Category(Enum):
     """
     Enum for the categories.
     """
+
     TRAIN: str = 'train'
     VALIDATION: str = 'val'
     TEST: str = 'test'
@@ -460,8 +461,6 @@ class ImageBrowser:
             tf.data.Dataset: The dataset of the inpainted images
         """
 
-        images_path = self.__DEFAULT_PATH / Category.TEST.value
-
         def get_patch_match_images_generator() -> Generator[tuple[np.ndarray, np.ndarray], None, None]:
             """
             Browses the inpainted images using PatchMatch and returns them as a tuple.
@@ -474,10 +473,12 @@ class ImageBrowser:
             mask_ratio = self.image_processor.mask_generator.mask_ratio
             inpainted_path = patch_match_path / str(mask_ratio)
 
+            images_path = self.__DEFAULT_PATH / Category.TEST.value
+
             for image_path in images_path.iterdir():
                 original = cv.imread(str(image_path)).astype(np.float64)
                 original = np.expand_dims(original, axis=0)
-                masked = cv.imread(str(inpainted_path / image_path.name)).astype(np.float64)
+                masked = cv.imread(str(inpainted_path / image_path.with_suffix('.png').name)).astype(np.float64)
                 masked = np.expand_dims(masked, axis=0)
 
                 yield masked, original

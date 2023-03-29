@@ -1,1 +1,73 @@
-Mask ratio: (5, 10):
+Mask ratio (5, 10):
+Telea - PSNR: 36.4037
+Telea - SSIM: 0.9777
+Telea - LPIPS: 0.9841
+Navier-Stokes - PSNR: 36.6665
+Navier-Stokes - SSIM: 0.9795
+Navier-Stokes - LPIPS: 0.9853
+PatchMatch - PSNR: 36.4361
+PatchMatch - SSIM: 0.9760
+PatchMatch - LPIPS: 0.9833
+UNet MAE - LPIPS: 0.8734
+UNet MSE - LPIPS: 0.8687
+UNet SSIM+MAE - LPIPS: 0.8715
+
+
+Mask ratio (15, 20):
+Telea - PSNR: 31.4559
+Telea - SSIM: 0.9377
+Telea - LPIPS: 0.9526
+Navier-Stokes - PSNR: 31.5088
+Navier-Stokes - SSIM: 0.9421
+Navier-Stokes - LPIPS: 0.9556
+PatchMatch - PSNR: 31.3784
+PatchMatch - SSIM: 0.9318
+PatchMatch - LPIPS: 0.9516
+UNet MAE - LPIPS: 0.8593
+UNet MSE - LPIPS: 0.8329
+UNet SSIM+MAE - LPIPS: 0.8691
+
+
+Mask ratio (25, 30):
+Telea - PSNR: 28.8709
+Telea - SSIM: 0.8948
+Telea - LPIPS: 0.9148
+Navier-Stokes - PSNR: 28.9274
+Navier-Stokes - SSIM: 0.9016
+Navier-Stokes - LPIPS: 0.9191
+PatchMatch - PSNR: 28.9628
+PatchMatch - SSIM: 0.8830
+PatchMatch - LPIPS: 0.9177
+UNet MAE - LPIPS: 0.8078
+UNet MSE - LPIPS: 0.7735
+UNet SSIM+MAE - LPIPS: 0.7924
+
+
+Mask ratio (35, 40):
+Telea - PSNR: 27.0573
+Telea - SSIM: 0.8484
+Telea - LPIPS: 0.8701
+Navier-Stokes - PSNR: 27.0679
+Navier-Stokes - SSIM: 0.8570
+Navier-Stokes - LPIPS: 0.8754
+PatchMatch - PSNR: 27.1948
+PatchMatch - SSIM: 0.8290
+PatchMatch - LPIPS: 0.8807
+UNet MAE - LPIPS: 0.7834
+UNet MSE - LPIPS: 0.7193
+UNet SSIM+MAE - LPIPS: 0.7511
+
+
+Mask ratio (45, 50):
+Telea - PSNR: 25.5404
+Telea - SSIM: 0.7979
+Telea - LPIPS: 0.8195
+Navier-Stokes - PSNR: 25.4945
+Navier-Stokes - SSIM: 0.8078
+Navier-Stokes - LPIPS: 0.8246
+PatchMatch - PSNR: 25.7768
+PatchMatch - SSIM: 0.7704
+PatchMatch - LPIPS: 0.8413
+UNet MAE - LPIPS: 0.7322
+UNet MSE - LPIPS: 0.6924
+UNet SSIM+MAE - LPIPS: 0.7344
