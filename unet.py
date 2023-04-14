@@ -10,6 +10,10 @@ DROPOUT_RATE: Final[float] = 0.05
 
 
 class UpsampleMode(Enum):
+    """
+    Upsample mode for UNet.
+    """
+
     DECONVOLUTION = 'deconvolution'
     BILINEAR = 'bilinear'
     NEAREST_NEIGHBOR = 'nearest'
@@ -23,6 +27,10 @@ UpsampleModeType: TypeAlias = Literal[
 
 
 class DownsampleMode(Enum):
+    """
+    Downsample mode for UNet.
+    """
+
     STRIDE = 'stride'
     MAX_POOL = 'max_pool'
     AVERAGE_POOL = 'average_pool'
@@ -36,6 +44,10 @@ DownsampleModeType: TypeAlias = Literal[
 
 
 class PadMode(Enum):
+    """
+    Padding mode for UNet.
+    """
+
     CONSTANT = 'CONSTANT'
     REFLECT = 'REFLECT'
     SYMMETRIC = 'SYMMETRIC'
@@ -52,9 +64,18 @@ UNetConfig: TypeAlias = tuple[int, int, int, int, int, int]
 
 
 class Padding2D(tf.keras.layers.Layer):
+    """
+    Padding layer for 2D tensors.
+    """
 
     def __init__(self, padding: int | tuple[int, int] = 1, pad_mode: PadModeType = PadMode.CONSTANT, *args, **kwargs) -> None:
+        """
+        Initialize padding layer.
 
+        Args:
+            padding (int | tuple[int, int], optional): Padding size. Defaults to 1
+            pad_mode (PadModeType, optional): Padding mode. Defaults to PadMode.CONSTANT
+        """
         super().__init__(*args, **kwargs)
 
         self.pad_mode = pad_mode
@@ -65,6 +86,13 @@ class Padding2D(tf.keras.layers.Layer):
             self.padding = padding
 
     def get_config(self) -> dict[str, Any]:
+        """
+        Get layer configuration.
+
+        Returns:
+            dict[str, Any]: Layer configuration
+        """
+
         config = super().get_config()
 
         config.update({
@@ -74,15 +102,34 @@ class Padding2D(tf.keras.layers.Layer):
 
         return config
 
-    def compute_output_shape(self, input_shape) -> tuple[int, int, int, int]:
+    def compute_output_shape(self, input_shape: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+        """
+        Compute output shape.
+
+        Args:
+            input_shape (tuple[int, int, int, int]): Input shape
+
+        Returns:
+            tuple[int, int, int, int]: Output shape
+        """
 
         batch = input_shape[0]
         height = input_shape[1] + 2 * self.padding[0]
         width = input_shape[2] + 2 * self.padding[1]
         chanels = input_shape[3]
+
         return batch, height, width, chanels
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """
+        Forward pass.
+
+        Args:
+            inputs (tf.Tensor): Input tensor
+
+        Returns:
+            tf.Tensor: Output tensor
+        """
 
         width, height = self.padding
         paddings = ([0, 0], [height, height], [width, width], [0, 0])
@@ -91,9 +138,22 @@ class Padding2D(tf.keras.layers.Layer):
 
 
 class UNet2DConvolutionBlock(tf.keras.layers.Layer):
+    """
+    UNet 2D convolution block.
+    """
 
     def __init__(self, filters: int, kernel_size: int, stride: int = 1, pad_mode: PadModeType = PadMode.CONSTANT, *args,
                  **kwargs) -> None:
+        """
+        Initialize UNet 2D convolution block.
+
+        Args:
+            filters (int): Number of filters
+            kernel_size (int): Kernel size
+            stride (int, optional): Stride. Defaults to 1
+            pad_mode (PadModeType, optional): Padding mode. Defaults to PadMode.CONSTANT
+        """
+
         super().__init__(*args, **kwargs)
 
         self.filters = filters
@@ -114,6 +174,13 @@ class UNet2DConvolutionBlock(tf.keras.layers.Layer):
         self.activation = tf.keras.layers.LeakyReLU(alpha=LEAKY_RELU_ALPHA)
 
     def get_config(self) -> dict[str, Any]:
+        """
+        Get layer configuration.
+
+        Returns:
+            dict[str, Any]: Layer configuration
+        """
+
         config = super().get_config()
 
         config.update({
@@ -126,6 +193,16 @@ class UNet2DConvolutionBlock(tf.keras.layers.Layer):
         return config
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """
+        Forward pass.
+
+        Args:
+            inputs (tf.Tensor): Input tensor
+
+        Returns:
+            tf.Tensor: Output tensor
+        """
+
         padded = self.pad(inputs)
         convolved = self.conv(padded)
         normed = self.batch_norm(convolved)
@@ -135,9 +212,22 @@ class UNet2DConvolutionBlock(tf.keras.layers.Layer):
 
 
 class UNetDownLayer(tf.keras.layers.Layer):
+    """
+    UNet down layer.
+    """
 
     def __init__(self, filters: int, kernel_size: int, stride: int = 1, downsample_mode: DownsampleModeType = DownsampleMode.MAX_POOL,
                  pad_mode: PadModeType = PadMode.CONSTANT, *args, **kwargs) -> None:
+        """
+        Initialize UNet down layer.
+
+        Args:
+            filters (int): Number of filters
+            kernel_size (int): Kernel size
+            stride (int, optional): Stride. Defaults to 1
+            downsample_mode (DownsampleModeType, optional): Downsample mode. Defaults to DownsampleMode.MAX_POOL
+            pad_mode (PadModeType, optional): Padding mode. Defaults to PadMode.CONSTANT
+        """
 
         super().__init__(*args, **kwargs)
 
@@ -170,6 +260,13 @@ class UNetDownLayer(tf.keras.layers.Layer):
         self.unet_conv_block = UNet2DConvolutionBlock(filters=filters, kernel_size=kernel_size, stride=stride, pad_mode=pad_mode)
 
     def get_config(self) -> dict[str, Any]:
+        """
+        Get layer configuration.
+
+        Returns:
+            dict[str, Any]: Layer configuration
+        """
+
         config = super().get_config()
 
         config.update({
@@ -182,7 +279,16 @@ class UNetDownLayer(tf.keras.layers.Layer):
 
         return config
 
-    def call(self, inputs: tf.Tensor, *args, **kwargs) -> tf.Tensor:
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """
+        Forward pass.
+
+        Args:
+            inputs (tf.Tensor): Input tensor
+
+        Returns:
+            tf.Tensor: Output tensor
+        """
 
         convolved = self.conv(inputs)
         downsampled = self.downsample(convolved) if hasattr(self, 'downsample') else convolved
@@ -194,9 +300,21 @@ class UNetDownLayer(tf.keras.layers.Layer):
 
 
 class UNetUpLayer(tf.keras.layers.Layer):
+    """
+    UNet up layer.
+    """
 
     def __init__(self, filters: int, kernel_size: int, upsample_mode: UpsampleModeType = UpsampleMode.DECONVOLUTION,
                  pad_mode: PadModeType = PadMode.CONSTANT, *args, **kwargs) -> None:
+        """
+        Initialize UNet up layer.
+
+        Args:
+            filters (int): Number of filters
+            kernel_size (int): Kernel size
+            upsample_mode (UpsampleModeType, optional): Upsample mode. Defaults to UpsampleMode.DECONVOLUTION
+            pad_mode (PadModeType, optional): Padding mode. Defaults to PadMode.CONSTANT
+        """
 
         super().__init__(*args, **kwargs)
 
@@ -225,6 +343,13 @@ class UNetUpLayer(tf.keras.layers.Layer):
             self.upsample = tf.keras.layers.UpSampling2D(size=2, interpolation=upsample_mode.value)
 
     def get_config(self) -> dict[str, Any]:
+        """
+        Get layer configuration.
+
+        Returns:
+            dict[str, Any]: Layer configuration
+        """
+
         config = super().get_config()
 
         config.update({
@@ -235,7 +360,16 @@ class UNetUpLayer(tf.keras.layers.Layer):
         })
         return config
 
-    def call(self, inputs: tf.Tensor, *args, **kwargs) -> tf.Tensor:
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """
+        Forward pass.
+
+        Args:
+            inputs (tf.Tensor): Input tensor
+
+        Returns:
+            tf.Tensor: Output tensor
+        """
 
         normed = self.batch_norm(inputs)
         convolved1 = self.unet_conv_block_1(normed)
@@ -246,10 +380,26 @@ class UNetUpLayer(tf.keras.layers.Layer):
 
 
 class UNet(tf.keras.Model):
+    """
+    UNet model.
+    """
 
     def __init__(self, filters: UNetConfig, kernels: UNetConfig, skip_filters: UNetConfig, skip_kernels: UNetConfig, output_channels: int = 3,
                  downsample_mode: DownsampleModeType = DownsampleMode.MAX_POOL, pad_mode: PadModeType = PadMode.CONSTANT,
                  upsample_mode: UpsampleModeType = UpsampleMode.DECONVOLUTION, *args, **kwargs) -> None:
+        """
+        Initialize UNet model.
+
+        Args:
+            filters (UNetConfig): Number of filters per layer
+            kernels (UNetConfig): Kernel size per layer
+            skip_filters (UNetConfig): Number of filters per skip layer
+            skip_kernels (UNetConfig): Kernel size per skip layer
+            output_channels (int, optional): Number of output channels. Defaults to 3.
+            downsample_mode (DownsampleModeType, optional): Downsample mode. Defaults to DownsampleMode.MAX_POOL.
+            pad_mode (PadModeType, optional): Padding mode. Defaults to PadMode.CONSTANT.
+            upsample_mode (UpsampleModeType, optional): Upsample mode. Defaults to UpsampleMode.DECONVOLUTION.
+        """
 
         super().__init__(*args, **kwargs)
 
@@ -294,6 +444,13 @@ class UNet(tf.keras.Model):
         )
 
     def get_config(self) -> dict[str, Any]:
+        """
+        Get layer configuration.
+
+        Returns:
+            dict[str, Any]: Layer configuration
+        """
+
         config = super().get_config()
 
         config.update({
@@ -310,6 +467,15 @@ class UNet(tf.keras.Model):
         return config
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """
+        Forward pass.
+
+        Args:
+            inputs (tf.Tensor): Input tensor
+
+        Returns:
+            tf.Tensor: Output tensor
+        """
 
         down_computed_0 = self.down_layers[0](inputs)
         down_computed_1 = self.down_layers[1](down_computed_0)
@@ -335,10 +501,26 @@ class UNet(tf.keras.Model):
         return self.conv(up_computed_0)
 
     @property
-    def name(self) -> Literal['UNet']:
+    def name(self) -> str:
+        """
+        Get model name.
+
+        Returns:
+            str: Model name
+        """
+
         return 'UNet'
 
     def build_model(self, input_shape: tuple[int, int, int]) -> tf.keras.Model:
+        """
+        Build model.
+
+        Args:
+            input_shape (tuple[int, int, int]): Input shape
+
+        Returns:
+            tf.keras.Model: UNet model
+        """
 
         inputs = tf.keras.Input(shape=input_shape)
         return tf.keras.Model(inputs=inputs, outputs=self.call(inputs), name=self.name)
