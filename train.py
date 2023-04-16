@@ -1,11 +1,8 @@
 from __future__ import annotations
 
 import json
-import time
-import traceback
 from contextlib import redirect_stdout
 from pathlib import Path
-from sys import argv
 from typing import Final
 
 import tensorflow as tf
@@ -15,27 +12,30 @@ from graphs_generator import GraphsGenerator
 from image_browser import ImageBrowser
 from image_processor import ImageProcessor
 from mask_generator import MaskGenerator
-from metrics_and_losses import PSNR, SSIM, LPIPS
+from metrics_and_losses import PSNR, SSIM
+from resnet import ResNet
 from unet import UNet
 from utils import NumpyEncoder
 
-EPOCHS: Final[int] = 5000
+EPOCHS: Final[int] = 500
 BATCH: Final[int] = 64
 IMAGE_SIZE: Final[int] = 128
 
 
-def run() -> None:
-    if len(argv) != 4:
-        raise ValueError('Invalid number of arguments!')
+def train(model: UNet | ResNet, arguments: list[str]) -> None:
+    if len(arguments) != 4:
+        raise ValueError(F'Expected 3 arguments, but got {len(arguments) - 1}. '
+                         F'You must pass the prefix, the minimum value and the maximum value of the mask ratio.')
 
-    prefix = argv[1]
-    min_value = argv[2]
-    max_value = argv[3]
+    prefix = arguments[1]
+    min_value = arguments[2]
+    max_value = arguments[3]
     file_name: str = F'{prefix}_{min_value}-{max_value}'
 
-    model_path = Path('models', F'model_{file_name}')
+    model_path = Path('models', F'{model.type}_{file_name}')
+    model_path.mkdir(parents=True, exist_ok=True)
 
-    MASK_RATIO: Final[tuple[float, float]] = (float(min_value), float(max_value))
+    mask_ratio: Final[tuple[float, float]] = float(min_value), float(max_value)
 
     reduce_learning_rate_callback = tf.keras.callbacks.ReduceLROnPlateau(
         monitor='val_loss',
@@ -67,7 +67,7 @@ def run() -> None:
         save_freq='epoch'
     )
 
-    mask_generator = MaskGenerator(IMAGE_SIZE, MASK_RATIO)
+    mask_generator = MaskGenerator(IMAGE_SIZE, mask_ratio)
     image_processor = ImageProcessor(mask_generator)
     image_browser = ImageBrowser(image_processor, batch_size=BATCH, should_crop=True)
 
@@ -80,20 +80,22 @@ def run() -> None:
     print(Fore.GREEN + 'Loading test dataset information...' + Style.RESET_ALL, flush=True)
     test_images = image_browser.get_test_dataset()
 
-    print(Fore.GREEN + 'Creating model...' + Style.RESET_ALL, flush=True)
-    unet = UNet(filters=(16, 32, 64, 64, 64, 128), kernels=(7, 7, 5, 5, 3, 3), skip_filters=(4,) * 6, skip_kernels=(1,) * 6)
-    unet = unet.build_model(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3))
+    print(Fore.GREEN + 'Saving model architecture text summary...' + Style.RESET_ALL, flush=True)
+    with open(model_path / 'architecture.txt', 'w', encoding='UTF-8') as file:
+        with redirect_stdout(file):
+            model.summary(expand_nested=True)
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
-    loss = LPIPS(input_shape=IMAGE_SIZE)
+    loss = tf.keras.losses.MeanAbsoluteError()
     metrics = [PSNR(), SSIM()]
     callbacks = [reduce_learning_rate_callback, early_stopping_callback, checkpoint_callback]
 
-    unet.compile(optimizer=optimizer, loss=loss, metrics=metrics)
+    model = model.create()
+    model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 
     print(Fore.GREEN + 'Training model...' + Style.RESET_ALL, flush=True)
     print(Fore.CYAN, flush=True)
-    model_training = unet.fit(
+    model_training = model.fit(
         train_images,
         validation_data=val_images,
         epochs=EPOCHS,
@@ -104,21 +106,16 @@ def run() -> None:
     )
     print(Style.RESET_ALL, flush=True)
 
-    print(Fore.GREEN + 'Saving model architecture text summary...' + Style.RESET_ALL, flush=True)
-    with open(model_path / 'architecture.txt', 'w', encoding='UTF-8') as file:
-        with redirect_stdout(file):
-            unet.summary(expand_nested=True)
-
     print(Fore.GREEN + 'Saving model training history...' + Style.RESET_ALL, flush=True)
     with open(model_path / R'model_training.json', 'w', encoding='UTF-8') as file:
         history = json.dumps(model_training.history, cls=NumpyEncoder, indent=4)
         file.write(history)
 
-    unet.save(model_path / 'model.h5', save_format='h5')
+    model.save(model_path / 'model.h5', save_format='h5')
 
     print(Fore.GREEN + 'Evaluating model...' + Style.RESET_ALL, flush=True)
     print(Fore.CYAN, flush=True)
-    model_evaluation = unet.evaluate(
+    model_evaluation = model.evaluate(
         test_images,
         use_multiprocessing=True,
         workers=tf.data.AUTOTUNE,
@@ -128,45 +125,10 @@ def run() -> None:
     print(Style.RESET_ALL, flush=True)
 
     print(Fore.GREEN + 'Saving model evaluation...' + Style.RESET_ALL, flush=True)
-    with open(model_path / R'model_evaluation.json', 'w', encoding='UTF-8') as file:
+    with open(model_path / 'model_evaluation.json', 'w', encoding='UTF-8') as file:
         evaluation = json.dumps(model_evaluation, cls=NumpyEncoder)
         file.write(evaluation)
 
     print(Fore.GREEN + 'Generating training graphs...' + Style.RESET_ALL, flush=True)
     graphs_generator = GraphsGenerator(model_training.history, model_path)
     graphs_generator.create_all_graphs()
-
-
-def main() -> None:
-    print(Fore.MAGENTA + 'Starting script...' + Style.RESET_ALL, flush=True)
-
-    start_time = time.perf_counter()
-    try:
-
-        gpus = tf.config.list_logical_devices('GPU')
-        strategy = tf.distribute.MirroredStrategy(gpus)
-        with strategy.scope():
-            run()
-
-    except KeyboardInterrupt:
-
-        print(Fore.RED + '\nScript interrupted by the user!' + Style.RESET_ALL, flush=True)
-
-    except Exception:
-
-        print(Fore.RED, flush=True)
-        print('Script failed with the following error:', flush=True)
-        traceback.print_exc()
-        print(Style.RESET_ALL, flush=True)
-
-    end_time = time.perf_counter()
-
-    elapsed = end_time - start_time
-    elapsed_time = time.strftime('%H:%M:%S', time.gmtime(elapsed))
-
-    print(Fore.YELLOW + F'Total time: {elapsed_time}' + Style.RESET_ALL, flush=True)
-    print(Fore.MAGENTA + 'Everything done!' + Style.RESET_ALL, flush=True)
-
-
-if __name__ == '__main__':
-    main()

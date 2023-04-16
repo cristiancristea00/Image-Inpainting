@@ -122,11 +122,11 @@ class ImageProcessor:
 
         if color == MaskColor.WHITE:
 
-            masked[mask == MaskGenerator.MASK_VALUE] = MaskColor.WHITE.value
+            masked[mask == MaskGenerator.__MASK_VALUE] = MaskColor.WHITE.value
 
         elif color == MaskColor.BLACK:
 
-            masked[mask == MaskGenerator.MASK_VALUE] = MaskColor.BLACK.value
+            masked[mask == MaskGenerator.__MASK_VALUE] = MaskColor.BLACK.value
 
         else:
 

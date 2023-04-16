@@ -1,90 +1,347 @@
-from typing import Any
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any, Final
 
 import tensorflow as tf
 
-from metrics_and_losses import LPIPS
+from layers import GatedConv2D, Padding2D, PadModeType, PadMode
+
+LEAKY_RELU_ALPHA: Final[float] = 0.2
+DROPOUT_RATE: Final[float] = 0.05
 
 
-class GatedConv2D(tf.keras.layers.Layer):
-    def __init__(self, filters: int, kernel_size: int | tuple[int, int], strides: int | tuple[int, int] = 1, padding: str = 'same',
-                 dilation_rate: int | tuple[int, int] = 1, activation: str | tf.keras.layers.Layer = None, kernel_initializer: str = 'he_normal',
-                 bias_initializer: str = 'he_normal', kernel_regularizer: tf.keras.regularizers.Regularizer = None,
-                 bias_regularizer: tf.keras.regularizers.Regularizer = None, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+class ResidualBlock(tf.keras.layers.Layer):
+    """
+    Residual Block
+    """
 
+    def __init__(self, is_gated: bool, filters: int, kernel_size: int | tuple[int, int], strides: int | tuple[int, int] = 1,
+                 dilation_rate: int | tuple[int, int] = 1, pad_mode: PadModeType = PadMode.REFLECT, **kwargs) -> None:
+        """
+        Initialize Residual Block.
+
+        Args:
+            is_gated (bool): Apply gated convolution
+            filters (int): Number of filters
+            kernel_size (int | tuple[int, int]): Kernel size
+            strides (int | tuple[int, int], optional): Strides. Defaults to 1.
+            dilation_rate (int | tuple[int, int], optional): Dilation rate. Defaults to 1.
+            pad_mode (PadModeType, optional): Padding mode. Defaults to PadMode.REFLECT
+        """
+
+        super().__init__(**kwargs)
+
+        self.is_gated = is_gated
         self.filters = filters
         self.kernel_size = kernel_size
         self.strides = strides
-        self.padding = padding
         self.dilation_rate = dilation_rate
-        self.kernel_initializer = kernel_initializer
-        self.bias_initializer = bias_initializer
-        self.kernel_regularizer = kernel_regularizer
-        self.bias_regularizer = bias_regularizer
+        self.pad_mode = pad_mode
 
-        if isinstance(activation, str) or activation is None:
-            self.activation = tf.keras.layers.Activation(activation)
+        if self.is_gated:
+            Conv2D = GatedConv2D
         else:
-            self.activation = activation
+            Conv2D = tf.keras.layers.Conv2D
 
-        self.conv_layer = tf.keras.layers.Conv2D(
+        if isinstance(self.kernel_size, int):
+            padding = (self.kernel_size + (self.kernel_size - 1) * (self.dilation_rate - 1) - 1) // 2
+
+            self.pad1 = Padding2D(padding=padding, pad_mode=pad_mode)
+            self.pad2 = Padding2D(padding=padding, pad_mode=pad_mode)
+        else:
+            padding_x = (self.kernel_size[0] + (self.kernel_size[0] - 1) * (self.dilation_rate[0] - 1) - 1) // 2
+            padding_y = (self.kernel_size[1] + (self.kernel_size[1] - 1) * (self.dilation_rate[1] - 1) - 1) // 2
+
+            self.pad1 = Padding2D(padding=(padding_x, padding_y), pad_mode=pad_mode)
+            self.pad2 = Padding2D(padding=(padding_x, padding_y), pad_mode=pad_mode)
+
+        self.conv1 = Conv2D(
             filters=self.filters,
             kernel_size=self.kernel_size,
             strides=self.strides,
-            padding=self.padding,
+            padding='valid',
             dilation_rate=self.dilation_rate,
-            kernel_initializer=self.kernel_initializer,
-            bias_initializer=self.bias_initializer,
-            kernel_regularizer=self.kernel_regularizer,
-            bias_regularizer=self.bias_regularizer
+            kernel_initializer='he_normal',
+            bias_initializer='he_normal',
+            name='conv1'
         )
-
-        self.gate_layer = tf.keras.layers.Conv2D(
+        self.batch_norm1 = tf.keras.layers.BatchNormalization(name='batch_norm1')
+        self.conv2 = Conv2D(
             filters=self.filters,
             kernel_size=self.kernel_size,
             strides=self.strides,
-            padding=self.padding,
+            padding='valid',
             dilation_rate=self.dilation_rate,
-            activation='sigmoid',
-            kernel_initializer=self.kernel_initializer,
-            bias_initializer=self.bias_initializer,
-            kernel_regularizer=self.kernel_regularizer,
-            bias_regularizer=self.bias_regularizer
+            kernel_initializer='he_normal',
+            bias_initializer='he_normal',
+            name='conv2'
         )
+        self.batch_norm2 = tf.keras.layers.BatchNormalization(name='batch_norm2')
 
-    def call(self, inputs: tf.Tensor, *args, **kwargs) -> tf.Tensor:
-        conv_output = self.activation(self.conv_layer(inputs))
-        gate_output = self.gate_layer(inputs)
-        outputs = conv_output * gate_output
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """
+        Forward pass.
+
+        Args:
+            inputs (tf.Tensor): Input tensor
+
+        Returns:
+            tf.Tensor: Output tensor
+        """
+
+        padded1 = self.pad1(inputs)
+        convolved1 = self.conv1(padded1)
+        normed1 = self.batch_norm1(convolved1)
+        dropped1 = tf.keras.layers.Dropout(DROPOUT_RATE)(normed1)
+        activation = tf.keras.layers.LeakyReLU(LEAKY_RELU_ALPHA)
+        activated = activation(dropped1)
+        padded2 = self.pad2(activated)
+        convolved2 = self.conv2(padded2)
+        outputs = self.batch_norm2(convolved2)
 
         return outputs
 
-    def compute_output_shape(self, input_shape: tf.TensorShape) -> tf.TensorShape:
-        return self.conv_layer.compute_output_shape(input_shape)
-
     def get_config(self) -> dict[str, Any]:
+        """
+        Get layer configuration.
+
+        Returns:
+            dict[str, Any]: Layer configuration
+        """
+
         config = super().get_config()
 
         config.update({
+            'is_gated': self.is_gated,
             'filters': self.filters,
             'kernel_size': self.kernel_size,
             'strides': self.strides,
-            'padding': self.padding,
             'dilation_rate': self.dilation_rate,
-            'activation': self.activation,
-            'kernel_initializer': self.kernel_initializer,
-            'bias_initializer': self.bias_initializer,
-            'kernel_regularizer': self.kernel_regularizer,
-            'bias_regularizer': self.bias_regularizer
+            'pad_mode': self.pad_mode
         })
 
         return config
 
 
-if __name__ == '__main__':
-    image = tf.random.uniform((1, 200, 200, 3))
+class ResNet(tf.keras.Model):
+    """
+    ResNet Model
+    """
 
-    lpips = LPIPS(input_shape=(200, 200), all_layers=True)
+    def __init__(self, input_shape: int | tuple[int, int], num_blocks: int = 15, is_gated: bool = True, **kwargs) -> None:
+        """
+        Initialize the ResNet Model.
 
-    loss = lpips(image, image)
-    print(loss)
+        Args:
+            input_shape (int | tuple[int, int]): Input shape
+            num_blocks (int, optional): Number of residual blocks. Defaults to 8.
+            is_gated (bool, optional): Apply gated convolution. Defaults to True.
+        """
+
+        super().__init__(**kwargs)
+
+        self.input_shape = input_shape
+        self.num_blocks = num_blocks
+        self.is_gated = is_gated
+
+        self.initial_pad = Padding2D(
+            padding=3,
+            pad_mode=PadMode.REFLECT,
+            name='initial_pad'
+        )
+        self.initial_conv = tf.keras.layers.Conv2D(
+            filters=32,
+            kernel_size=3,
+            strides=1,
+            padding='same',
+            kernel_initializer='he_normal',
+            bias_initializer='he_normal',
+            name='initial_conv'
+        )
+        self.initial_batch_norm = tf.keras.layers.BatchNormalization(name='initial_batch_norm')
+        self.inital_max_pool = tf.keras.layers.MaxPool2D(
+            pool_size=3,
+            strides=2,
+            padding='same',
+            name='initial_max_pool'
+        )
+
+        self.residual_blocks: list[ResidualBlock] = []
+
+        for idx in range(self.num_blocks):
+            self.residual_blocks.append(ResidualBlock(
+                is_gated=self.is_gated,
+                filters=32,
+                kernel_size=3,
+                strides=1,
+                dilation_rate=3,
+                name=F'residual_{idx}'
+            ))
+
+        self.final_conv = tf.keras.layers.Conv2D(
+            filters=64,
+            kernel_size=5,
+            strides=1,
+            padding='valid',
+            kernel_initializer='he_normal',
+            bias_initializer='he_normal',
+            name='final_conv'
+        )
+
+        self.final_batch_norm = tf.keras.layers.BatchNormalization(name='final_batch_norm')
+
+        self.final_activation = tf.keras.layers.LeakyReLU(LEAKY_RELU_ALPHA)
+
+        self.upsample = tf.keras.layers.Conv2DTranspose(
+            filters=3,
+            kernel_size=4,
+            strides=2,
+            padding='valid',
+            kernel_initializer='he_normal',
+            bias_initializer='he_normal',
+            name='upsample'
+        )
+
+    def get_config(self) -> dict[str, Any]:
+        """
+        Get layer configuration.
+
+        Returns:
+            dict[str, Any]: Layer configuration
+        """
+
+        config = super().get_config()
+
+        config.update({
+            'num_blocks': self.num_blocks,
+            'is_gated': self.is_gated,
+        })
+
+        return config
+
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
+        """
+        Forward pass.
+
+        Args:
+            inputs (tf.Tensor): Input tensor
+
+        Returns:
+            tf.Tensor: Output tensor
+        """
+
+        padded = self.initial_pad(inputs)
+        convolved = self.initial_conv(padded)
+        batch_normed = self.initial_batch_norm(convolved)
+        pooled = self.inital_max_pool(batch_normed)
+        activation = tf.keras.layers.LeakyReLU(LEAKY_RELU_ALPHA)
+        activated = activation(pooled)
+
+        block_input = activated
+
+        for block in self.residual_blocks:
+            block_output = block(block_input)
+            adder = tf.keras.layers.Add()
+            summed = adder([block_input, block_output])
+            activation = tf.keras.layers.LeakyReLU(LEAKY_RELU_ALPHA)
+            block_input = activation(summed)
+
+        convolved = self.final_conv(block_input)
+        batch_normed = self.final_batch_norm(convolved)
+        activated = self.final_activation(batch_normed)
+        outputs = self.upsample(activated)
+        return outputs
+
+    def __build_graph(self) -> tf.keras.Model:
+        """
+        Builds a functional graph model. This is used for summary and drawing,
+        because the summary and drawing methods do not work with subclassed
+        models.
+
+        Returns:
+            tf.keras.Model: Graph model
+        """
+
+        input_layer = tf.keras.Input(shape=self.input_shape)
+        return tf.keras.Model(inputs=input_layer, outputs=self.call(input_layer))
+
+    def summary(self, *args, **kwargs) -> None:
+        """
+        Prints a summary of the model.
+        """
+
+        self.__build_graph().summary(*args, **kwargs)
+
+    def draw(self, file_path: Path | str | None = None) -> None:
+        """
+        Draws the model.
+
+        Args:
+            file_path (Path | str, optional): File path. Defaults to None.
+        """
+
+        if file_path is None:
+            file_path = Path(f'{self.name}.pdf')
+
+        tf.keras.utils.plot_model(self.__build_graph(), to_file=file_path, show_shapes=True, rankdir='TB',
+                                  show_layer_names=True, expand_nested=True, dpi=100)
+
+    def create(self) -> tf.keras.Model:
+        """
+        Creates the model.
+
+        Returns:
+            tf.keras.Model: UNet model
+        """
+
+        return self.__build_graph()
+
+    @property
+    def name(self) -> str:
+        """
+        Get model name.
+
+        Returns:
+            str: Model name
+        """
+
+        if self.is_gated:
+            return F'GatedResNet-{self.num_blocks}'
+
+        return F'ResNet-{self.num_blocks}'
+
+    @property
+    def type(self) -> str:
+        """
+        Get model type.
+
+        Returns:
+            str: Model type
+        """
+
+        return 'resnet'
+
+    @property
+    def input_shape(self) -> tuple[int, int, int]:
+        """
+        Get input shape.
+
+        Returns:
+            tuple[int, int, int]: Input shape
+        """
+
+        return self.__input_shape
+
+    @input_shape.setter
+    def input_shape(self, shape: int | tuple[int, int]) -> None:
+        """
+        Sets the  input shape.
+
+        Args:
+            shape (int | tuple[int, int]): Input shape
+        """
+        if isinstance(shape, int):
+            self.__input_shape = (shape, shape, 3)
+        else:
+            self.__input_shape = (*shape, 3)

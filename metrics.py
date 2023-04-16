@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import time
-import traceback
 from pathlib import Path
 from typing import Final
 
@@ -13,18 +11,21 @@ from image_comparator import ImageComparator
 from image_processor import ImageProcessor
 from mask_generator import MaskGenerator
 from metrics_and_losses import PSNR, SSIM, SSIM_L1
+from utils import time_running_cpu
 
 DATASET: Final[str] = 'COCO'
 BATCH: Final[int] = 64
 IMAGE_SIZE: Final[int] = 128
-MASK_RATIO: Final = ((5, 10), (15, 20), (25, 30), (35, 40), (45, 50))
+MASK_RATIOS: Final = ((5, 10), (15, 20), (25, 30), (35, 40), (45, 50))
 
 
 def baseline() -> None:
     baseline_path = Path('results', F'baseline_{DATASET.lower()}.txt')
 
+    print(Fore.YELLOW + F'Processing baseline results for {DATASET} dataset...' + Style.RESET_ALL, end='\n\n', flush=True)
+
     with open(baseline_path, 'w', encoding='UTF-8') as results_file:
-        for mask_ratio in MASK_RATIO:
+        for mask_ratio in MASK_RATIOS:
             print(Fore.YELLOW + F'Processing {DATASET} dataset with mask ratio {mask_ratio}...' + Style.RESET_ALL, end='\n\n', flush=True)
             print(F'Mask ratio {mask_ratio}:', file=results_file, flush=True)
 
@@ -58,8 +59,10 @@ def baseline() -> None:
 def results() -> None:
     results_path = Path('results', F'results_{DATASET.lower()}.txt')
 
+    print(Fore.YELLOW + F'Processing results for {DATASET} dataset...' + Style.RESET_ALL, end='\n\n', flush=True)
+
     with open(results_path, 'w', encoding='UTF-8') as results_file:
-        for mask_ratio in MASK_RATIO:
+        for mask_ratio in MASK_RATIOS:
             print(Fore.YELLOW + F'Processing {DATASET} dataset with mask ratio {mask_ratio}...' + Style.RESET_ALL, end='\n\n', flush=True)
             print(F'Mask ratio {mask_ratio}:', file=results_file, flush=True)
 
@@ -161,34 +164,10 @@ def results() -> None:
             print(end='\n\n', file=results_file, flush=True)
 
 
-def main() -> None:
-    print(Fore.MAGENTA + 'Starting script...' + Style.RESET_ALL, flush=True)
-
-    start_time = time.perf_counter()
-    try:
-
-        baseline()
-        results()
-
-    except KeyboardInterrupt:
-
-        print(Fore.RED + '\nScript interrupted by the user!' + Style.RESET_ALL, flush=True)
-
-    except Exception:
-
-        print(Fore.RED, flush=True)
-        print('Script failed with the following error:', flush=True)
-        traceback.print_exc()
-        print(Style.RESET_ALL, flush=True)
-
-    end_time = time.perf_counter()
-
-    elapsed = end_time - start_time
-    elapsed_time = time.strftime('%H:%M:%S', time.gmtime(elapsed))
-
-    print(Fore.YELLOW + F'Total time: {elapsed_time}' + Style.RESET_ALL, flush=True)
-    print(Fore.MAGENTA + 'Everything done!' + Style.RESET_ALL, flush=True)
+def run() -> None:
+    baseline()
+    results()
 
 
 if __name__ == '__main__':
-    main()
+    time_running_cpu(run)

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import multiprocessing as mp
 import subprocess as sp
-import time
-import traceback
 from functools import partial
 from pathlib import Path
 from typing import Final
@@ -14,6 +12,7 @@ from colorama import Fore, Style
 
 from image_processor import ImageProcessor
 from mask_generator import MaskGenerator
+from utils import time_running_cpu
 
 IMAGE_SIZE: Final[int] = 128
 MASK_RATIO: Final = ((5, 10), (15, 20), (25, 30), (35, 40), (45, 50))
@@ -76,33 +75,5 @@ def run() -> None:
             processes_pool.map(function, images_path.iterdir(), chunksize=200)
 
 
-def main() -> None:
-    print(Fore.MAGENTA + 'Starting script...' + Style.RESET_ALL, flush=True)
-
-    start_time = time.perf_counter()
-    try:
-        mp.set_start_method('fork')
-        run()
-
-    except KeyboardInterrupt:
-
-        print(Fore.RED + '\nScript interrupted by the user!' + Style.RESET_ALL, flush=True)
-
-    except Exception:
-
-        print(Fore.RED, flush=True)
-        print('Script failed with the following error:', flush=True)
-        traceback.print_exc()
-        print(Style.RESET_ALL, flush=True)
-
-    end_time = time.perf_counter()
-
-    elapsed = end_time - start_time
-    elapsed_time = time.strftime('%H:%M:%S', time.gmtime(elapsed))
-
-    print(Fore.YELLOW + F'Total time: {elapsed_time}' + Style.RESET_ALL, flush=True)
-    print(Fore.MAGENTA + 'Everything done!' + Style.RESET_ALL, flush=True)
-
-
 if __name__ == '__main__':
-    main()
+    time_running_cpu(run)
