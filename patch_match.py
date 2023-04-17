@@ -36,7 +36,7 @@ def mask_image(path: Path, mask_ratio: tuple[int, int]) -> None:
 
     image = cv.imread(str(path))
     cropped = tf.image.random_crop(image, size=(IMAGE_SIZE, IMAGE_SIZE, 3)).numpy()
-    masked, mask = IMAGE_PROCESSOR.apply_mask_with_return_numpy(cropped)
+    masked, mask = IMAGE_PROCESSOR.apply_mask_numpy(cropped)
 
     cv.imwrite(str(masked_path), masked.astype('uint8'))
     cv.imwrite(str(mask_path), mask.astype('uint8'))

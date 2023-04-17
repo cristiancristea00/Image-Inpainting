@@ -15,6 +15,31 @@ class UpsampleMode(Enum):
     BILINEAR = 'bilinear'
     NEAREST_NEIGHBOR = 'nearest'
 
+    def __str__(self) -> str:
+        """
+        Get string representation of the PadMode.
+
+        Returns:
+            str: String representation of the PadMode
+        """
+
+        return self.value
+
+    def __eq__(self, other: Any) -> bool:
+        """
+        Check if the value of the enum is equal to the value of the other object.
+
+        Args:
+            other (Any): The other object to compare to
+
+        Returns:
+            bool: True if the value of the enum is equal to the value of the other object, False otherwise
+        """
+        if isinstance(other, str):
+            return self.value == other
+
+        return super().__eq__(other)
+
 
 UpsampleModeType: TypeAlias = Literal[
     UpsampleMode.DECONVOLUTION,
@@ -32,6 +57,31 @@ class DownsampleMode(Enum):
     MAX_POOL = 'max_pool'
     AVERAGE_POOL = 'average_pool'
 
+    def __str__(self) -> str:
+        """
+        Get string representation of the PadMode.
+
+        Returns:
+            str: String representation of the PadMode
+        """
+
+        return self.value
+
+    def __eq__(self, other: Any) -> bool:
+        """
+        Check if the value of the enum is equal to the value of the other object.
+
+        Args:
+            other (Any): The other object to compare to
+
+        Returns:
+            bool: True if the value of the enum is equal to the value of the other object, False otherwise
+        """
+        if isinstance(other, str):
+            return self.value == other
+
+        return super().__eq__(other)
+
 
 DownsampleModeType: TypeAlias = Literal[
     DownsampleMode.STRIDE,
@@ -48,6 +98,31 @@ class PadMode(Enum):
     CONSTANT = 'CONSTANT'
     REFLECT = 'REFLECT'
     SYMMETRIC = 'SYMMETRIC'
+
+    def __str__(self) -> str:
+        """
+        Get string representation of the PadMode.
+
+        Returns:
+            str: String representation of the PadMode
+        """
+
+        return self.value
+
+    def __eq__(self, other: Any) -> bool:
+        """
+        Check if the value of the enum is equal to the value of the other object.
+
+        Args:
+            other (Any): The other object to compare to
+
+        Returns:
+            bool: True if the value of the enum is equal to the value of the other object, False otherwise
+        """
+        if isinstance(other, str):
+            return self.value == other
+
+        return super().__eq__(other)
 
 
 PadModeType: TypeAlias = Literal[
@@ -127,7 +202,7 @@ class Padding2D(tf.keras.layers.Layer):
 
         width, height = self.padding
         paddings = ([0, 0], [height, height], [width, width], [0, 0])
-        result = tf.pad(tensor=inputs, paddings=paddings, mode=self.pad_mode.value, constant_values=0)
+        result = tf.pad(tensor=inputs, paddings=paddings, mode=str(self.pad_mode))
         return result
 
 

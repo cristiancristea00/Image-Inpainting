@@ -4,7 +4,7 @@ import os
 import random
 from collections.abc import Iterable
 from enum import Enum
-from typing import Final, Literal, TypeAlias, List, Tuple, Any
+from typing import Final, Literal, TypeAlias, Callable
 
 import cv2 as cv
 import numpy as np
@@ -33,20 +33,20 @@ class MaskGenerator:
     Generator that yields random masks. The white part represents the area of interest.
     """
 
-    __MASK_VALUE: Final = MaskColor.WHITE.value
+    _MASK_VALUE: Final = MaskColor.WHITE.value
 
-    __DEFAULT_MASK_RATIO: Final[tuple[float, float]] = (25, 30)
-    __DEFAULT_IMPLEMENTATION: Final[MaskImplType] = MaskImpl.FREEFORM
+    _DEFAULT_MASK_RATIO: Final[tuple[float, float]] = (25, 30)
+    _DEFAULT_IMPLEMENTATION: Final[MaskImplType] = MaskImpl.FREEFORM
 
-    __DEFAULT_RANDOM_SHAPES_DRAW_SCALE: Final[float] = 0.015
+    _DEFAULT_RANDOM_SHAPES_DRAW_SCALE: Final[float] = 0.015
 
-    __DEFAULT_FREEFORM_MIN_VERTICES: Final[int] = 1
-    __DEFAULT_FREEFORM_MAX_VERTICES: Final[int] = 10
-    __DEFAULT_FREEFORM_MEAN_ANGLE: Final[float] = 2 * np.pi / 5
-    __DEFAULT_FREEFORM_ANGLE_RANGE: Final[float] = 2 * np.pi / 15
+    _DEFAULT_FREEFORM_MIN_VERTICES: Final[int] = 1
+    _DEFAULT_FREEFORM_MAX_VERTICES: Final[int] = 10
+    _DEFAULT_FREEFORM_MEAN_ANGLE: Final[float] = 2 * np.pi / 5
+    _DEFAULT_FREEFORM_ANGLE_RANGE: Final[float] = 2 * np.pi / 15
 
-    def __init__(self, mask_size: int | tuple[int, int], ratio: tuple[float, float] = __DEFAULT_MASK_RATIO,
-                 implementation: MaskImplType = __DEFAULT_IMPLEMENTATION) -> None:
+    def __init__(self, mask_size: int | tuple[int, int], ratio: tuple[float, float] = _DEFAULT_MASK_RATIO,
+                 implementation: MaskImplType = _DEFAULT_IMPLEMENTATION) -> None:
         """
         Initializes the generator.
 
@@ -64,6 +64,13 @@ class MaskGenerator:
         self.implementation = implementation
 
         self.random_generator = random.SystemRandom(int(os.urandom(32).hex(), 16))
+
+        if self.implementation == MaskImpl.FREEFORM:
+            self.generate: Callable[[], tuple[np.ndarray, int]] = self._generate_freeform_helper
+        elif self.implementation == MaskImpl.RANDOM_SHAPES:
+            self.generate: Callable[[], tuple[np.ndarray, int]] = self._generate_random_shapes_helper
+        else:
+            raise ValueError(F'Unknown mask implementation {self.implementation}')
 
     @property
     def mask_size(self) -> tuple[int, int]:
@@ -293,9 +300,9 @@ class MaskGenerator:
 
         self.__random_generator = value
 
-    def __generate_uniform_number(self, start: float, stop: float) -> float:
+    def _generate_uniform_number(self, start: float, stop: float) -> float:
         """
-        Generate a radnom number between start and stop from a uniform
+        Generate a random number between start and stop from a uniform
         distribution.
 
         Args:
@@ -310,7 +317,7 @@ class MaskGenerator:
         result = self.random_generator.uniform(start, stop)
         return result
 
-    def __generate_gaussian_number(self, mean: float, std: float) -> float:
+    def _generate_gaussian_number(self, mean: float, std: float) -> float:
         """
         Generate a random number from a gaussian distribution.
 
@@ -326,7 +333,7 @@ class MaskGenerator:
         result = self.random_generator.gauss(mean, std)
         return result
 
-    def __generate_random_int(self, start: int, stop: int) -> int:
+    def _generate_random_int(self, start: int, stop: int) -> int:
         """
         Generate a random integer between start and stop.
 
@@ -343,7 +350,7 @@ class MaskGenerator:
         return result
 
     @classmethod
-    def __compute_mask_ratio(cls, mask: np.ndarray) -> float:
+    def _compute_mask_ratio(cls, mask: np.ndarray) -> float:
         """
         Compute the hole-to-image ratio of the mask.
 
@@ -355,10 +362,11 @@ class MaskGenerator:
         """
 
         mask_size = float(mask.size)
-        result = np.count_nonzero(mask == MaskGenerator.__MASK_VALUE) / mask_size
+        result = np.count_nonzero(mask == MaskGenerator._MASK_VALUE) / mask_size
         return 100.0 * result
 
-    def __draw_line(self, mask: np.ndarray, size: int, height: int, width: int, color: MaskColor = MaskColor.WHITE) -> None:
+    def _draw_line(self, mask: np.ndarray, size: int, height: int, width: int,
+                   color: MaskColor = MaskColor.WHITE) -> None:
         """
         Draws random lines on the mask.
 
@@ -369,13 +377,14 @@ class MaskGenerator:
             width (int): Mask width
         """
 
-        if self.__generate_uniform_number(0, 1) > 0.5:
+        if self._generate_uniform_number(0, 1) > 0.5:
             start_x, stop_x = np.random.randint(0, width, 2, dtype=np.uint16)
             start_y, stop_y = np.random.randint(0, height, 2, dtype=np.uint16)
             thickness = random.randint(1, size)
             cv.line(mask, (start_x, start_y), (stop_x, stop_y), color.value, thickness)
 
-    def __draw_circle(self, mask: np.ndarray, size: int, height: int, width: int, color: MaskColor = MaskColor.WHITE) -> None:
+    def _draw_circle(self, mask: np.ndarray, size: int, height: int, width: int,
+                     color: MaskColor = MaskColor.WHITE) -> None:
         """
         Draws random circles on the mask.
 
@@ -386,13 +395,14 @@ class MaskGenerator:
             width (int): Mask width
         """
 
-        if self.__generate_uniform_number(0, 1) > 0.5:
+        if self._generate_uniform_number(0, 1) > 0.5:
             center_x = random.randint(0, width)
             center_y = random.randint(0, height)
             radius = random.randint(1, size)
             cv.circle(mask, (center_x, center_y), radius, color.value, -1)
 
-    def __draw_ellipse(self, mask: np.ndarray, size: int, height: int, width: int, color: MaskColor = MaskColor.WHITE) -> None:
+    def _draw_ellipse(self, mask: np.ndarray, size: int, height: int, width: int,
+                      color: MaskColor = MaskColor.WHITE) -> None:
         """
         Draws random ellipses on the mask.
 
@@ -403,7 +413,7 @@ class MaskGenerator:
             width (int): Mask width
         """
 
-        if self.__generate_uniform_number(0, 1) > 0.5:
+        if self._generate_uniform_number(0, 1) > 0.5:
             center_x = random.randint(0, width)
             center_y = random.randint(0, height)
             axis1 = random.randint(1, size)
@@ -415,7 +425,8 @@ class MaskGenerator:
             cv.ellipse(mask, (center_x, center_y), (axis1, axis2), rotation_angle,
                        start_arc_angle, stop_arc_angle, color.value, thickness)
 
-    def __generate_random_shapes(self, height: int, width: int, ratio_min: float, ratio_max: float) -> tuple[np.ndarray, int]:
+    def _generate_random_shapes(self, height: int, width: int, ratio_min: float, ratio_max: float) -> tuple[
+        np.ndarray, int]:
         """
         Generate a random mask with random shapes.
 
@@ -431,37 +442,37 @@ class MaskGenerator:
 
         mask = np.zeros((height, width), dtype=np.uint8)
 
-        size = float(width + height) * self.__DEFAULT_RANDOM_SHAPES_DRAW_SCALE
+        size = float(width + height) * self._DEFAULT_RANDOM_SHAPES_DRAW_SCALE
         size = int(size) if size > 1 else 1
 
         ratio_min = float(ratio_min)
         ratio_max = float(ratio_max)
 
         while True:
-            if self.__compute_mask_ratio(mask) > ratio_min:
+            if self._compute_mask_ratio(mask) > ratio_min:
                 break
-            self.__draw_line(mask, size, height, width, MaskColor.WHITE)
-            if self.__compute_mask_ratio(mask) > ratio_min:
+            self._draw_line(mask, size, height, width, MaskColor.WHITE)
+            if self._compute_mask_ratio(mask) > ratio_min:
                 break
-            self.__draw_circle(mask, size, height, width, MaskColor.WHITE)
-            if self.__compute_mask_ratio(mask) > ratio_min:
+            self._draw_circle(mask, size, height, width, MaskColor.WHITE)
+            if self._compute_mask_ratio(mask) > ratio_min:
                 break
-            self.__draw_ellipse(mask, size, height, width, MaskColor.WHITE)
+            self._draw_ellipse(mask, size, height, width, MaskColor.WHITE)
 
         while True:
-            if self.__compute_mask_ratio(mask) < ratio_max:
+            if self._compute_mask_ratio(mask) < ratio_max:
                 break
-            self.__draw_line(mask, size, height, width, MaskColor.BLACK)
-            if self.__compute_mask_ratio(mask) < ratio_max:
+            self._draw_line(mask, size, height, width, MaskColor.BLACK)
+            if self._compute_mask_ratio(mask) < ratio_max:
                 break
-            self.__draw_circle(mask, size, height, width, MaskColor.BLACK)
-            if self.__compute_mask_ratio(mask) < ratio_max:
+            self._draw_circle(mask, size, height, width, MaskColor.BLACK)
+            if self._compute_mask_ratio(mask) < ratio_max:
                 break
-            self.__draw_ellipse(mask, size, height, width, MaskColor.BLACK)
+            self._draw_ellipse(mask, size, height, width, MaskColor.BLACK)
 
-        return mask, np.count_nonzero(mask == MaskGenerator.__MASK_VALUE)
+        return mask, np.count_nonzero(mask == MaskGenerator._MASK_VALUE)
 
-    def __generate_freeform(self, height: int, width: int, ratio_min: float, ratio_max: float) -> tuple[np.ndarray, int]:
+    def _generate_freeform(self, height: int, width: int, ratio_min: float, ratio_max: float) -> tuple[np.ndarray, int]:
         """
         Generate a random mask with freeform shapes.
 
@@ -481,7 +492,7 @@ class MaskGenerator:
         mid_width: Final[float] = np.sqrt(height * width) / 10
         max_width: Final[float] = np.sqrt(height * width) / 5
 
-        target_percent = self.__generate_uniform_number(ratio_min, ratio_max)
+        target_percent = self._generate_uniform_number(ratio_min, ratio_max)
         target_area = (height * width) * (target_percent / 100)
 
         current_area = 0
@@ -489,36 +500,37 @@ class MaskGenerator:
         while current_area < target_area:
             mask = Image.fromarray(mask)
 
-            num_vertex = random.randint(self.__DEFAULT_FREEFORM_MIN_VERTICES, self.__DEFAULT_FREEFORM_MAX_VERTICES)
-            angle_min = self.__DEFAULT_FREEFORM_MEAN_ANGLE - self.__generate_uniform_number(0, self.__DEFAULT_FREEFORM_ANGLE_RANGE)
-            angle_max = self.__DEFAULT_FREEFORM_MEAN_ANGLE + self.__generate_uniform_number(0, self.__DEFAULT_FREEFORM_ANGLE_RANGE)
+            num_vertex = random.randint(self._DEFAULT_FREEFORM_MIN_VERTICES, self._DEFAULT_FREEFORM_MAX_VERTICES)
+            angle_min = self._DEFAULT_FREEFORM_MEAN_ANGLE - self._generate_uniform_number(0, self._DEFAULT_FREEFORM_ANGLE_RANGE)
+            angle_max = self._DEFAULT_FREEFORM_MEAN_ANGLE + self._generate_uniform_number(0, self._DEFAULT_FREEFORM_ANGLE_RANGE)
 
             angles: list[float] = []
 
             for idx in range(num_vertex):
                 if idx % 2 == 0:
-                    angles.append(2 * np.pi - self.__generate_uniform_number(angle_min, angle_max))
+                    angles.append(2 * np.pi - self._generate_uniform_number(angle_min, angle_max))
                 else:
-                    angles.append(self.__generate_uniform_number(angle_min, angle_max))
+                    angles.append(self._generate_uniform_number(angle_min, angle_max))
 
             vertices: list[tuple[int, int]] = []
 
-            start_x = self.__generate_random_int(0, width)
-            start_y = self.__generate_random_int(0, height)
+            start_x = self._generate_random_int(0, width)
+            start_y = self._generate_random_int(0, height)
 
             vertices.append((start_y, start_x))
 
             for idx in range(num_vertex):
-                radius = np.clip(self.__generate_gaussian_number(average_radius, average_radius // 2), 0, 2 * average_radius)
+                radius = np.clip(self._generate_gaussian_number(average_radius, average_radius // 2), 0,
+                                 2 * average_radius)
                 new_x = np.clip(vertices[-1][0] + radius * np.cos(angles[idx]), 0, width)
                 new_y = np.clip(vertices[-1][1] + radius * np.sin(angles[idx]), 0, height)
                 vertices.append((int(new_x), int(new_y)))
 
-            width = int(self.__generate_uniform_number(mid_width, max_width))
+            width = int(self._generate_uniform_number(mid_width, max_width))
 
             draw = ImageDraw.Draw(mask)
 
-            draw.line(vertices, fill=MaskGenerator.__MASK_VALUE, width=width)
+            draw.line(vertices, fill=MaskGenerator._MASK_VALUE, width=width)
 
             for elem_x, elem_y in vertices:
                 start_x = elem_x - width // 2
@@ -526,25 +538,38 @@ class MaskGenerator:
                 end_x = elem_x + width // 2
                 end_y = elem_y + width // 2
 
-                draw.ellipse((start_x, start_y, end_x, end_y), fill=MaskGenerator.__MASK_VALUE)
+                draw.ellipse((start_x, start_y, end_x, end_y), fill=MaskGenerator._MASK_VALUE)
+
+            if self._generate_gaussian_number(0, 1) > 0:
+                mask = mask.transpose(Image.FLIP_LEFT_RIGHT)
+
+            if self._generate_gaussian_number(0, 1) > 0:
+                mask = mask.transpose(Image.FLIP_TOP_BOTTOM)
 
             mask = np.asarray(mask)
-            current_area = np.count_nonzero(mask == MaskGenerator.__MASK_VALUE)
+            current_area = np.count_nonzero(mask == MaskGenerator._MASK_VALUE)
 
         return mask, current_area
 
-    def generate(self) -> tuple[np.ndarray, int]:
+    def _generate_freeform_helper(self) -> tuple[np.ndarray, int]:
         """
-        Generates a random mask and the number of pixels in the mask.
+        Helper function for the freeform mask generation.
 
         Returns:
             tuple(np.ndarray, int): Mask and the number of pixels in the mask
         """
 
-        if self.implementation == MaskImpl.FREEFORM:
-            return self.__generate_freeform(self.height, self.width, self.ratio_min, self.ratio_max)
+        return self._generate_freeform(self.height, self.width, self.ratio_min, self.ratio_max)
 
-        return self.__generate_random_shapes(self.height, self.width, self.ratio_min, self.ratio_max)
+    def _generate_random_shapes_helper(self) -> tuple[np.ndarray, int]:
+        """
+        Helper function for the random shapes mask generation.
+
+        Returns:
+            tuple(np.ndarray, int): Mask and the number of pixels in the mask
+        """
+
+        return self._generate_random_shapes(self.height, self.width, self.ratio_min, self.ratio_max)
 
     def __call__(self) -> Iterable[tuple[np.ndarray, int]]:
         """
@@ -554,9 +579,5 @@ class MaskGenerator:
             tuple(np.ndarray, int): Mask and the number of pixels in the mask
         """
 
-        if self.implementation == MaskImpl.FREEFORM:
-            while True:
-                yield self.__generate_freeform(self.height, self.width, self.ratio_min, self.ratio_max)
-        else:
-            while True:
-                yield self.__generate_random_shapes(self.height, self.width, self.ratio_min, self.ratio_max)
+        while True:
+            yield self.generate()

@@ -8,7 +8,7 @@ import tensorflow as tf
 from layers import GatedConv2D, Padding2D, PadModeType, PadMode
 
 LEAKY_RELU_ALPHA: Final[float] = 0.2
-DROPOUT_RATE: Final[float] = 0.05
+DROPOUT_RATE: Final[float] = 0.1
 
 
 class ResidualBlock(tf.keras.layers.Layer):
@@ -129,7 +129,7 @@ class ResNet(tf.keras.Model):
     ResNet Model
     """
 
-    def __init__(self, input_shape: int | tuple[int, int], num_blocks: int = 15, is_gated: bool = True, **kwargs) -> None:
+    def __init__(self, input_shape: int | tuple[int, int], num_blocks: int = 13, is_gated: bool = True, **kwargs) -> None:
         """
         Initialize the ResNet Model.
 
@@ -147,7 +147,6 @@ class ResNet(tf.keras.Model):
 
         self.initial_pad = Padding2D(
             padding=3,
-            pad_mode=PadMode.REFLECT,
             name='initial_pad'
         )
         self.initial_conv = tf.keras.layers.Conv2D(

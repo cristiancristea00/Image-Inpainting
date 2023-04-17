@@ -1,7 +1,6 @@
 import cv2 as cv
 import numpy as np
 import tensorflow as tf
-from colorama import Fore, Style
 
 from mask_generator import MaskGenerator
 from utils import MaskColor
@@ -21,15 +20,33 @@ class ImageProcessor:
         """
 
         self.mask_generator = mask_generator
-        mask_generator_dataset = tf.data.Dataset.from_generator(
-            self.mask_generator,
-            output_signature=(
-                tf.TensorSpec(shape=self.image_size, dtype=tf.int64),
-                tf.TensorSpec(shape=(), dtype=tf.int64)
-            )
-        )
-        mask_generator_dataset = mask_generator_dataset.prefetch(tf.data.AUTOTUNE)
-        self.mask_generator_dataset = mask_generator_dataset
+
+    @property
+    def mask_generator(self) -> MaskGenerator:
+        """
+        Get the mask generator.
+
+        Returns:
+            MaskGenerator: The mask generator
+        """
+
+        return self._mask_generator
+
+    @mask_generator.setter
+    def mask_generator(self, mask_generator: MaskGenerator) -> None:
+        """
+        Set the mask generator.
+
+        Args:
+            mask_generator (MaskGenerator): The mask generator
+        """
+
+        if not isinstance(mask_generator, MaskGenerator):
+            raise TypeError(F'Expected mask_generator to be of type MaskGenerator, but got {type(mask_generator)}.')
+        elif mask_generator is None:
+            raise ValueError('Expected mask_generator to not be None.')
+        else:
+            self._mask_generator = mask_generator
 
     @property
     def image_size(self) -> tuple[int, int]:
@@ -42,33 +59,7 @@ class ImageProcessor:
 
         return self.mask_generator.mask_size
 
-    @property
-    def mask_generator_dataset(self) -> tf.data.Dataset:
-        """
-        Get the mask generator dataset.
-
-        Returns:
-            tf.data.Dataset: The mask generator dataset
-        """
-
-        return self.__mask_generator_dataset
-
-    @mask_generator_dataset.setter
-    def mask_generator_dataset(self, mask_generator_dataset: tf.data.Dataset) -> None:
-        """
-        Set the mask generator dataset.
-
-        Args:
-            mask_generator_dataset (tf.data.Dataset): The mask generator dataset
-        """
-
-        if mask_generator_dataset is None:
-            raise ValueError('Mask generator dataset cannot be None.')
-        if not isinstance(mask_generator_dataset, tf.data.Dataset):
-            raise TypeError('Mask generator dataset must be a tf.data.Dataset.')
-        self.__mask_generator_dataset = mask_generator_dataset
-
-    def apply_mask_with_return(self, image: tf.Tensor, color: MaskColor = MaskColor.WHITE) -> tuple[tf.Tensor, tf.Tensor]:
+    def apply_mask(self, image: tf.Tensor, color: MaskColor = MaskColor.WHITE) -> tuple[tf.Tensor, tf.Tensor]:
         """
         Apply a mask to an image.
 
@@ -80,8 +71,8 @@ class ImageProcessor:
             tuple[tf.Tensor, tf.Tensor]: The masked image and the mask
         """
 
-        mask_and_count = self.mask_generator_dataset.take(1)
-        mask, count = next(iter(mask_and_count))
+        # We use this to avoid deterministic masks
+        mask, count = tf.py_function(self.mask_generator.generate, [], (tf.uint8, tf.uint32))
         initial_mask = mask
 
         mask = tf.stack([mask, mask, mask], axis=-1)
@@ -90,12 +81,12 @@ class ImageProcessor:
         if color == MaskColor.WHITE:
 
             update_values = tf.fill((count * 3,), MaskColor.WHITE.value)
-            update_values = tf.cast(update_values, tf.float32)
+            update_values = tf.cast(update_values, tf.uint8)
 
         elif color == MaskColor.BLACK:
 
             update_values = tf.fill((count * 3,), MaskColor.BLACK.value)
-            update_values = tf.cast(update_values, tf.float32)
+            update_values = tf.cast(update_values, tf.uint8)
 
         else:
 
@@ -105,7 +96,7 @@ class ImageProcessor:
 
         return masked, initial_mask
 
-    def apply_mask_with_return_numpy(self, image: np.ndarray, color: MaskColor = MaskColor.WHITE) -> tuple[np.ndarray, np.ndarray]:
+    def apply_mask_numpy(self, image: np.ndarray, color: MaskColor = MaskColor.WHITE) -> tuple[np.ndarray, np.ndarray]:
         """
         Apply a mask to an image.
 
@@ -134,22 +125,9 @@ class ImageProcessor:
 
         return masked, mask
 
-    def apply_mask(self, image: tf.Tensor, color: MaskColor = MaskColor.WHITE) -> tf.Tensor:
-        """
-        Apply a mask to an image.
-
-        Args:
-            image (tf.Tensor): The image to apply the mask to
-            color (MaskColor, optional): The color of the mask. Defaults to MaskColor.WHITE
-
-        Returns:
-            tf.Tensor: The masked image
-        """
-
-        return self.apply_mask_with_return(image, color)[0]
-
     @staticmethod
-    def inpaint_navier_stokes(image: np.ndarray | tf.Tensor, mask: np.ndarray | tf.Tensor, radius: float = 3.0) -> np.ndarray:
+    def inpaint_navier_stokes(image: np.ndarray | tf.Tensor, mask: np.ndarray | tf.Tensor,
+                              radius: float = 3.0) -> np.ndarray:
         """
         Inpaint an image using the Navier-Stokes algorithm.
 
