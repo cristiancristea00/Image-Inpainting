@@ -1,0 +1,580 @@
+2023-04-19 12:26:51.653140: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-04-19 12:26:57.891631: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory
+2023-04-19 12:26:57.892282: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory
+2023-04-19 12:26:57.892301: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+Matplotlib created a temporary config/cache directory at /tmp/matplotlib-27egpkp3 because the default path (/home/cristec/.config/matplotlib) is not a writable directory; it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+[35mStarting script...[0m
+2023-04-19 12:27:08.545468: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-04-19 12:27:10.972879: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1613] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 7425 MB memory:  -> device: 0, name: Quadro M4000, pci bus id: 0000:04:00.0, compute capability: 5.2
+[32mLoading train dataset information...[0m
+WARNING:tensorflow:From /shared_storage/cristec/conda/envs/ML/lib/python3.10/site-packages/tensorflow/python/autograph/pyct/static_analysis/liveness.py:83: Analyzer.lamba_check (from tensorflow.python.autograph.pyct.static_analysis.liveness) is deprecated and will be removed after 2023-09-23.
+Instructions for updating:
+Lambda fuctions will be no more assumed to be used in the statement where they are used, or at least in the same block. https://github.com/tensorflow/tensorflow/issues/56089
+[32mLoading validation dataset information...[0m
+[32mLoading test dataset information...[0m
+[32mSaving model architecture text summary...[0m
+[32mTraining model...[0m
+[36m
+Epoch 1/500
+2023-04-19 12:27:32.573942: E tensorflow/core/grappler/optimizers/meta_optimizer.cc:954] layout failed: INVALID_ARGUMENT: Size of values 0 does not match size of permutation 4 @ fanin shape inmodel_1/residual_0/dropout/dropout/SelectV2-2-TransposeNHWCToNCHW-LayoutOptimizer
+2023-04-19 12:27:35.828316: I tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:428] Loaded cuDNN version 8101
+2023-04-19 12:27:36.732879: I tensorflow/tsl/platform/default/subprocess.cc:304] Start cannot spawn child process: No such file or directory
+2023-04-19 12:27:38.961706: I tensorflow/compiler/xla/service/service.cc:173] XLA service 0x7f829023cf30 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2023-04-19 12:27:38.961747: I tensorflow/compiler/xla/service/service.cc:181]   StreamExecutor device (0): Quadro M4000, Compute Capability 5.2
+2023-04-19 12:27:39.052863: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+2023-04-19 12:27:39.721416: I tensorflow/tsl/platform/default/subprocess.cc:304] Start cannot spawn child process: No such file or directory
+2023-04-19 12:27:39.821339: I tensorflow/compiler/jit/xla_compilation_cache.cc:477] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+
+Epoch 1: val_loss improved from inf to 0.06686, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 3529s - loss: 0.0944 - psnr: 18.6731 - ssim: 0.4715 - val_loss: 0.0669 - val_psnr: 20.8035 - val_ssim: 0.5592 - lr: 0.0100 - 3529s/epoch - 3s/step
+Epoch 2/500
+
+Epoch 2: val_loss improved from 0.06686 to 0.05583, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0636 - psnr: 21.4440 - ssim: 0.5923 - val_loss: 0.0558 - val_psnr: 21.9904 - val_ssim: 0.6179 - lr: 0.0100 - 2633s/epoch - 2s/step
+Epoch 3/500
+
+Epoch 3: val_loss improved from 0.05583 to 0.04773, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2632s - loss: 0.0563 - psnr: 22.5201 - ssim: 0.6356 - val_loss: 0.0477 - val_psnr: 23.4481 - val_ssim: 0.6651 - lr: 0.0100 - 2632s/epoch - 2s/step
+Epoch 4/500
+
+Epoch 4: val_loss improved from 0.04773 to 0.04190, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2632s - loss: 0.0504 - psnr: 23.3740 - ssim: 0.6669 - val_loss: 0.0419 - val_psnr: 24.6779 - val_ssim: 0.6927 - lr: 0.0100 - 2632s/epoch - 2s/step
+Epoch 5/500
+
+Epoch 5: val_loss did not improve from 0.04190
+1250/1250 - 2610s - loss: 0.0502 - psnr: 23.3774 - ssim: 0.6655 - val_loss: 0.0438 - val_psnr: 24.3123 - val_ssim: 0.6801 - lr: 0.0100 - 2610s/epoch - 2s/step
+Epoch 6/500
+
+Epoch 6: val_loss improved from 0.04190 to 0.04065, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2632s - loss: 0.0468 - psnr: 23.9375 - ssim: 0.6861 - val_loss: 0.0407 - val_psnr: 24.9508 - val_ssim: 0.7079 - lr: 0.0100 - 2632s/epoch - 2s/step
+Epoch 7/500
+
+Epoch 7: val_loss improved from 0.04065 to 0.04011, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2632s - loss: 0.0444 - psnr: 24.3438 - ssim: 0.7001 - val_loss: 0.0401 - val_psnr: 25.1235 - val_ssim: 0.7195 - lr: 0.0100 - 2632s/epoch - 2s/step
+Epoch 8/500
+
+Epoch 8: val_loss did not improve from 0.04011
+1250/1250 - 2611s - loss: 0.0429 - psnr: 24.6040 - ssim: 0.7104 - val_loss: 0.0406 - val_psnr: 24.9539 - val_ssim: 0.7213 - lr: 0.0100 - 2611s/epoch - 2s/step
+Epoch 9/500
+
+Epoch 9: val_loss improved from 0.04011 to 0.03857, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0417 - psnr: 24.8214 - ssim: 0.7183 - val_loss: 0.0386 - val_psnr: 25.4240 - val_ssim: 0.7267 - lr: 0.0100 - 2633s/epoch - 2s/step
+Epoch 10/500
+
+Epoch 10: val_loss did not improve from 0.03857
+1250/1250 - 2610s - loss: 0.0411 - psnr: 24.9485 - ssim: 0.7244 - val_loss: 0.0669 - val_psnr: 24.7282 - val_ssim: 0.7265 - lr: 0.0100 - 2610s/epoch - 2s/step
+Epoch 11/500
+
+Epoch 11: val_loss improved from 0.03857 to 0.03702, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2631s - loss: 0.0401 - psnr: 25.1378 - ssim: 0.7308 - val_loss: 0.0370 - val_psnr: 25.7739 - val_ssim: 0.7386 - lr: 0.0100 - 2631s/epoch - 2s/step
+Epoch 12/500
+
+Epoch 12: val_loss did not improve from 0.03702
+1250/1250 - 2610s - loss: 0.0400 - psnr: 25.1619 - ssim: 0.7346 - val_loss: 0.0382 - val_psnr: 25.6194 - val_ssim: 0.7352 - lr: 0.0100 - 2610s/epoch - 2s/step
+Epoch 13/500
+
+Epoch 13: val_loss did not improve from 0.03702
+1250/1250 - 2611s - loss: 0.0393 - psnr: 25.2953 - ssim: 0.7386 - val_loss: 0.0370 - val_psnr: 25.7074 - val_ssim: 0.7342 - lr: 0.0100 - 2611s/epoch - 2s/step
+Epoch 14/500
+
+Epoch 14: val_loss did not improve from 0.03702
+1250/1250 - 2611s - loss: 0.0391 - psnr: 25.3392 - ssim: 0.7417 - val_loss: 0.0373 - val_psnr: 25.5181 - val_ssim: 0.7487 - lr: 0.0100 - 2611s/epoch - 2s/step
+Epoch 15/500
+
+Epoch 15: val_loss did not improve from 0.03702
+1250/1250 - 2610s - loss: 0.0386 - psnr: 25.4323 - ssim: 0.7448 - val_loss: 0.0391 - val_psnr: 25.5688 - val_ssim: 0.7413 - lr: 0.0100 - 2610s/epoch - 2s/step
+Epoch 16/500
+
+Epoch 16: val_loss did not improve from 0.03702
+1250/1250 - 2610s - loss: 0.0382 - psnr: 25.4928 - ssim: 0.7476 - val_loss: 0.0391 - val_psnr: 25.5874 - val_ssim: 0.7465 - lr: 0.0100 - 2610s/epoch - 2s/step
+Epoch 17/500
+
+Epoch 17: val_loss improved from 0.03702 to 0.03653, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2632s - loss: 0.0383 - psnr: 25.4937 - ssim: 0.7483 - val_loss: 0.0365 - val_psnr: 25.9025 - val_ssim: 0.7504 - lr: 0.0100 - 2632s/epoch - 2s/step
+Epoch 18/500
+
+Epoch 18: val_loss did not improve from 0.03653
+1250/1250 - 2611s - loss: 0.0382 - psnr: 25.5296 - ssim: 0.7508 - val_loss: 0.0366 - val_psnr: 25.9996 - val_ssim: 0.7544 - lr: 0.0100 - 2611s/epoch - 2s/step
+Epoch 19/500
+
+Epoch 19: val_loss did not improve from 0.03653
+1250/1250 - 2612s - loss: 0.0381 - psnr: 25.5189 - ssim: 0.7503 - val_loss: 0.0402 - val_psnr: 25.3319 - val_ssim: 0.7486 - lr: 0.0100 - 2612s/epoch - 2s/step
+Epoch 20/500
+
+Epoch 20: val_loss did not improve from 0.03653
+1250/1250 - 2611s - loss: 0.0374 - psnr: 25.6626 - ssim: 0.7540 - val_loss: 0.0440 - val_psnr: 24.9146 - val_ssim: 0.7502 - lr: 0.0100 - 2611s/epoch - 2s/step
+Epoch 21/500
+
+Epoch 21: val_loss did not improve from 0.03653
+1250/1250 - 2612s - loss: 0.0371 - psnr: 25.7302 - ssim: 0.7568 - val_loss: 0.0414 - val_psnr: 25.2488 - val_ssim: 0.7442 - lr: 0.0100 - 2612s/epoch - 2s/step
+Epoch 22/500
+
+Epoch 22: val_loss did not improve from 0.03653
+1250/1250 - 2611s - loss: 0.0369 - psnr: 25.7716 - ssim: 0.7587 - val_loss: 0.0389 - val_psnr: 25.6663 - val_ssim: 0.7555 - lr: 0.0100 - 2611s/epoch - 2s/step
+Epoch 23/500
+
+Epoch 23: val_loss did not improve from 0.03653
+1250/1250 - 2612s - loss: 0.0448 - psnr: 24.2797 - ssim: 0.7039 - val_loss: 0.0408 - val_psnr: 25.2066 - val_ssim: 0.7203 - lr: 0.0100 - 2612s/epoch - 2s/step
+Epoch 24/500
+
+Epoch 24: val_loss did not improve from 0.03653
+1250/1250 - 2612s - loss: 0.0403 - psnr: 25.0580 - ssim: 0.7343 - val_loss: 0.0395 - val_psnr: 25.4797 - val_ssim: 0.7392 - lr: 0.0100 - 2612s/epoch - 2s/step
+Epoch 25/500
+
+Epoch 25: val_loss did not improve from 0.03653
+1250/1250 - 2611s - loss: 0.0387 - psnr: 25.3620 - ssim: 0.7453 - val_loss: 0.0386 - val_psnr: 25.6478 - val_ssim: 0.7448 - lr: 0.0100 - 2611s/epoch - 2s/step
+Epoch 26/500
+
+Epoch 26: val_loss did not improve from 0.03653
+1250/1250 - 2612s - loss: 0.0380 - psnr: 25.5109 - ssim: 0.7510 - val_loss: 0.0369 - val_psnr: 25.8757 - val_ssim: 0.7516 - lr: 0.0100 - 2612s/epoch - 2s/step
+Epoch 27/500
+
+Epoch 27: val_loss did not improve from 0.03653
+1250/1250 - 2612s - loss: 0.0378 - psnr: 25.5570 - ssim: 0.7541 - val_loss: 0.0395 - val_psnr: 25.3909 - val_ssim: 0.7469 - lr: 0.0100 - 2612s/epoch - 2s/step
+Epoch 28/500
+
+Epoch 28: val_loss did not improve from 0.03653
+1250/1250 - 2612s - loss: 0.0373 - psnr: 25.6589 - ssim: 0.7573 - val_loss: 0.0378 - val_psnr: 25.8147 - val_ssim: 0.7511 - lr: 0.0100 - 2612s/epoch - 2s/step
+Epoch 29/500
+
+Epoch 29: val_loss did not improve from 0.03653
+1250/1250 - 2612s - loss: 0.0368 - psnr: 25.7604 - ssim: 0.7601 - val_loss: 0.0375 - val_psnr: 25.8931 - val_ssim: 0.7558 - lr: 0.0100 - 2612s/epoch - 2s/step
+Epoch 30/500
+
+Epoch 30: val_loss did not improve from 0.03653
+1250/1250 - 2612s - loss: 0.0368 - psnr: 25.7605 - ssim: 0.7607 - val_loss: 0.0434 - val_psnr: 24.8810 - val_ssim: 0.7378 - lr: 0.0100 - 2612s/epoch - 2s/step
+Epoch 31/500
+
+Epoch 31: ReduceLROnPlateau reducing learning rate to 0.0019999999552965165.
+
+Epoch 31: val_loss did not improve from 0.03653
+1250/1250 - 2612s - loss: 0.0368 - psnr: 25.7503 - ssim: 0.7607 - val_loss: 0.0418 - val_psnr: 25.0757 - val_ssim: 0.7501 - lr: 0.0100 - 2612s/epoch - 2s/step
+Epoch 32/500
+
+Epoch 32: val_loss improved from 0.03653 to 0.03404, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0344 - psnr: 26.2477 - ssim: 0.7681 - val_loss: 0.0340 - val_psnr: 26.4695 - val_ssim: 0.7796 - lr: 0.0020 - 2633s/epoch - 2s/step
+Epoch 33/500
+
+Epoch 33: val_loss improved from 0.03404 to 0.03387, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2632s - loss: 0.0340 - psnr: 26.3161 - ssim: 0.7697 - val_loss: 0.0339 - val_psnr: 26.5417 - val_ssim: 0.7792 - lr: 0.0020 - 2632s/epoch - 2s/step
+Epoch 34/500
+
+Epoch 34: val_loss improved from 0.03387 to 0.03299, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0339 - psnr: 26.3517 - ssim: 0.7707 - val_loss: 0.0330 - val_psnr: 26.7031 - val_ssim: 0.7804 - lr: 0.0020 - 2633s/epoch - 2s/step
+Epoch 35/500
+
+Epoch 35: val_loss did not improve from 0.03299
+1250/1250 - 2611s - loss: 0.0338 - psnr: 26.3785 - ssim: 0.7714 - val_loss: 0.0330 - val_psnr: 26.7071 - val_ssim: 0.7804 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 36/500
+
+Epoch 36: val_loss improved from 0.03299 to 0.03263, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0336 - psnr: 26.4061 - ssim: 0.7722 - val_loss: 0.0326 - val_psnr: 26.7732 - val_ssim: 0.7821 - lr: 0.0020 - 2633s/epoch - 2s/step
+Epoch 37/500
+
+Epoch 37: val_loss improved from 0.03263 to 0.03232, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0335 - psnr: 26.4257 - ssim: 0.7728 - val_loss: 0.0323 - val_psnr: 26.8502 - val_ssim: 0.7824 - lr: 0.0020 - 2633s/epoch - 2s/step
+Epoch 38/500
+
+Epoch 38: val_loss did not improve from 0.03232
+1250/1250 - 2611s - loss: 0.0334 - psnr: 26.4515 - ssim: 0.7735 - val_loss: 0.0324 - val_psnr: 26.8366 - val_ssim: 0.7829 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 39/500
+
+Epoch 39: val_loss improved from 0.03232 to 0.03191, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0334 - psnr: 26.4650 - ssim: 0.7740 - val_loss: 0.0319 - val_psnr: 26.9219 - val_ssim: 0.7827 - lr: 0.0020 - 2633s/epoch - 2s/step
+Epoch 40/500
+
+Epoch 40: val_loss did not improve from 0.03191
+1250/1250 - 2611s - loss: 0.0333 - psnr: 26.4734 - ssim: 0.7742 - val_loss: 0.0323 - val_psnr: 26.8369 - val_ssim: 0.7840 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 41/500
+
+Epoch 41: val_loss did not improve from 0.03191
+1250/1250 - 2612s - loss: 0.0332 - psnr: 26.4952 - ssim: 0.7750 - val_loss: 0.0321 - val_psnr: 26.8817 - val_ssim: 0.7830 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 42/500
+
+Epoch 42: val_loss improved from 0.03191 to 0.03180, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0332 - psnr: 26.5127 - ssim: 0.7754 - val_loss: 0.0318 - val_psnr: 26.9570 - val_ssim: 0.7845 - lr: 0.0020 - 2634s/epoch - 2s/step
+Epoch 43/500
+
+Epoch 43: val_loss did not improve from 0.03180
+1250/1250 - 2612s - loss: 0.0331 - psnr: 26.5259 - ssim: 0.7759 - val_loss: 0.0319 - val_psnr: 26.9285 - val_ssim: 0.7842 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 44/500
+
+Epoch 44: val_loss improved from 0.03180 to 0.03168, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0330 - psnr: 26.5375 - ssim: 0.7763 - val_loss: 0.0317 - val_psnr: 26.9862 - val_ssim: 0.7846 - lr: 0.0020 - 2634s/epoch - 2s/step
+Epoch 45/500
+
+Epoch 45: val_loss improved from 0.03168 to 0.03156, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0330 - psnr: 26.5495 - ssim: 0.7767 - val_loss: 0.0316 - val_psnr: 27.0054 - val_ssim: 0.7859 - lr: 0.0020 - 2634s/epoch - 2s/step
+Epoch 46/500
+
+Epoch 46: val_loss did not improve from 0.03156
+1250/1250 - 2611s - loss: 0.0329 - psnr: 26.5650 - ssim: 0.7772 - val_loss: 0.0316 - val_psnr: 26.9932 - val_ssim: 0.7864 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 47/500
+
+Epoch 47: val_loss improved from 0.03156 to 0.03146, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2632s - loss: 0.0329 - psnr: 26.5654 - ssim: 0.7774 - val_loss: 0.0315 - val_psnr: 27.0275 - val_ssim: 0.7862 - lr: 0.0020 - 2632s/epoch - 2s/step
+Epoch 48/500
+
+Epoch 48: val_loss did not improve from 0.03146
+1250/1250 - 2612s - loss: 0.0329 - psnr: 26.5721 - ssim: 0.7777 - val_loss: 0.0318 - val_psnr: 26.9857 - val_ssim: 0.7860 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 49/500
+
+Epoch 49: val_loss did not improve from 0.03146
+1250/1250 - 2612s - loss: 0.0328 - psnr: 26.5903 - ssim: 0.7782 - val_loss: 0.0316 - val_psnr: 27.0150 - val_ssim: 0.7850 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 50/500
+
+Epoch 50: val_loss improved from 0.03146 to 0.03140, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0327 - psnr: 26.6092 - ssim: 0.7788 - val_loss: 0.0314 - val_psnr: 27.0349 - val_ssim: 0.7861 - lr: 0.0020 - 2634s/epoch - 2s/step
+Epoch 51/500
+
+Epoch 51: val_loss improved from 0.03140 to 0.03131, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0326 - psnr: 26.6252 - ssim: 0.7791 - val_loss: 0.0313 - val_psnr: 27.0657 - val_ssim: 0.7875 - lr: 0.0020 - 2634s/epoch - 2s/step
+Epoch 52/500
+
+Epoch 52: val_loss did not improve from 0.03131
+1250/1250 - 2612s - loss: 0.0326 - psnr: 26.6374 - ssim: 0.7795 - val_loss: 0.0314 - val_psnr: 27.0574 - val_ssim: 0.7855 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 53/500
+
+Epoch 53: val_loss improved from 0.03131 to 0.03129, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0325 - psnr: 26.6466 - ssim: 0.7798 - val_loss: 0.0313 - val_psnr: 27.0627 - val_ssim: 0.7862 - lr: 0.0020 - 2634s/epoch - 2s/step
+Epoch 54/500
+
+Epoch 54: val_loss did not improve from 0.03129
+1250/1250 - 2612s - loss: 0.0325 - psnr: 26.6605 - ssim: 0.7803 - val_loss: 0.0314 - val_psnr: 27.0815 - val_ssim: 0.7862 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 55/500
+
+Epoch 55: val_loss improved from 0.03129 to 0.03098, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0324 - psnr: 26.6699 - ssim: 0.7807 - val_loss: 0.0310 - val_psnr: 27.1075 - val_ssim: 0.7874 - lr: 0.0020 - 2633s/epoch - 2s/step
+Epoch 56/500
+
+Epoch 56: val_loss did not improve from 0.03098
+1250/1250 - 2611s - loss: 0.0324 - psnr: 26.6764 - ssim: 0.7808 - val_loss: 0.0311 - val_psnr: 27.1002 - val_ssim: 0.7876 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 57/500
+
+Epoch 57: val_loss did not improve from 0.03098
+1250/1250 - 2611s - loss: 0.0323 - psnr: 26.6903 - ssim: 0.7814 - val_loss: 0.0315 - val_psnr: 27.0329 - val_ssim: 0.7882 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 58/500
+
+Epoch 58: val_loss did not improve from 0.03098
+1250/1250 - 2611s - loss: 0.0323 - psnr: 26.6997 - ssim: 0.7816 - val_loss: 0.0312 - val_psnr: 27.1057 - val_ssim: 0.7866 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 59/500
+
+Epoch 59: val_loss improved from 0.03098 to 0.03069, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0322 - psnr: 26.7129 - ssim: 0.7821 - val_loss: 0.0307 - val_psnr: 27.1569 - val_ssim: 0.7886 - lr: 0.0020 - 2633s/epoch - 2s/step
+Epoch 60/500
+
+Epoch 60: val_loss did not improve from 0.03069
+1250/1250 - 2612s - loss: 0.0322 - psnr: 26.7246 - ssim: 0.7825 - val_loss: 0.0310 - val_psnr: 27.1104 - val_ssim: 0.7890 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 61/500
+
+Epoch 61: val_loss did not improve from 0.03069
+1250/1250 - 2612s - loss: 0.0322 - psnr: 26.7308 - ssim: 0.7827 - val_loss: 0.0309 - val_psnr: 27.1256 - val_ssim: 0.7897 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 62/500
+
+Epoch 62: val_loss improved from 0.03069 to 0.03060, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0321 - psnr: 26.7388 - ssim: 0.7831 - val_loss: 0.0306 - val_psnr: 27.1940 - val_ssim: 0.7907 - lr: 0.0020 - 2634s/epoch - 2s/step
+Epoch 63/500
+
+Epoch 63: val_loss did not improve from 0.03060
+1250/1250 - 2612s - loss: 0.0320 - psnr: 26.7558 - ssim: 0.7834 - val_loss: 0.0309 - val_psnr: 27.1440 - val_ssim: 0.7897 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 64/500
+
+Epoch 64: val_loss did not improve from 0.03060
+1250/1250 - 2611s - loss: 0.0320 - psnr: 26.7624 - ssim: 0.7837 - val_loss: 0.0309 - val_psnr: 27.1228 - val_ssim: 0.7882 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 65/500
+
+Epoch 65: val_loss did not improve from 0.03060
+1250/1250 - 2612s - loss: 0.0320 - psnr: 26.7648 - ssim: 0.7837 - val_loss: 0.0310 - val_psnr: 27.1371 - val_ssim: 0.7888 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 66/500
+
+Epoch 66: val_loss did not improve from 0.03060
+1250/1250 - 2612s - loss: 0.0319 - psnr: 26.7828 - ssim: 0.7843 - val_loss: 0.0311 - val_psnr: 27.1079 - val_ssim: 0.7899 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 67/500
+
+Epoch 67: val_loss did not improve from 0.03060
+1250/1250 - 2612s - loss: 0.0319 - psnr: 26.7819 - ssim: 0.7846 - val_loss: 0.0308 - val_psnr: 27.1286 - val_ssim: 0.7891 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 68/500
+
+Epoch 68: val_loss did not improve from 0.03060
+1250/1250 - 2612s - loss: 0.0319 - psnr: 26.7922 - ssim: 0.7848 - val_loss: 0.0309 - val_psnr: 27.1328 - val_ssim: 0.7902 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 69/500
+
+Epoch 69: val_loss did not improve from 0.03060
+1250/1250 - 2612s - loss: 0.0318 - psnr: 26.8011 - ssim: 0.7851 - val_loss: 0.0307 - val_psnr: 27.1584 - val_ssim: 0.7894 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 70/500
+
+Epoch 70: val_loss did not improve from 0.03060
+1250/1250 - 2611s - loss: 0.0318 - psnr: 26.8113 - ssim: 0.7854 - val_loss: 0.0307 - val_psnr: 27.1545 - val_ssim: 0.7885 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 71/500
+
+Epoch 71: val_loss did not improve from 0.03060
+1250/1250 - 2612s - loss: 0.0317 - psnr: 26.8259 - ssim: 0.7858 - val_loss: 0.0311 - val_psnr: 27.0475 - val_ssim: 0.7887 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 72/500
+
+Epoch 72: val_loss did not improve from 0.03060
+1250/1250 - 2611s - loss: 0.0317 - psnr: 26.8303 - ssim: 0.7859 - val_loss: 0.0309 - val_psnr: 27.1295 - val_ssim: 0.7902 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 73/500
+
+Epoch 73: val_loss improved from 0.03060 to 0.03056, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0317 - psnr: 26.8445 - ssim: 0.7864 - val_loss: 0.0306 - val_psnr: 27.2121 - val_ssim: 0.7924 - lr: 0.0020 - 2634s/epoch - 2s/step
+Epoch 74/500
+
+Epoch 74: val_loss did not improve from 0.03056
+1250/1250 - 2612s - loss: 0.0316 - psnr: 26.8501 - ssim: 0.7866 - val_loss: 0.0309 - val_psnr: 27.1470 - val_ssim: 0.7894 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 75/500
+
+Epoch 75: val_loss did not improve from 0.03056
+1250/1250 - 2612s - loss: 0.0316 - psnr: 26.8603 - ssim: 0.7868 - val_loss: 0.0307 - val_psnr: 27.1882 - val_ssim: 0.7908 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 76/500
+
+Epoch 76: val_loss did not improve from 0.03056
+1250/1250 - 2612s - loss: 0.0316 - psnr: 26.8554 - ssim: 0.7870 - val_loss: 0.0308 - val_psnr: 27.1264 - val_ssim: 0.7907 - lr: 0.0020 - 2612s/epoch - 2s/step
+Epoch 77/500
+
+Epoch 77: val_loss improved from 0.03056 to 0.03038, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0316 - psnr: 26.8684 - ssim: 0.7874 - val_loss: 0.0304 - val_psnr: 27.2159 - val_ssim: 0.7933 - lr: 0.0020 - 2634s/epoch - 2s/step
+Epoch 78/500
+
+Epoch 78: val_loss did not improve from 0.03038
+1250/1250 - 2611s - loss: 0.0315 - psnr: 26.8748 - ssim: 0.7874 - val_loss: 0.0307 - val_psnr: 27.1826 - val_ssim: 0.7928 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 79/500
+
+Epoch 79: ReduceLROnPlateau reducing learning rate to 0.0003999999724328518.
+
+Epoch 79: val_loss did not improve from 0.03038
+1250/1250 - 2611s - loss: 0.0315 - psnr: 26.8792 - ssim: 0.7877 - val_loss: 0.0306 - val_psnr: 27.1536 - val_ssim: 0.7920 - lr: 0.0020 - 2611s/epoch - 2s/step
+Epoch 80/500
+
+Epoch 80: val_loss improved from 0.03038 to 0.02998, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0311 - psnr: 26.9855 - ssim: 0.7895 - val_loss: 0.0300 - val_psnr: 27.3187 - val_ssim: 0.7959 - lr: 4.0000e-04 - 2633s/epoch - 2s/step
+Epoch 81/500
+
+Epoch 81: val_loss improved from 0.02998 to 0.02989, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0310 - psnr: 26.9946 - ssim: 0.7898 - val_loss: 0.0299 - val_psnr: 27.3353 - val_ssim: 0.7959 - lr: 4.0000e-04 - 2633s/epoch - 2s/step
+Epoch 82/500
+
+Epoch 82: val_loss did not improve from 0.02989
+1250/1250 - 2612s - loss: 0.0310 - psnr: 27.0012 - ssim: 0.7899 - val_loss: 0.0299 - val_psnr: 27.3399 - val_ssim: 0.7960 - lr: 4.0000e-04 - 2612s/epoch - 2s/step
+Epoch 83/500
+
+Epoch 83: val_loss improved from 0.02989 to 0.02988, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2635s - loss: 0.0310 - psnr: 27.0038 - ssim: 0.7900 - val_loss: 0.0299 - val_psnr: 27.3392 - val_ssim: 0.7959 - lr: 4.0000e-04 - 2635s/epoch - 2s/step
+Epoch 84/500
+
+Epoch 84: val_loss did not improve from 0.02988
+1250/1250 - 2612s - loss: 0.0310 - psnr: 27.0076 - ssim: 0.7901 - val_loss: 0.0301 - val_psnr: 27.3055 - val_ssim: 0.7956 - lr: 4.0000e-04 - 2612s/epoch - 2s/step
+Epoch 85/500
+
+Epoch 85: val_loss improved from 0.02988 to 0.02987, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0310 - psnr: 27.0085 - ssim: 0.7902 - val_loss: 0.0299 - val_psnr: 27.3389 - val_ssim: 0.7960 - lr: 4.0000e-04 - 2634s/epoch - 2s/step
+Epoch 86/500
+
+Epoch 86: val_loss improved from 0.02987 to 0.02984, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0310 - psnr: 27.0113 - ssim: 0.7902 - val_loss: 0.0298 - val_psnr: 27.3317 - val_ssim: 0.7963 - lr: 4.0000e-04 - 2634s/epoch - 2s/step
+Epoch 87/500
+
+Epoch 87: val_loss did not improve from 0.02984
+1250/1250 - 2612s - loss: 0.0310 - psnr: 27.0130 - ssim: 0.7903 - val_loss: 0.0300 - val_psnr: 27.3293 - val_ssim: 0.7961 - lr: 4.0000e-04 - 2612s/epoch - 2s/step
+Epoch 88/500
+
+Epoch 88: val_loss did not improve from 0.02984
+1250/1250 - 2612s - loss: 0.0309 - psnr: 27.0164 - ssim: 0.7904 - val_loss: 0.0299 - val_psnr: 27.3354 - val_ssim: 0.7959 - lr: 4.0000e-04 - 2612s/epoch - 2s/step
+Epoch 89/500
+
+Epoch 89: val_loss did not improve from 0.02984
+1250/1250 - 2611s - loss: 0.0309 - psnr: 27.0192 - ssim: 0.7905 - val_loss: 0.0299 - val_psnr: 27.3348 - val_ssim: 0.7962 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 90/500
+
+Epoch 90: val_loss did not improve from 0.02984
+1250/1250 - 2611s - loss: 0.0310 - psnr: 27.0012 - ssim: 0.7898 - val_loss: 0.0299 - val_psnr: 27.3273 - val_ssim: 0.7953 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 91/500
+
+Epoch 91: val_loss did not improve from 0.02984
+1250/1250 - 2612s - loss: 0.0310 - psnr: 26.9942 - ssim: 0.7895 - val_loss: 0.0299 - val_psnr: 27.3252 - val_ssim: 0.7957 - lr: 4.0000e-04 - 2612s/epoch - 2s/step
+Epoch 92/500
+
+Epoch 92: val_loss did not improve from 0.02984
+1250/1250 - 2611s - loss: 0.0310 - psnr: 27.0076 - ssim: 0.7901 - val_loss: 0.0299 - val_psnr: 27.3315 - val_ssim: 0.7960 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 93/500
+
+Epoch 93: val_loss did not improve from 0.02984
+1250/1250 - 2611s - loss: 0.0309 - psnr: 27.0151 - ssim: 0.7904 - val_loss: 0.0298 - val_psnr: 27.3406 - val_ssim: 0.7961 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 94/500
+
+Epoch 94: val_loss did not improve from 0.02984
+1250/1250 - 2611s - loss: 0.0309 - psnr: 27.0191 - ssim: 0.7905 - val_loss: 0.0299 - val_psnr: 27.3431 - val_ssim: 0.7964 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 95/500
+
+Epoch 95: val_loss did not improve from 0.02984
+1250/1250 - 2612s - loss: 0.0309 - psnr: 27.0206 - ssim: 0.7906 - val_loss: 0.0299 - val_psnr: 27.3484 - val_ssim: 0.7971 - lr: 4.0000e-04 - 2612s/epoch - 2s/step
+Epoch 96/500
+
+Epoch 96: val_loss improved from 0.02984 to 0.02980, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0309 - psnr: 27.0250 - ssim: 0.7907 - val_loss: 0.0298 - val_psnr: 27.3589 - val_ssim: 0.7971 - lr: 4.0000e-04 - 2634s/epoch - 2s/step
+Epoch 97/500
+
+Epoch 97: val_loss improved from 0.02980 to 0.02978, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2632s - loss: 0.0309 - psnr: 27.0277 - ssim: 0.7909 - val_loss: 0.0298 - val_psnr: 27.3632 - val_ssim: 0.7974 - lr: 4.0000e-04 - 2632s/epoch - 2s/step
+Epoch 98/500
+
+Epoch 98: val_loss improved from 0.02978 to 0.02977, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0309 - psnr: 27.0316 - ssim: 0.7910 - val_loss: 0.0298 - val_psnr: 27.3511 - val_ssim: 0.7964 - lr: 4.0000e-04 - 2633s/epoch - 2s/step
+Epoch 99/500
+
+Epoch 99: val_loss did not improve from 0.02977
+1250/1250 - 2611s - loss: 0.0309 - psnr: 27.0340 - ssim: 0.7911 - val_loss: 0.0298 - val_psnr: 27.3604 - val_ssim: 0.7972 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 100/500
+
+Epoch 100: val_loss improved from 0.02977 to 0.02975, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0309 - psnr: 27.0345 - ssim: 0.7912 - val_loss: 0.0298 - val_psnr: 27.3705 - val_ssim: 0.7974 - lr: 4.0000e-04 - 2633s/epoch - 2s/step
+Epoch 101/500
+
+Epoch 101: val_loss did not improve from 0.02975
+1250/1250 - 2611s - loss: 0.0308 - psnr: 27.0369 - ssim: 0.7912 - val_loss: 0.0298 - val_psnr: 27.3585 - val_ssim: 0.7973 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 102/500
+
+Epoch 102: val_loss improved from 0.02975 to 0.02971, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2633s - loss: 0.0308 - psnr: 27.0395 - ssim: 0.7913 - val_loss: 0.0297 - val_psnr: 27.3715 - val_ssim: 0.7976 - lr: 4.0000e-04 - 2633s/epoch - 2s/step
+Epoch 103/500
+
+Epoch 103: val_loss improved from 0.02971 to 0.02964, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0308 - psnr: 27.0437 - ssim: 0.7914 - val_loss: 0.0296 - val_psnr: 27.3777 - val_ssim: 0.7979 - lr: 4.0000e-04 - 2634s/epoch - 2s/step
+Epoch 104/500
+
+Epoch 104: val_loss did not improve from 0.02964
+1250/1250 - 2611s - loss: 0.0308 - psnr: 27.0437 - ssim: 0.7915 - val_loss: 0.0297 - val_psnr: 27.3740 - val_ssim: 0.7974 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 105/500
+
+Epoch 105: val_loss did not improve from 0.02964
+1250/1250 - 2611s - loss: 0.0308 - psnr: 27.0452 - ssim: 0.7916 - val_loss: 0.0298 - val_psnr: 27.3533 - val_ssim: 0.7970 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 106/500
+
+Epoch 106: val_loss did not improve from 0.02964
+1250/1250 - 2611s - loss: 0.0308 - psnr: 27.0495 - ssim: 0.7916 - val_loss: 0.0297 - val_psnr: 27.3687 - val_ssim: 0.7976 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 107/500
+
+Epoch 107: val_loss did not improve from 0.02964
+1250/1250 - 2611s - loss: 0.0308 - psnr: 27.0515 - ssim: 0.7917 - val_loss: 0.0297 - val_psnr: 27.3767 - val_ssim: 0.7975 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 108/500
+
+Epoch 108: val_loss did not improve from 0.02964
+1250/1250 - 2612s - loss: 0.0308 - psnr: 27.0521 - ssim: 0.7917 - val_loss: 0.0298 - val_psnr: 27.3735 - val_ssim: 0.7982 - lr: 4.0000e-04 - 2612s/epoch - 2s/step
+Epoch 109/500
+
+Epoch 109: val_loss did not improve from 0.02964
+1250/1250 - 2611s - loss: 0.0308 - psnr: 27.0561 - ssim: 0.7918 - val_loss: 0.0297 - val_psnr: 27.3898 - val_ssim: 0.7985 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 110/500
+
+Epoch 110: val_loss did not improve from 0.02964
+1250/1250 - 2611s - loss: 0.0308 - psnr: 27.0542 - ssim: 0.7918 - val_loss: 0.0297 - val_psnr: 27.3762 - val_ssim: 0.7977 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 111/500
+
+Epoch 111: val_loss did not improve from 0.02964
+1250/1250 - 2611s - loss: 0.0308 - psnr: 27.0601 - ssim: 0.7919 - val_loss: 0.0298 - val_psnr: 27.3729 - val_ssim: 0.7978 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 112/500
+
+Epoch 112: val_loss did not improve from 0.02964
+1250/1250 - 2611s - loss: 0.0308 - psnr: 27.0600 - ssim: 0.7920 - val_loss: 0.0297 - val_psnr: 27.3904 - val_ssim: 0.7981 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 113/500
+
+Epoch 113: val_loss did not improve from 0.02964
+1250/1250 - 2612s - loss: 0.0307 - psnr: 27.0609 - ssim: 0.7920 - val_loss: 0.0297 - val_psnr: 27.3729 - val_ssim: 0.7976 - lr: 4.0000e-04 - 2612s/epoch - 2s/step
+Epoch 114/500
+
+Epoch 114: val_loss did not improve from 0.02964
+1250/1250 - 2612s - loss: 0.0307 - psnr: 27.0644 - ssim: 0.7921 - val_loss: 0.0297 - val_psnr: 27.3855 - val_ssim: 0.7983 - lr: 4.0000e-04 - 2612s/epoch - 2s/step
+Epoch 115/500
+
+Epoch 115: val_loss did not improve from 0.02964
+1250/1250 - 2612s - loss: 0.0307 - psnr: 27.0663 - ssim: 0.7922 - val_loss: 0.0297 - val_psnr: 27.3842 - val_ssim: 0.7985 - lr: 4.0000e-04 - 2612s/epoch - 2s/step
+Epoch 116/500
+
+Epoch 116: val_loss did not improve from 0.02964
+1250/1250 - 2611s - loss: 0.0307 - psnr: 27.0699 - ssim: 0.7922 - val_loss: 0.0297 - val_psnr: 27.3794 - val_ssim: 0.7985 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 117/500
+
+Epoch 117: val_loss improved from 0.02964 to 0.02959, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0307 - psnr: 27.0681 - ssim: 0.7923 - val_loss: 0.0296 - val_psnr: 27.3891 - val_ssim: 0.7988 - lr: 4.0000e-04 - 2634s/epoch - 2s/step
+Epoch 118/500
+
+Epoch 118: val_loss did not improve from 0.02959
+1250/1250 - 2611s - loss: 0.0307 - psnr: 27.0712 - ssim: 0.7923 - val_loss: 0.0297 - val_psnr: 27.3906 - val_ssim: 0.7993 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 119/500
+
+Epoch 119: val_loss improved from 0.02959 to 0.02959, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0307 - psnr: 27.0739 - ssim: 0.7924 - val_loss: 0.0296 - val_psnr: 27.3965 - val_ssim: 0.7986 - lr: 4.0000e-04 - 2634s/epoch - 2s/step
+Epoch 120/500
+
+Epoch 120: val_loss did not improve from 0.02959
+1250/1250 - 2611s - loss: 0.0307 - psnr: 27.0749 - ssim: 0.7925 - val_loss: 0.0296 - val_psnr: 27.3891 - val_ssim: 0.7986 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 121/500
+
+Epoch 121: val_loss did not improve from 0.02959
+1250/1250 - 2611s - loss: 0.0307 - psnr: 27.0779 - ssim: 0.7925 - val_loss: 0.0296 - val_psnr: 27.3924 - val_ssim: 0.7981 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 122/500
+
+Epoch 122: val_loss improved from 0.02959 to 0.02948, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2634s - loss: 0.0307 - psnr: 27.0770 - ssim: 0.7925 - val_loss: 0.0295 - val_psnr: 27.4101 - val_ssim: 0.7998 - lr: 4.0000e-04 - 2634s/epoch - 2s/step
+Epoch 123/500
+
+Epoch 123: ReduceLROnPlateau reducing learning rate to 7.999999215826393e-05.
+
+Epoch 123: val_loss did not improve from 0.02948
+1250/1250 - 2611s - loss: 0.0307 - psnr: 27.0813 - ssim: 0.7926 - val_loss: 0.0296 - val_psnr: 27.4009 - val_ssim: 0.7992 - lr: 4.0000e-04 - 2611s/epoch - 2s/step
+Epoch 124/500
+
+Epoch 124: val_loss improved from 0.02948 to 0.02946, saving model to models/resnet_mae_old_draw_25-30
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, padding2d_layer_call_fn, padding2d_layer_call_and_return_conditional_losses while saving (showing 5 of 315). These functions will not be directly callable after loading.
+1250/1250 - 2632s - loss: 0.0306 - psnr: 27.1038 - ssim: 0.7931 - val_loss: 0.0295 - val_psnr: 27.4510 - val_ssim: 0.8006 - lr: 8.0000e-05 - 2632s/epoch - 2s/step
+Epoch 125/500
+
+Epoch 125: val_loss did not improve from 0.02946
+1250/1250 - 2611s - loss: 0.0306 - psnr: 27.1048 - ssim: 0.7931 - val_loss: 0.0295 - val_psnr: 27.4464 - val_ssim: 0.8005 - lr: 8.0000e-05 - 2611s/epoch - 2s/step
+Epoch 126/500
+
+Epoch 126: val_loss did not improve from 0.02946
+1250/1250 - 2611s - loss: 0.0306 - psnr: 27.1055 - ssim: 0.7932 - val_loss: 0.0295 - val_psnr: 27.4475 - val_ssim: 0.8006 - lr: 8.0000e-05 - 2611s/epoch - 2s/step
+Epoch 127/500
