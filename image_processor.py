@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import tensorflow as tf
+from skimage.util import view_as_windows
 
 from mask_generator import MaskGenerator
 from utils import MaskColor
@@ -173,3 +174,71 @@ class ImageProcessor:
         inpainted = cv.inpaint(image, mask, radius, cv.INPAINT_TELEA)
 
         return inpainted.astype(np.float32)
+
+    @staticmethod
+    def extract_patches(image: np.ndarray, patch_size: int, step: int = 16) -> tuple[np.ndarray, tuple[int, int, int]]:
+        """
+        Extract patches from an image. The image is padded with the reflect mode to ensure that the patches are extracted from the entire image.
+
+        Args:
+            image (ndarray): The image
+            patch_size (int): The patch size
+            step (int): The step size. Defaults to 16.
+
+        Returns:
+            tuple[ndarray, tuple[int, int, int]]: The patches and the shape of the padded image
+        """
+
+        height, width, channels = image.shape
+
+        x_start, y_start = 0, 0
+        x_end, y_end = height, width
+
+        row_padding = (patch_size - (height - patch_size) % step) % step
+        col_padding = (patch_size - (width - patch_size) % step) % step
+
+        height_padding = (0, row_padding)
+        width_padding = (0, col_padding)
+        channel_padding = (0, 0)
+        padded_image = np.pad(image, (height_padding, width_padding, channel_padding), mode='reflect')
+
+        x_end += row_padding
+        y_end += col_padding
+
+        patches = view_as_windows(padded_image[x_start:x_end, y_start:y_end], (patch_size, patch_size, channels), step=step)
+        patches = patches.squeeze()
+
+        return patches, padded_image.shape
+
+    @staticmethod
+    def reconstruct_image(patches: np.ndarray, initial_shape: tuple[int, int, int], padded_shape: tuple[int, int, int], step: int = 16) -> np.ndarray:
+        """
+        Reconstruct an image from patches.
+
+        Args:
+            patches (ndarray): The patches
+            initial_shape (tuple[int, int, int]): The initial shape of the image
+            padded_shape (tuple[int, int, int]): The shape of the padded image
+            step (int): The step size. Defaults to 16.
+
+        Returns:
+            ndarray: The reconstructed image
+        """
+
+        patch_size = patches.shape[2]
+
+        reconstructed = np.zeros(padded_shape, dtype=np.float64)
+        count = np.zeros(padded_shape)
+
+        for x in range(patches.shape[0]):
+            for y in range(patches.shape[1]):
+                x_pos, y_pos = x * step, y * step
+                reconstructed[x_pos:x_pos + patch_size, y_pos:y_pos + patch_size] += patches[x, y]
+                count[x_pos:x_pos + patch_size, y_pos:y_pos + patch_size] += 1
+
+        mean = np.uint8(np.round(reconstructed / count))
+
+        height, width, _ = initial_shape
+        result = mean[:height, :width]
+
+        return result
