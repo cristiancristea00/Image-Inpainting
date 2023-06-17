@@ -12,13 +12,13 @@ from graphs_generator import GraphsGenerator
 from image_browser import ImageBrowser
 from image_processor import ImageProcessor
 from mask_generator import MaskGenerator
-from metrics_and_losses import PSNR, SSIM
+from metrics_and_losses import PSNR, SSIM, LPIPS_L1
 from resnet import ResNet
 from unet import UNet
 from utils import NumpyEncoder
 
 EPOCHS: Final[int] = 500
-BATCH: Final[int] = 64
+BATCH: Final[int] = 32
 IMAGE_SIZE: Final[int] = 128
 
 
@@ -86,7 +86,7 @@ def train(model: UNet | ResNet, arguments: list[str]) -> None:
             model.summary(expand_nested=True)
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01, amsgrad=True)
-    loss = tf.keras.losses.MeanAbsoluteError()
+    loss = LPIPS_L1(IMAGE_SIZE)
     metrics = [PSNR(), SSIM()]
     callbacks = [reduce_learning_rate_callback, early_stopping_callback, checkpoint_callback]
 
