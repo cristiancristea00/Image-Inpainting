@@ -15,7 +15,8 @@ def run() -> None:
         filters=(16, 32, 64, 64, 64, 128),
         kernels=(7, 7, 5, 5, 3, 3),
         skip_filters=(4,) * 6,
-        skip_kernels=(1,) * 6
+        skip_kernels=(1,) * 6,
+        is_gated=False
     )
 
     train(unet, argv)

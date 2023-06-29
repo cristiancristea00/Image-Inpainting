@@ -1,0 +1,72 @@
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to                     
+==================================================================================================
+ input_1 (InputLayer)           [(None, 128, 128, 3  0           []                               
+                                )]                                                                
+                                                                                                  
+ unet_down_0 (UNetDownLayer)    (None, 64, 64, 16)   15056       ['input_1[0][0]']                
+                                                                                                  
+ unet_down_1 (UNetDownLayer)    (None, 32, 32, 32)   75584       ['unet_down_0[0][0]']            
+                                                                                                  
+ unet_down_2 (UNetDownLayer)    (None, 16, 16, 64)   154240      ['unet_down_1[0][0]']            
+                                                                                                  
+ unet_down_3 (UNetDownLayer)    (None, 8, 8, 64)     205440      ['unet_down_2[0][0]']            
+                                                                                                  
+ unet_down_4 (UNetDownLayer)    (None, 4, 4, 64)     74368       ['unet_down_3[0][0]']            
+                                                                                                  
+ unet_down_5 (UNetDownLayer)    (None, 2, 2, 128)    222464      ['unet_down_4[0][0]']            
+                                                                                                  
+ unet_skip_5 (UNet2DConvolution  (None, 2, 2, 4)     532         ['unet_down_5[0][0]']            
+ Block)                                                                                           
+                                                                                                  
+ unet_up_5 (UNetUpLayer)        (None, 4, 4, 128)    87952       ['unet_skip_5[0][0]']            
+                                                                                                  
+ unet_skip_4 (UNet2DConvolution  (None, 4, 4, 4)     276         ['unet_down_4[0][0]']            
+ Block)                                                                                           
+                                                                                                  
+ concatenate (Concatenate)      (None, 4, 4, 132)    0           ['unet_up_5[0][0]',              
+                                                                  'unet_skip_4[0][0]']            
+                                                                                                  
+ unet_up_4 (UNetUpLayer)        (None, 8, 8, 64)     97744       ['concatenate[0][0]']            
+                                                                                                  
+ unet_skip_3 (UNet2DConvolution  (None, 8, 8, 4)     276         ['unet_down_3[0][0]']            
+ Block)                                                                                           
+                                                                                                  
+ concatenate_1 (Concatenate)    (None, 8, 8, 68)     0           ['unet_up_4[0][0]',              
+                                                                  'unet_skip_3[0][0]']            
+                                                                                                  
+ unet_up_3 (UNetUpLayer)        (None, 16, 16, 64)   130256      ['concatenate_1[0][0]']          
+                                                                                                  
+ unet_skip_2 (UNet2DConvolution  (None, 16, 16, 4)   276         ['unet_down_2[0][0]']            
+ Block)                                                                                           
+                                                                                                  
+ concatenate_2 (Concatenate)    (None, 16, 16, 68)   0           ['unet_up_3[0][0]',              
+                                                                  'unet_skip_2[0][0]']            
+                                                                                                  
+ unet_up_2 (UNetUpLayer)        (None, 32, 32, 64)   130256      ['concatenate_2[0][0]']          
+                                                                                                  
+ unet_skip_1 (UNet2DConvolution  (None, 32, 32, 4)   148         ['unet_down_1[0][0]']            
+ Block)                                                                                           
+                                                                                                  
+ concatenate_3 (Concatenate)    (None, 32, 32, 68)   0           ['unet_up_2[0][0]',              
+                                                                  'unet_skip_1[0][0]']            
+                                                                                                  
+ unet_up_1 (UNetUpLayer)        (None, 64, 64, 32)   112368      ['concatenate_3[0][0]']          
+                                                                                                  
+ unet_skip_0 (UNet2DConvolution  (None, 64, 64, 4)   84          ['unet_down_0[0][0]']            
+ Block)                                                                                           
+                                                                                                  
+ concatenate_4 (Concatenate)    (None, 64, 64, 36)   0           ['unet_up_1[0][0]',              
+                                                                  'unet_skip_0[0][0]']            
+                                                                                                  
+ unet_up_0 (UNetUpLayer)        (None, 128, 128, 16  29824       ['concatenate_4[0][0]']          
+                                )                                                                 
+                                                                                                  
+ conv2d_30 (Conv2D)             (None, 128, 128, 3)  51          ['unet_up_0[0][0]']              
+                                                                                                  
+==================================================================================================
+Total params: 1,337,195
+Trainable params: 1,333,451
+Non-trainable params: 3,744
+__________________________________________________________________________________________________

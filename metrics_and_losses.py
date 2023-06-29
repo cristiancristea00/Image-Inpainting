@@ -430,7 +430,7 @@ class LPIPS_L1(LPIPS):
     LPIPS + L1 loss.
     """
 
-    def __init__(self, input_shape: int | tuple[int, int], alpha: float = 0.75, name: str = 'lpips_l1', *args, **kwargs) -> None:
+    def __init__(self, input_shape: int | tuple[int, int] = 128, alpha: float = 0.75, name: str = 'lpips_l1', *args, **kwargs) -> None:
         """
         Initialize the LPIPS + L1 loss.
 
@@ -440,7 +440,7 @@ class LPIPS_L1(LPIPS):
             name (str, optional): The name of the loss. Defaults to 'lpips_l1'.
         """
 
-        super().__init__(name=name, input_shape=input_shape,*args, **kwargs)
+        super().__init__(name=name, input_shape=input_shape, *args, **kwargs)
 
         self.alpha = alpha
 
